@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="TicketBure">
+<meta name="theme-color" content="#E8450A">
+<title>TicketBure — Find Events in Dar es Salaam</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{
+    --brand:#E8450A;
+    --brand2:#FF6B35;
+    --brand-dark:#A83200;
+    --bg:#F5F2EE;
+    --card:#FFFFFF;
+    --text:#1A1A1A;
+    --muted:#888;
+    --border:#E0DDD8;
+    --green:#1D9E75;
+    --green-bg:#E1F5EE;
+    --green-text:#0F6E56;
+    --amber:#BA7517;
+    --purple:#534AB7;
+    --teal:#0F6E56;
+    --pink:#993556;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* ========== APP SHELL ========== */
+  .app {
+    max-width: 430px;
+    margin: 0 auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== STATUS BAR ========== */
+  .status-bar {
+    background: var(--brand);
+    padding: env(safe-area-inset-top, 12px) 20px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  /* ========== HEADER ========== */
+  .app-header {
+    background: var(--brand);
+    padding: 4px 20px 16px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .app-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .app-header p {
+    font-size: 12px;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+
+  /* ========== TABS ========== */
+  .tabs {
+    display: flex;
+    background: var(--card);
+    border-bottom: 0.5px solid var(--border);
+    flex-shrink: 0;
+  }
+  .tab {
+    flex: 1;
+    padding: 13px 4px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .tab.active {
+    color: var(--brand);
+    border-bottom-color: var(--brand);
+  }
+
+  /* ========== SCREENS ========== */
+  .screen {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .screen.active { display: block; }
+
+  /* ========== MAP ========== */
+  .map-area {
+    position: relative;
+    height: 260px;
+    overflow: hidden;
+    background: #C8E6C9;
+  }
+  .map-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg,
+        #D4EDDA 0%,
+        #B8DFC0 25%,
+        #9ED4A8 50%,
+        #A0896B 75%,
+        #8D7560 100%
+      );
+  }
+  .map-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg,rgba(255,255,255,0.05) 0,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 44px),
+      repeating-linear-gradient(90deg,rgba(255,255,255,0.05) 0,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 44px);
+  }
+  .road {
+    position: absolute;
+    background: rgba(255,255,255,0.55);
+  }
+  .road.h { height: 5px; left: 0; right: 0; }
+  .road.v { width: 5px; top: 0; bottom: 0; }
+  .map-label {
+    position: absolute;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+  }
+  .map-search {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    background: #fff;
+    border-radius: 24px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .map-badge {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .pin {
+    position: absolute;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.15s;
+    user-select: none;
+  }
+  .pin:active { transform: scale(0.92); }
+  .pin-bubble {
+    background: var(--brand);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 14px;
+    white-space: nowrap;
+    font-family: 'Space Grotesk', sans-serif;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .pin-stem { width: 2px; height: 8px; margin: 0 auto; }
+  .pin-dot { width: 7px; height: 7px; border-radius: 50%; margin: 0 auto; }
+
+  /* ========== SECTION TITLE ========== */
+  .section-title {
+    padding: 16px 16px 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  /* ========== EVENT CARDS ========== */
+  .event-card {
+    margin: 0 12px 10px;
+    background: var(--card);
+    border-radius: 16px;
+    border: 0.5px solid var(--border);
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    transition: transform 0.12s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .event-card:active { transform: scale(0.97); }
+  .event-thumb {
+    width: 76px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+  }
+  .event-thumb.music { background: #EEEDFE; }
+  .event-thumb.tech  { background: #E1F5EE; }
+  .event-thumb.art   { background: #FBEAF0; }
+  .event-thumb.food  { background: #FAEEDA; }
+  .event-info { padding: 12px 14px; flex: 1; min-width: 0; }
+  .event-name {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .event-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .event-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+  .price-tag {
+    background: var(--brand);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .price-tag.free { background: var(--green); }
+  .venue-tag { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+  /* ========== CHECKOUT ========== */
+  .checkout-hero {
+    background: var(--brand);
+    padding: 20px 20px 24px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .checkout-hero::before {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+  }
+  .checkout-hero::after {
+    content: '';
+    position: absolute;
+    right: 30px;
+    bottom: -20px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .co-cat {
+    font-size: 11px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .checkout-hero h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.2;
+    position: relative;
+  }
+  .checkout-hero .co-date {
+    font-size: 13px;
+    opacity: 0.8;
+    margin-top: 4px;
+    position: relative;
+  }
+  .checkout-hero .price-big {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 10px;
+    position: relative;
+  }
+
+  .checkout-body { padding: 16px; }
+  .pay-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 10px;
+  }
+  .pay-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    padding: 13px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
+  }
+  .pay-option:active { transform: scale(0.98); }
+  .pay-option.selected {
+    border-color: var(--brand);
+    border-width: 1.5px;
+    background: #FFF5F2;
+  }
+  .pay-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: -0.3px;
+  }
+  .pay-icon.mpesa    { background: #4CAF50; }
+  .pay-icon.tigo     { background: #1565C0; }
+  .pay-icon.airtel   { background: #CC0000; font-size: 9px; }
+  .pay-name  { font-weight: 600; font-size: 14px; }
+  .pay-sub   { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .pay-radio {
+    margin-left: auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .pay-radio.checked { border-color: var(--brand); background: var(--brand); }
+  .pay-radio.checked::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  .qty-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-top: 0.5px solid var(--border);
+    margin-top: 4px;
+  }
+  .qty-label { font-weight: 500; font-size: 15px; }
+  .qty-ctrl  { display: flex; align-items: center; gap: 16px; }
+  .qty-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 400;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s;
+    color: var(--text);
+    line-height: 1;
+  }
+  .qty-btn:active { background: var(--border); }
+  .qty-num {
+    font-size: 20px;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 0.5px solid var(--border);
+    font-size: 14px;
+  }
+  .total-val {
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    color: var(--brand);
+  }
+
+  .buy-btn {
+    width: 100%;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 17px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: -0.2px;
+  }
+  .buy-btn:active { background: var(--brand-dark); transform: scale(0.98); }
+  .buy-hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* ========== STK OVERLAY ========== */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: flex-end;
+    z-index: 100;
+    display: none;
+    backdrop-filter: blur(2px);
+  }
+  .sheet {
+    background: #fff;
+    width: 100%;
+    border-radius: 24px 24px 0 0;
+    padding: 28px 24px 40px;
+  }
+  .sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+  .stk-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .stk-sub {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .stk-amount-card {
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .stk-amount-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .stk-amount-val {
+    font-size: 26px;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--brand);
+  }
+  .pin-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 16px 0 8px;
+  }
+  .dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.25s;
+  }
+  .dot.filled { background: var(--brand); }
+  .pin-hint { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+  .stk-confirm {
+    width: 100%;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .stk-confirm:active { opacity: 0.88; transform: scale(0.98); }
+  .stk-cancel {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 12px;
+    padding: 6px;
+  }
+
+  /* ========== SUCCESS ========== */
+  .success-overlay {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 32px;
+    z-index: 200;
+    text-align: center;
+    display: none;
+  }
+  .success-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--green-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin-bottom: 24px;
+    animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  .success-overlay h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--green-text);
+  }
+  .success-overlay p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+  .success-btn {
+    margin-top: 28px;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 15px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: background 0.2s;
+  }
+  .success-btn:active { background: var(--brand-dark); }
+
+  /* ========== WALLET ========== */
+  .wallet-hero {
+    background: var(--brand);
+    padding: 16px 20px 20px;
+    color: #fff;
+    text-align: center;
+  }
+  .wallet-hero h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .wallet-hero p { font-size: 12px; opacity: 0.75; margin-top: 3px; }
+
+  .ticket-card {
+    margin: 12px 12px 0;
+    background: var(--card);
+    border-radius: 18px;
+    border: 0.5px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .ticket-top {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .ticket-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .ticket-date { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .status-pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: var(--green-bg);
+    color: var(--green-text);
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+  .status-pill.used { background: var(--bg); color: var(--muted); }
+  .dashed-divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+    margin: 0 16px;
+  }
+  .ticket-qr-area {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .qr-box {
+    width: 80px;
+    height: 80px;
+    background: #1A1A1A;
+    border-radius: 10px;
+    flex-shrink: 0;
+    padding: 7px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1.5px;
+  }
+  .qr-cell { border-radius: 1px; }
+  .qr-cell.on  { background: #fff; }
+  .qr-cell.off { background: transparent; }
+  .qr-info {}
+  .qr-holder { font-size: 11px; color: var(--muted); }
+  .qr-holder-name { font-weight: 600; font-size: 15px; margin-top: 2px; }
+  .offline-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--green-bg);
+    color: var(--green-text);
+    padding: 4px 9px;
+    border-radius: 6px;
+  }
+  .offline-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .ticket-footer {
+    padding: 10px 16px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 0.5px solid var(--border);
+  }
+  .ticket-id { font-family: monospace; font-size: 11px; }
+
+  .empty-wallet {
+    padding: 60px 24px 24px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .empty-wallet .icon { font-size: 48px; margin-bottom: 14px; }
+  .empty-wallet .title { font-weight: 600; font-size: 16px; color: var(--text); }
+  .empty-wallet .subtitle { font-size: 13px; margin-top: 6px; line-height: 1.5; }
+  .empty-wallet .cta {
+    display: inline-block;
+    margin-top: 20px;
+    background: var(--brand);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    border: none;
+    transition: background 0.2s;
+  }
+  .empty-wallet .cta:active { background: var(--brand-dark); }
+
+  /* ========== BOTTOM NAV AREA ========== */
+  .bottom-safe {
+    background: var(--card);
+    height: env(safe-area-inset-bottom, 8px);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .home-bar {
+    width: 100px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 4px 0;
+  }
+
+  /* ========== SCROLL PADDING ========== */
+  .scroll-pad { height: 20px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span id="live-time">9:41</span>
+    <span>Dar es Salaam</span>
+    <span>●●●● 100%</span>
+  </div>
+
+  <!-- Header -->
+  <div class="app-header">
+    <h1>TicketBure</h1>
+    <p>Pata tiketi yako haraka — Get your ticket fast</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('discover')">🗺 Discover</div>
+    <div class="tab" onclick="switchTab('checkout')">🎟 Buy</div>
+    <div class="tab" onclick="switchTab('wallet')">👜 Wallet</div>
+  </div>
+
+  <!-- ====== DISCOVER SCREEN ====== -->
+  <div class="screen active" id="screen-discover">
+
+    <!-- Map -->
+    <div class="map-area">
+      <div class="map-bg"></div>
+      <div class="map-grid"></div>
+
+      <!-- Roads -->
+      <div class="road h" style="top:36%"></div>
+      <div class="road h" style="top:62%"></div>
+      <div class="road v" style="left:28%"></div>
+      <div class="road v" style="left:68%"></div>
+
+      <!-- Area labels -->
+      <div class="map-label" style="top:39%;left:30%">Masaki</div>
+      <div class="map-label" style="top:64%;left:70%">Kariakoo</div>
+      <div class="map-label" style="top:12%;left:8%">Sinza</div>
+      <div class="map-label" style="top:39%;left:70%">Upanga</div>
+
+      <!-- Search bar -->
+      <div class="map-search">
+        <span>🔍</span>
+        <span>Search events near you...</span>
+      </div>
+
+      <!-- Pins -->
+      <div class="pin" style="top:26%;left:36%" onclick="selectEvent(0)">
+        <div class="pin-bubble" style="background:var(--purple)">TSh 15k 🎵</div>
+        <div class="pin-stem" style="background:var(--purple)"></div>
+        <div class="pin-dot"  style="background:var(--purple)"></div>
+      </div>
+
+      <div class="pin" style="top:48%;left:62%" onclick="selectEvent(1)">
+        <div class="pin-bubble" style="background:var(--teal)">TSh 25k 💻</div>
+        <div class="pin-stem" style="background:var(--teal)"></div>
+        <div class="pin-dot"  style="background:var(--teal)"></div>
+      </div>
+
+      <div class="pin" style="top:14%;left:12%" onclick="selectEvent(2)">
+        <div class="pin-bubble" style="background:var(--pink)">TSh 10k 🎨</div>
+        <div class="pin-stem" style="background:var(--pink)"></div>
+        <div class="pin-dot"  style="background:var(--pink)"></div>
+      </div>
+
+      <div class="pin" style="top:68%;left:18%" onclick="selectEvent(3)">
+        <div class="pin-bubble" style="background:var(--amber)">FREE 🍲</div>
+        <div class="pin-stem" style="background:var(--amber)"></div>
+        <div class="pin-dot"  style="background:var(--amber)"></div>
+      </div>
+
+      <div class="map-badge">4 events nearby</div>
+    </div>
+
+    <div class="section-title">Happening This Weekend</div>
+
+    <div class="event-card" onclick="selectEvent(0)">
+      <div class="event-thumb music">🎵</div>
+      <div class="event-info">
+        <div class="event-name">Afrobeat Night — Live Band</div>
+        <div class="event-meta">Sat 26 Apr · 8:00 PM · Masaki</div>
+        <div class="event-footer">
+          <span class="price-tag">TSh 15,000</span>
+          <span class="venue-tag">New Msasani Club</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="event-card" onclick="selectEvent(1)">
+      <div class="event-thumb tech">💻</div>
+      <div class="event-info">
+        <div class="event-name">DSM Tech Meetup #12</div>
+        <div class="event-meta">Sat 26 Apr · 2:00 PM · Upanga</div>
+        <div class="event-footer">
+          <span class="price-tag">TSh 25,000</span>
+          <span class="venue-tag">Serena Hotel</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="event-card" onclick="selectEvent(2)">
+      <div class="event-thumb art">🎨</div>
+      <div class="event-info">
+        <div class="event-name">Sanaa Ya Mitaa Exhibition</div>
+        <div class="event-meta">Sun 27 Apr · 11:00 AM · Sinza</div>
+        <div class="event-footer">
+          <span class="price-tag">TSh 10,000</span>
+          <span class="venue-tag">Cultural Centre</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="event-card" onclick="selectEvent(3)">
+      <div class="event-thumb food">🍲</div>
+      <div class="event-info">
+        <div class="event-name">Kariakoo Street Food Fest</div>
+        <div class="event-meta">Sun 27 Apr · 12:00 PM · Kariakoo</div>
+        <div class="event-footer">
+          <span class="price-tag free">FREE</span>
+          <span class="venue-tag">Kariakoo Market</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-pad"></div>
+  </div>
+
+  <!-- ====== CHECKOUT SCREEN ====== -->
+  <div class="screen" id="screen-checkout">
+    <div class="checkout-hero">
+      <div class="co-cat" id="co-cat">🎵 Music</div>
+      <h2 id="co-name">Afrobeat Night — Live Band</h2>
+      <div class="co-date" id="co-date">Sat 26 Apr · 8:00 PM · Masaki</div>
+      <div class="price-big" id="co-price">TSh 15,000</div>
+    </div>
+
+    <div class="checkout-body">
+      <div class="pay-label">Pay with Mobile Money</div>
+
+      <div class="pay-option selected" id="opt-mpesa" onclick="selectPay('mpesa')">
+        <div class="pay-icon mpesa">M-PESA</div>
+        <div>
+          <div class="pay-name">M-Pesa</div>
+          <div class="pay-sub">+255 71x xxx xxx</div>
+        </div>
+        <div class="pay-radio checked" id="radio-mpesa"></div>
+      </div>
+
+      <div class="pay-option" id="opt-tigo" onclick="selectPay('tigo')">
+        <div class="pay-icon tigo">TIGO</div>
+        <div>
+          <div class="pay-name">Tigo Pesa</div>
+          <div class="pay-sub">Link your number</div>
+        </div>
+        <div class="pay-radio" id="radio-tigo"></div>
+      </div>
+
+      <div class="pay-option" id="opt-airtel" onclick="selectPay('airtel')">
+        <div class="pay-icon airtel">AIRTEL</div>
+        <div>
+          <div class="pay-name">Airtel Money</div>
+          <div class="pay-sub">Link your number</div>
+        </div>
+        <div class="pay-radio" id="radio-airtel"></div>
+      </div>
+
+      <div class="qty-row">
+        <span class="qty-label">Tickets</span>
+        <div class="qty-ctrl">
+          <div class="qty-btn" onclick="changeQty(-1)">−</div>
+          <div class="qty-num" id="qty-display">1</div>
+          <div class="qty-btn" onclick="changeQty(1)">+</div>
+        </div>
+      </div>
+
+      <div class="total-row">
+        <span style="color:var(--muted);font-size:13px">Total</span>
+        <span class="total-val" id="total-display">TSh 15,000</span>
+      </div>
+
+      <button class="buy-btn" onclick="showSTK()">
+        <span>📱</span>
+        <span id="buy-btn-text">Pay with M-Pesa STK Push</span>
+      </button>
+      <div class="buy-hint">You'll receive a PIN popup on your phone instantly</div>
+    </div>
+
+    <div class="scroll-pad"></div>
+  </div>
+
+  <!-- ====== WALLET SCREEN ====== -->
+  <div class="screen" id="screen-wallet">
+    <div class="wallet-hero">
+      <h2>My Tickets</h2>
+      <p id="wallet-subtitle">0 active tickets</p>
+    </div>
+
+    <div id="wallet-list"></div>
+
+    <div class="empty-wallet" id="empty-wallet">
+      <div class="icon">🎟</div>
+      <div class="title">No tickets yet</div>
+      <div class="subtitle">Find events on the map and buy one in under 30 seconds.</div>
+      <button class="cta" onclick="switchTab('discover')">Browse Events →</button>
+    </div>
+
+    <div class="scroll-pad"></div>
+  </div>
+
+  <!-- ====== STK OVERLAY ====== -->
+  <div class="overlay" id="stk-overlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="stk-title">Enter your M-Pesa PIN</div>
+      <div class="stk-sub" id="stk-sub">Paying TSh 15,000 to TicketBure for 1 ticket</div>
+      <div class="stk-amount-card">
+        <div class="stk-amount-label">Amount to pay</div>
+        <div class="stk-amount-val" id="stk-val">TSh 15,000</div>
+      </div>
+      <div class="pin-dots">
+        <div class="dot" id="d0"></div>
+        <div class="dot" id="d1"></div>
+        <div class="dot" id="d2"></div>
+        <div class="dot" id="d3"></div>
+      </div>
+      <div class="pin-hint">Tap Confirm to simulate PIN entry</div>
+      <button class="stk-confirm" onclick="confirmPay()">✓ &nbsp;Confirm Payment</button>
+      <button class="stk-cancel" onclick="cancelSTK()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ====== SUCCESS OVERLAY ====== -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-circle">✓</div>
+    <h2>Tiketi Yako Iko Ready!</h2>
+    <p>Your ticket has been added to your wallet. Show the QR code at the entrance — it works even without internet.</p>
+    <button class="success-btn" onclick="goWallet()">Open My Wallet 👜</button>
+  </div>
+
+  <div class="bottom-safe"><div class="home-bar"></div></div>
+</div>
+
+<script>
+/* =====================
+   DATA
+   ===================== */
+const EVENTS = [
+  { name:'Afrobeat Night — Live Band', date:'Sat 26 Apr · 8:00 PM · Masaki', price:15000, cat:'🎵 Music', venue:'New Msasani Club' },
+  { name:'DSM Tech Meetup #12',        date:'Sat 26 Apr · 2:00 PM · Upanga', price:25000, cat:'💻 Tech',  venue:'Serena Hotel' },
+  { name:'Sanaa Ya Mitaa Exhibition',  date:'Sun 27 Apr · 11:00 AM · Sinza', price:10000, cat:'🎨 Art',   venue:'Cultural Centre' },
+  { name:'Kariakoo Street Food Fest',  date:'Sun 27 Apr · 12:00 PM · Kariakoo', price:0,  cat:'🍲 Food',  venue:'Kariakoo Market' },
+];
+
+/* QR pattern (7×7 grid, 49 cells) */
+const QR_PATTERN = [1,1,1,1,1,1,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,1,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1];
+
+let selEvent = 0;
+let qty = 1;
+let walletItems = [];
+let currentPayMethod = 'mpesa';
+let pinTimer = null;
+
+/* =====================
+   LIVE CLOCK
+   ===================== */
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('live-time').textContent = h + ':' + m;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+/* =====================
+   TAB NAVIGATION
+   ===================== */
+function switchTab(name) {
+  const tabs = document.querySelectorAll('.tab');
+  const names = ['discover','checkout','wallet'];
+  tabs.forEach((t,i) => t.classList.toggle('active', names[i] === name));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.getElementById('success-overlay').style.display = 'none';
+}
+
+/* =====================
+   FORMAT PRICE
+   ===================== */
+function fmt(n) {
+  if (n === 0) return 'FREE';
+  return 'TSh ' + n.toLocaleString();
+}
+
+/* =====================
+   SELECT EVENT → go to checkout
+   ===================== */
+function selectEvent(i) {
+  selEvent = i;
+  qty = 1;
+  const e = EVENTS[i];
+  document.getElementById('co-cat').textContent   = e.cat;
+  document.getElementById('co-name').textContent  = e.name;
+  document.getElementById('co-date').textContent  = e.date;
+  document.getElementById('co-price').textContent = fmt(e.price);
+  document.getElementById('qty-display').textContent = '1';
+  document.getElementById('total-display').textContent = fmt(e.price);
+  switchTab('checkout');
+}
+
+/* =====================
+   PAYMENT METHOD
+   ===================== */
+function selectPay(id) {
+  ['mpesa','tigo','airtel'].forEach(m => {
+    document.getElementById('opt-'   + m).classList.toggle('selected', m === id);
+    const r = document.getElementById('radio-' + m);
+    r.classList.toggle('checked', m === id);
+  });
+  currentPayMethod = id;
+  const labels = { mpesa:'M-Pesa', tigo:'Tigo Pesa', airtel:'Airtel Money' };
+  document.getElementById('buy-btn-text').textContent = 'Pay with ' + labels[id] + ' STK Push';
+}
+
+/* =====================
+   QUANTITY
+   ===================== */
+function changeQty(d) {
+  qty = Math.max(1, Math.min(10, qty + d));
+  document.getElementById('qty-display').textContent = qty;
+  const total = EVENTS[selEvent].price * qty;
+  document.getElementById('total-display').textContent = fmt(total);
+}
+
+/* =====================
+   STK PUSH SIMULATION
+   ===================== */
+function showSTK() {
+  const total = EVENTS[selEvent].price * qty;
+  const labels = { mpesa:'M-Pesa', tigo:'Tigo Pesa', airtel:'Airtel Money' };
+  document.getElementById('stk-sub').textContent =
+    'Paying ' + fmt(total) + ' to TicketBure via ' + labels[currentPayMethod] + ' for ' + qty + ' ticket' + (qty > 1 ? 's' : '');
+  document.getElementById('stk-val').textContent = fmt(total);
+  document.getElementById('stk-overlay').style.display = 'flex';
+
+  // Animate pin dots
+  [0,1,2,3].forEach(i => document.getElementById('d'+i).classList.remove('filled'));
+  let n = 0;
+  if (pinTimer) clearInterval(pinTimer);
+  pinTimer = setInterval(() => {
+    if (n < 4) {
+      document.getElementById('d' + n).classList.add('filled');
+      n++;
+    } else {
+      clearInterval(pinTimer);
+    }
+  }, 320);
+}
+
+function cancelSTK() {
+  document.getElementById('stk-overlay').style.display = 'none';
+  if (pinTimer) clearInterval(pinTimer);
+}
+
+/* =====================
+   CONFIRM PAYMENT → add to wallet
+   ===================== */
+function confirmPay() {
+  document.getElementById('stk-overlay').style.display = 'none';
+  if (pinTimer) clearInterval(pinTimer);
+
+  // Add to wallet
+  for (let i = 0; i < qty; i++) {
+    walletItems.push({
+      eventIdx: selEvent,
+      id: 'TB-' + Math.random().toString(36).substring(2,8).toUpperCase(),
+    });
+  }
+
+  renderWallet();
+
+  // Show success
+  const s = document.getElementById('success-overlay');
+  s.style.display = 'flex';
+}
+
+function goWallet() {
+  document.getElementById('success-overlay').style.display = 'none';
+  switchTab('wallet');
+}
+
+/* =====================
+   RENDER WALLET
+   ===================== */
+function renderWallet() {
+  const count = walletItems.length;
+  document.getElementById('wallet-subtitle').textContent =
+    count + ' active ticket' + (count !== 1 ? 's' : '');
+
+  const list = document.getElementById('wallet-list');
+  const empty = document.getElementById('empty-wallet');
+
+  if (count === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.innerHTML = walletItems.map((item, idx) => {
+    const e = EVENTS[item.eventIdx];
+    const qrCells = QR_PATTERN.slice(0, 49).map((b, ci) =>
+      `<div class="qr-cell ${b ? 'on' : 'off'}"></div>`
+    ).join('');
+    return `
+      <div class="ticket-card">
+        <div class="ticket-top">
+          <div>
+            <div class="ticket-name">${e.name}</div>
+            <div class="ticket-date">${e.date}</div>
+          </div>
+          <div class="status-pill">VALID</div>
+        </div>
+        <hr class="dashed-divider">
+        <div class="ticket-qr-area">
+          <div class="qr-box">${qrCells}</div>
+          <div class="qr-info">
+            <div class="qr-holder">Ticket holder</div>
+            <div class="qr-holder-name">Emmanuel</div>
+            <div class="offline-tag">
+              <div class="offline-dot"></div>
+              Offline ready
+            </div>
+          </div>
+        </div>
+        <div class="ticket-footer">
+          <span>${e.venue}</span>
+          <span class="ticket-id">${item.id}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* =====================
+   INIT
+   ===================== */
+renderWallet();
+</script>
+</body>
+</html>
