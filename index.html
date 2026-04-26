@@ -91,6 +91,57 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
 .venue-tag{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
 .custom-badge{background:#FFF0EB;color:var(--brand);font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;border:1px solid rgba(232,69,10,0.2);margin-left:4px;vertical-align:middle}
 
+/* CROWD LEVEL */
+.crowd-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.crowd-badge.quiet{background:#F0EDE8;color:#7A7870}
+.crowd-badge.filling{background:#FEF3E2;color:#B87316}
+.crowd-badge.busy{background:#FFF0EB;color:#C05A0A}
+.crowd-badge.packed{background:#FBEAEA;color:#C0392B}
+.crowd-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.crowd-badge.quiet .crowd-dot{background:#7A7870}
+.crowd-badge.filling .crowd-dot{background:#B87316;animation:pulse 2s infinite}
+.crowd-badge.busy .crowd-dot{background:#C05A0A;animation:pulse 1.5s infinite}
+.crowd-badge.packed .crowd-dot{background:#C0392B;animation:pulse 1s infinite}
+
+/* VENUE SNAPS STRIP */
+.snap-strip{display:flex;gap:8px;padding:8px 12px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-shrink:0}
+.snap-strip::-webkit-scrollbar{display:none}
+.snap-item{flex-shrink:0;position:relative;cursor:pointer;border-radius:12px;overflow:hidden;width:80px;height:100px}
+.snap-item img{width:100%;height:100%;object-fit:cover;display:block}
+.snap-placeholder{width:100%;height:100%;background:linear-gradient(135deg,var(--border),var(--bg));display:flex;align-items:center;justify-content:center;font-size:24px}
+.snap-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.72));color:#fff;font-size:9px;font-weight:700;padding:14px 5px 5px;line-height:1.2}
+.snap-live-ring{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--brand);border:1.5px solid #fff;animation:pulse 1s infinite}
+.snap-add-btn{flex-shrink:0;width:80px;height:100px;border-radius:12px;border:1.5px dashed var(--border);background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font-size:22px;color:var(--muted)}
+.snap-add-label{font-size:9px;font-weight:600;color:var(--muted)}
+
+/* EVENT DETAIL SHEET */
+.detail-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:flex-end;z-index:500;backdrop-filter:blur(3px)}
+.detail-sheet{background:var(--card);width:100%;border-radius:22px 22px 0 0;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
+.detail-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:14px auto 0}
+.detail-cover{width:100%;height:170px;object-fit:cover;display:block;margin-top:12px}
+.detail-cover-placeholder{width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:52px;margin-top:12px}
+.detail-body{padding:14px 16px}
+.detail-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;line-height:1.2;margin-bottom:6px}
+.detail-meta{font-size:13px;color:var(--muted);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.detail-badges{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px}
+.detail-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+.detail-snaps-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.detail-snaps{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:16px}
+.detail-snaps::-webkit-scrollbar{display:none}
+.detail-snap-card{flex-shrink:0;width:120px;border-radius:14px;overflow:hidden;border:0.5px solid var(--border)}
+.detail-snap-card img{width:120px;height:150px;object-fit:cover;display:block}
+.detail-snap-card .snap-ph{width:120px;height:150px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:32px}
+.detail-snap-caption{font-size:10px;color:var(--muted);padding:6px 8px;line-height:1.3}
+.detail-buy-btn{width:100%;background:var(--brand);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;margin-bottom:20px;transition:background 0.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.detail-buy-btn:active{background:var(--brand-dark)}
+.detail-close{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.18);border:none;color:var(--text);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* CROWD PICKER in form */
+.crowd-picker{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.crowd-opt{padding:10px 8px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;font-size:12px;font-weight:600;color:var(--muted);line-height:1.4}
+.crowd-opt .crowd-icon{font-size:16px;display:block;margin-bottom:3px}
+.crowd-opt.selected{border-color:var(--brand);background:#FFF0EB;color:var(--brand)}
+
 /* ══════════════════════════════
    ADD EVENT SCREEN
 ══════════════════════════════ */
@@ -285,8 +336,19 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
       <div class="chip art"   onclick="filterEvents(this,'art')">🎨 Art</div>
       <div class="chip food"  onclick="filterEvents(this,'food')">🍲 Food</div>
     </div>
+    <!-- Venue Snaps Strip -->
+    <div class="snap-strip" id="snap-strip"></div>
     <div class="section-title" id="count-label">Loading events...</div>
     <div class="events-scroll" id="events-list"></div>
+  </div>
+
+  <!-- EVENT DETAIL SHEET -->
+  <div class="detail-overlay" id="detail-overlay">
+    <div class="detail-sheet" id="detail-sheet">
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+      <div class="detail-handle"></div>
+      <div id="detail-content"></div>
+    </div>
   </div>
 
   <!-- ══════════ ADD EVENT ══════════ -->
@@ -359,6 +421,23 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
           <input class="form-input" id="f-price" type="number" placeholder="e.g. 15000" min="0" step="500">
           <div style="font-size:11px;color:var(--muted);margin-top:5px">Amount in Tanzanian Shillings (TSh)</div>
         </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Current Crowd Level</label>
+        <div class="crowd-picker" id="crowd-picker">
+          <div class="crowd-opt selected" onclick="selectCrowd(this,'quiet')"><span class="crowd-icon">😴</span>Quiet</div>
+          <div class="crowd-opt" onclick="selectCrowd(this,'filling')"><span class="crowd-icon">🚶</span>Filling up</div>
+          <div class="crowd-opt" onclick="selectCrowd(this,'busy')"><span class="crowd-icon">🔥</span>Busy</div>
+          <div class="crowd-opt" onclick="selectCrowd(this,'packed')"><span class="crowd-icon">🤩</span>Packed!</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Venue Snap (optional)</label>
+        <input class="form-input" id="f-snap-url" type="url" placeholder="Paste an image link (e.g. from Google Photos)">
+        <div style="font-size:11px;color:var(--muted);margin-top:5px">Share a photo of the venue or setup so people can see the vibe</div>
+        <input class="form-input" id="f-snap-caption" type="text" placeholder="Caption e.g. 'The dancefloor is open 🔥'" maxlength="60" style="margin-top:8px">
       </div>
 
       <button class="submit-btn" onclick="submitEvent()">
@@ -480,12 +559,12 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
    SEED EVENTS (built-in)
 ══════════════════════════════════════ */
 const SEED = [
-  { id:'s0', name:'Afrobeat Night — Live Band', date:'2026-04-26', time:'20:00', venue:'New Msasani Club', hood:'Masaki', cat:'music', price:15000, lat:-6.7590, lng:39.2695, custom:false },
-  { id:'s1', name:'DSM Tech Meetup #12', date:'2026-04-26', time:'14:00', venue:'Serena Hotel', hood:'Upanga', cat:'tech', price:25000, lat:-6.8150, lng:39.2900, custom:false },
-  { id:'s2', name:'Sanaa Ya Mitaa Exhibition', date:'2026-04-27', time:'11:00', venue:'Alliance Française', hood:'Upanga', cat:'art', price:10000, lat:-6.8105, lng:39.2825, custom:false },
-  { id:'s3', name:'Kariakoo Street Food Fest', date:'2026-04-27', time:'12:00', venue:'Kariakoo Market Square', hood:'Kariakoo', cat:'food', price:0, lat:-6.8220, lng:39.2730, custom:false },
-  { id:'s4', name:'Jazz & Cocktails Evening', date:'2026-04-25', time:'19:30', venue:'Hyatt Regency Dar', hood:'Oyster Bay', cat:'music', price:35000, lat:-6.7710, lng:39.2785, custom:false },
-  { id:'s5', name:'Startup Pitch Night DSM', date:'2026-04-24', time:'18:00', venue:'Buni Innovation Hub', hood:'Mikocheni', cat:'tech', price:5000, lat:-6.7860, lng:39.2600, custom:false },
+  { id:'s0', name:'Afrobeat Night — Live Band', date:'2026-04-26', time:'20:00', venue:'New Msasani Club', hood:'Masaki', cat:'music', price:15000, lat:-6.7590, lng:39.2695, custom:false, crowd:'busy', snapUrl:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&q=80', snapCaption:'Dancefloor warming up 🔥', desc:'Live afrobeat band all night. Bar opens at 7PM.' },
+  { id:'s1', name:'DSM Tech Meetup #12', date:'2026-04-26', time:'14:00', venue:'Serena Hotel', hood:'Upanga', cat:'tech', price:25000, lat:-6.8150, lng:39.2900, custom:false, crowd:'filling', snapUrl:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=80', snapCaption:'Setup ready, early birds arriving', desc:'12 lightning talks, networking, panel on fintech in East Africa.' },
+  { id:'s2', name:'Sanaa Ya Mitaa Exhibition', date:'2026-04-27', time:'11:00', venue:'Alliance Française', hood:'Upanga', cat:'art', price:10000, lat:-6.8105, lng:39.2825, custom:false, crowd:'quiet', snapUrl:'https://images.unsplash.com/photo-1531243269054-5ebf6f34081e?w=400&q=80', snapCaption:'Doors open at 11AM', desc:'Street art and photography by 14 Tanzanian artists. Family friendly.' },
+  { id:'s3', name:'Kariakoo Street Food Fest', date:'2026-04-27', time:'12:00', venue:'Kariakoo Market Square', hood:'Kariakoo', cat:'food', price:0, lat:-6.8220, lng:39.2730, custom:false, crowd:'packed', snapUrl:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&q=80', snapCaption:'Already packed — come now! 🤩', desc:'30+ food stalls, live cooking demos, kids activities. Completely free.' },
+  { id:'s4', name:'Jazz & Cocktails Evening', date:'2026-04-25', time:'19:30', venue:'Hyatt Regency Dar', hood:'Oyster Bay', cat:'music', price:35000, lat:-6.7710, lng:39.2785, custom:false, crowd:'busy', snapUrl:'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=400&q=80', snapCaption:'Smooth vibes on the terrace 🎺', desc:'Jazz quartet with ocean views. Dress code smart casual. Cocktails included.' },
+  { id:'s5', name:'Startup Pitch Night DSM', date:'2026-04-24', time:'18:00', venue:'Buni Innovation Hub', hood:'Mikocheni', cat:'tech', price:5000, lat:-6.7860, lng:39.2600, custom:false, crowd:'filling', snapUrl:'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&q=80', snapCaption:'Pitches start at 6:30PM', desc:'6 startups pitch to a panel of DSM investors. Q&A and networking after.' },
 ];
 
 /* Neighborhood → approx coordinates */
@@ -518,7 +597,11 @@ let activeFilter = 'all';
 let map, markerMap = {}; // id → leaflet marker
 
 /* form state */
-let fCat = 'music', fHood = 'Masaki', fPriceType = 'paid';
+let fCat = 'music', fHood = 'Masaki', fPriceType = 'paid', fCrowd = 'quiet';
+
+/* crowd helpers */
+const CROWD_LABEL = { quiet:'😴 Quiet', filling:'🚶 Filling up', busy:'🔥 Busy', packed:'🤩 Packed!' };
+const CROWD_CLASS = { quiet:'quiet', filling:'filling', busy:'busy', packed:'packed' };
 
 /* ══════════════════════════════════════
    STORAGE
@@ -618,24 +701,89 @@ function locateMe(){
 }
 
 /* ══════════════════════════════════════
+   RENDER SNAP STRIP
+══════════════════════════════════════ */
+function renderSnapStrip(){
+  const evts = allEvents().filter(e => e.snapUrl);
+  const strip = document.getElementById('snap-strip');
+  if(!strip) return;
+  if(!evts.length){ strip.innerHTML=''; return; }
+  strip.innerHTML = evts.map(e=>`
+    <div class="snap-item" onclick="openDetail('${e.id}')">
+      <img src="${e.snapUrl}" alt="${e.name}" onerror="this.parentElement.querySelector('img').style.display='none'">
+      <div class="snap-label">${e.name.split('—')[0].trim()}</div>
+      ${(e.crowd==='packed'||e.crowd==='busy')?'<div class="snap-live-ring"></div>':''}
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════
    RENDER EVENT CARDS
 ══════════════════════════════════════ */
 function renderCards(){
   const evts = allEvents().filter(e => activeFilter==='all' || e.cat===activeFilter);
   document.getElementById('count-label').textContent = evts.length+' event'+(evts.length!==1?'s':'')+' this weekend';
   document.getElementById('events-list').innerHTML = evts.map(e=>`
-    <div class="event-card" onclick="selectEvent('${e.id}')">
+    <div class="event-card" onclick="openDetail('${e.id}')">
       <div class="event-thumb ${e.cat}">${CAT_EMOJI[e.cat]}</div>
       <div class="event-info">
         <div class="event-name">${e.name}${e.custom?'<span class="custom-badge">YOURS</span>':''}</div>
         <div class="event-meta">${fmtDate(e.date,e.time)} · ${e.hood}</div>
         <div class="event-footer">
           <span class="price-pill${e.price===0?' free':''}">${fmt(e.price)}</span>
-          <span class="venue-tag">${e.venue}</span>
+          <span class="crowd-badge ${CROWD_CLASS[e.crowd||'quiet']}"><span class="crowd-dot"></span>${CROWD_LABEL[e.crowd||'quiet']}</span>
         </div>
       </div>
     </div>`).join('');
+  renderSnapStrip();
 }
+
+/* ══════════════════════════════════════
+   EVENT DETAIL SHEET
+══════════════════════════════════════ */
+function openDetail(id){
+  const e = allEvents().find(ev=>ev.id===id);
+  if(!e) return;
+  const col = CAT_COLORS[e.cat];
+  const snapsHtml = e.snapUrl ? `
+    <div class="detail-snaps-label">Venue Snap</div>
+    <div class="detail-snaps">
+      <div class="detail-snap-card">
+        <img src="${e.snapUrl}" alt="venue snap" onerror="this.style.display='none'">
+        ${e.snapCaption?`<div class="detail-snap-caption">${e.snapCaption}</div>`:''}
+      </div>
+    </div>` : '';
+
+  document.getElementById('detail-content').innerHTML = `
+    ${e.snapUrl?`<img class="detail-cover" src="${e.snapUrl}" alt="${e.name}" onerror="this.style.display='none'">`
+               :`<div class="detail-cover-placeholder">${CAT_EMOJI[e.cat]}</div>`}
+    <div class="detail-body">
+      <div class="detail-name">${e.name}</div>
+      <div class="detail-meta">📍 ${e.venue} · ${e.hood}</div>
+      <div class="detail-meta">🗓 ${fmtDate(e.date,e.time)}</div>
+      <div class="detail-badges">
+        <span class="price-pill${e.price===0?' free':''}" style="font-size:13px;padding:5px 12px">${fmt(e.price)}</span>
+        <span class="crowd-badge ${CROWD_CLASS[e.crowd||'quiet']}" style="font-size:12px;padding:5px 10px">
+          <span class="crowd-dot"></span>${CROWD_LABEL[e.crowd||'quiet']}
+        </span>
+      </div>
+      ${e.desc?`<div class="detail-desc">${e.desc}</div>`:''}
+      ${snapsHtml}
+      <button class="detail-buy-btn" style="background:${col}" onclick="closeDetail();selectEvent('${e.id}')">
+        🎟 Get Ticket — ${fmt(e.price)}
+      </button>
+    </div>`;
+
+  document.getElementById('detail-overlay').style.display='flex';
+}
+
+function closeDetail(){
+  document.getElementById('detail-overlay').style.display='none';
+}
+
+// Close detail on overlay tap
+document.getElementById('detail-overlay').addEventListener('click', function(ev){
+  if(ev.target===this) closeDetail();
+});
 
 /* ══════════════════════════════════════
    FILTER
@@ -677,6 +825,11 @@ function selectEvent(id){
 /* ══════════════════════════════════════
    FORM STATE
 ══════════════════════════════════════ */
+function selectCrowd(el, crowd){
+  fCrowd = crowd;
+  document.querySelectorAll('.crowd-opt').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
 function selectCat(el, cat){
   fCat = cat;
   document.querySelectorAll('.cat-opt').forEach(c=>c.classList.remove('selected'));
@@ -711,6 +864,8 @@ function submitEvent(){
   if(fPriceType==='paid' && (!priceRaw || isNaN(Number(priceRaw)))){ showToast('Please enter a valid ticket price'); return; }
 
   const price = fPriceType==='free' ? 0 : Number(priceRaw);
+  const snapUrl     = document.getElementById('f-snap-url').value.trim();
+  const snapCaption = document.getElementById('f-snap-caption').value.trim();
 
   // Jitter coords slightly so pins don't stack perfectly
   const base = HOOD_COORDS[fHood] || [-6.7924, 39.2083];
@@ -721,6 +876,10 @@ function submitEvent(){
     id: 'c_' + Date.now(),
     name, venue, hood: fHood, cat: fCat,
     date, time, price, lat, lng,
+    crowd: fCrowd,
+    snapUrl: snapUrl || null,
+    snapCaption: snapCaption || null,
+    desc: '',
     custom: true,
   };
 
@@ -739,6 +898,8 @@ function submitEvent(){
   document.getElementById('f-name').value = '';
   document.getElementById('f-venue').value = '';
   document.getElementById('f-price').value = '';
+  document.getElementById('f-snap-url').value = '';
+  document.getElementById('f-snap-caption').value = '';
 
   renderCards();
   renderMyEvents();
