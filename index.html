@@ -7,995 +7,276 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="TicketBure">
 <meta name="theme-color" content="#E8450A">
-<title>TicketBure — Find Events in Dar es Salaam</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<title>TicketBure — Dar es Salaam Events</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  :root{
-    --brand:#E8450A;
-    --brand2:#FF6B35;
-    --brand-dark:#A83200;
-    --bg:#F5F2EE;
-    --card:#FFFFFF;
-    --text:#1A1A1A;
-    --muted:#888;
-    --border:#E0DDD8;
-    --green:#1D9E75;
-    --green-bg:#E1F5EE;
-    --green-text:#0F6E56;
-    --amber:#BA7517;
-    --purple:#534AB7;
-    --teal:#0F6E56;
-    --pink:#993556;
-  }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --brand:#E8450A;--brand-dark:#B33208;
+  --bg:#F4F1ED;--card:#FFFFFF;--text:#191917;--muted:#7A7870;
+  --border:#E2DED8;--green:#1A9268;--green-bg:#E0F2EB;--green-text:#0D6B4A;
+  --amber:#B87316;--purple:#4F45B0;--teal:#0D6B56;--pink:#92314F;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+.app{max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
+.status-bar{background:var(--brand);padding:env(safe-area-inset-top,10px) 20px 6px;display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:11px;font-weight:600;flex-shrink:0}
+.app-header{background:var(--brand);padding:2px 16px 14px;color:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.header-left h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px}
+.header-left p{font-size:11px;opacity:0.72;margin-top:1px}
+.live-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.2);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-left:5px;vertical-align:middle}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#fff;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.4)}}
+.icon-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;border:none;color:#fff}
+.tabs{display:flex;background:var(--card);border-bottom:0.5px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:12px 4px;text-align:center;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;transition:all 0.18s;user-select:none}
+.tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
+.screen.active{display:flex;flex-direction:column}
 
-  html, body {
-    height: 100%;
-    background: var(--bg);
-    font-family: 'DM Sans', sans-serif;
-    color: var(--text);
-    overflow: hidden;
-  }
+/* MAP */
+#map{width:100%;height:260px;flex-shrink:0;z-index:1}
+.leaflet-container{font-family:'DM Sans',sans-serif}
+.leaflet-control-zoom{border:none!important;box-shadow:0 2px 10px rgba(0,0,0,0.15)!important}
+.leaflet-control-zoom a{border-radius:8px!important;border:none!important;font-weight:700!important;color:var(--text)!important}
+.leaflet-popup-content-wrapper{border-radius:14px!important;padding:0!important;box-shadow:0 6px 24px rgba(0,0,0,0.2)!important;border:none!important;overflow:hidden}
+.leaflet-popup-content{margin:0!important;min-width:210px}
+.leaflet-popup-tip-container{display:none}
+.leaflet-popup-close-button{top:7px!important;right:10px!important;font-size:16px!important;color:rgba(255,255,255,0.85)!important;font-weight:400!important;z-index:10}
+.popup-top{padding:12px 14px 10px;color:#fff}
+.popup-cat{font-size:10px;font-weight:700;opacity:0.8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
+.popup-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;line-height:1.2}
+.popup-date{font-size:11px;opacity:0.8;margin-top:3px}
+.popup-bottom{background:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.popup-price{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--brand)}
+.popup-price.free{color:var(--green)}
+.popup-buy{background:var(--brand);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+.popup-buy:active{background:var(--brand-dark)}
+.custom-pin{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.pin-label{color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:10px;white-space:nowrap;font-family:'Syne',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.25);border:1.5px solid rgba(255,255,255,0.25)}
+.pin-stem{width:2px;height:7px;margin:0 auto}
+.pin-dot{width:6px;height:6px;border-radius:50%;margin:0 auto}
 
-  /* ========== APP SHELL ========== */
-  .app {
-    max-width: 430px;
-    margin: 0 auto;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: var(--bg);
-    position: relative;
-    overflow: hidden;
-  }
+/* FILTERS */
+.filter-bar{padding:10px 12px 6px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-shrink:0;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:all 0.15s;user-select:none}
+.chip.active{border-color:var(--brand);background:#FFF0EB;color:var(--brand)}
+.chip.music.active{border-color:var(--purple);background:#EEEDFE;color:var(--purple)}
+.chip.tech.active{border-color:var(--teal);background:#E0F2EB;color:var(--teal)}
+.chip.art.active{border-color:var(--pink);background:#FBEAF0;color:var(--pink)}
+.chip.food.active{border-color:var(--amber);background:#FEF3E2;color:var(--amber)}
+.section-title{padding:12px 14px 6px;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.8px;text-transform:uppercase;flex-shrink:0}
+.events-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:16px}
+.event-card{margin:0 12px 8px;background:var(--card);border-radius:16px;border:0.5px solid var(--border);overflow:hidden;cursor:pointer;display:flex;transition:transform 0.12s;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.event-card:active{transform:scale(0.975)}
+.event-thumb{width:74px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px}
+.event-thumb.music{background:#EEEDFE}
+.event-thumb.tech{background:#E0F2EB}
+.event-thumb.art{background:#FBEAF0}
+.event-thumb.food{background:#FEF3E2}
+.event-info{padding:11px 13px;flex:1;min-width:0}
+.event-name{font-weight:600;font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.event-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.event-footer{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
+.price-pill{background:var(--brand);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px;font-family:'Syne',sans-serif}
+.price-pill.free{background:var(--green)}
+.venue-tag{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
 
-  /* ========== STATUS BAR ========== */
-  .status-bar {
-    background: var(--brand);
-    padding: env(safe-area-inset-top, 12px) 20px 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 500;
-    flex-shrink: 0;
-  }
+/* CHECKOUT */
+.checkout-hero{padding:20px 18px 22px;color:#fff;position:relative;overflow:hidden;flex-shrink:0}
+.checkout-hero::before{content:'';position:absolute;right:-50px;top:-50px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.06)}
+.co-cat{font-size:10px;opacity:0.7;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;position:relative}
+.co-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;line-height:1.2;position:relative}
+.co-date{font-size:12px;opacity:0.8;margin-top:4px;position:relative}
+.co-venue{font-size:12px;opacity:0.7;margin-top:2px;position:relative}
+.co-price{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;margin-top:10px;position:relative}
+.checkout-body{padding:14px;flex:1;overflow-y:auto}
+.pay-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
+.pay-opt{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 13px;margin-bottom:7px;cursor:pointer;transition:all 0.15s;user-select:none}
+.pay-opt:active{transform:scale(0.98)}
+.pay-opt.selected{border-color:var(--brand);border-width:1.5px;background:#FFF5F2}
+.pay-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+.pay-icon.mpesa{background:#2E7D32}
+.pay-icon.tigo{background:#1565C0}
+.pay-icon.airtel{background:#B71C1C;font-size:9px}
+.pay-name{font-weight:600;font-size:14px}
+.pay-sub{font-size:11px;color:var(--muted)}
+.pay-radio{margin-left:auto;width:19px;height:19px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+.pay-radio.checked{border-color:var(--brand);background:var(--brand)}
+.pay-radio.checked::after{content:'';width:7px;height:7px;border-radius:50%;background:#fff}
+.qty-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:0.5px solid var(--border);margin-top:2px}
+.qty-ctrl{display:flex;align-items:center;gap:14px}
+.qty-btn{width:32px;height:32px;border-radius:50%;background:var(--bg);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;user-select:none;color:var(--text);line-height:1}
+.qty-btn:active{background:var(--border)}
+.qty-num{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;min-width:22px;text-align:center}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:0.5px solid var(--border);font-size:13px}
+.total-val{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--brand)}
+.buy-btn{width:100%;background:var(--brand);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;transition:background 0.15s,transform 0.1s}
+.buy-btn:active{background:var(--brand-dark);transform:scale(0.98)}
+.buy-hint{text-align:center;font-size:11px;color:var(--muted);margin-top:7px}
 
-  /* ========== HEADER ========== */
-  .app-header {
-    background: var(--brand);
-    padding: 4px 20px 16px;
-    color: #fff;
-    flex-shrink: 0;
-  }
-  .app-header h1 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-  }
-  .app-header p {
-    font-size: 12px;
-    opacity: 0.75;
-    margin-top: 2px;
-  }
+/* STK */
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,0.55);display:none;align-items:flex-end;z-index:999;backdrop-filter:blur(3px)}
+.sheet{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:24px 22px 38px}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
+.stk-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;text-align:center;margin-bottom:3px}
+.stk-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:18px;line-height:1.4}
+.stk-amt-card{background:var(--bg);border-radius:12px;padding:14px;text-align:center;margin-bottom:16px}
+.stk-amt-lbl{font-size:11px;color:var(--muted);margin-bottom:3px}
+.stk-amt-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--brand)}
+.pin-dots{display:flex;justify-content:center;gap:12px;margin:14px 0 6px}
+.dot{width:15px;height:15px;border-radius:50%;background:var(--border);transition:background 0.25s}
+.dot.filled{background:var(--brand)}
+.pin-hint{text-align:center;font-size:12px;color:var(--muted);margin-bottom:18px}
+.stk-confirm{width:100%;background:var(--green);color:#fff;border:none;border-radius:13px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+.stk-confirm:active{opacity:0.85}
+.stk-cancel{width:100%;background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;margin-top:10px;padding:6px}
 
-  /* ========== TABS ========== */
-  .tabs {
-    display: flex;
-    background: var(--card);
-    border-bottom: 0.5px solid var(--border);
-    flex-shrink: 0;
-  }
-  .tab {
-    flex: 1;
-    padding: 13px 4px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2.5px solid transparent;
-    transition: all 0.2s;
-    user-select: none;
-  }
-  .tab.active {
-    color: var(--brand);
-    border-bottom-color: var(--brand);
-  }
+/* SUCCESS */
+.success-overlay{position:absolute;inset:0;background:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;z-index:1000;text-align:center}
+.success-circle{width:76px;height:76px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:20px;animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.success-overlay h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--green-text)}
+.success-overlay p{font-size:14px;color:var(--muted);margin-top:9px;line-height:1.6}
+.success-btn{margin-top:26px;background:var(--brand);color:#fff;border:none;border-radius:14px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+.success-btn:active{background:var(--brand-dark)}
 
-  /* ========== SCREENS ========== */
-  .screen {
-    display: none;
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .screen.active { display: block; }
-
-  /* ========== MAP ========== */
-  .map-area {
-    position: relative;
-    height: 260px;
-    overflow: hidden;
-    background: #C8E6C9;
-  }
-  .map-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(180deg,
-        #D4EDDA 0%,
-        #B8DFC0 25%,
-        #9ED4A8 50%,
-        #A0896B 75%,
-        #8D7560 100%
-      );
-  }
-  .map-grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-      repeating-linear-gradient(0deg,rgba(255,255,255,0.05) 0,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 44px),
-      repeating-linear-gradient(90deg,rgba(255,255,255,0.05) 0,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 44px);
-  }
-  .road {
-    position: absolute;
-    background: rgba(255,255,255,0.55);
-  }
-  .road.h { height: 5px; left: 0; right: 0; }
-  .road.v { width: 5px; top: 0; bottom: 0; }
-  .map-label {
-    position: absolute;
-    background: rgba(0,0,0,0.45);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 3px 7px;
-    border-radius: 4px;
-    letter-spacing: 0.3px;
-  }
-  .map-search {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    background: #fff;
-    border-radius: 24px;
-    padding: 10px 16px;
-    font-size: 13px;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-  }
-  .map-badge {
-    position: absolute;
-    bottom: 12px;
-    right: 12px;
-    background: #fff;
-    border-radius: 8px;
-    padding: 5px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  }
-  .pin {
-    position: absolute;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.15s;
-    user-select: none;
-  }
-  .pin:active { transform: scale(0.92); }
-  .pin-bubble {
-    background: var(--brand);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 5px 10px;
-    border-radius: 14px;
-    white-space: nowrap;
-    font-family: 'Space Grotesk', sans-serif;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  }
-  .pin-stem { width: 2px; height: 8px; margin: 0 auto; }
-  .pin-dot { width: 7px; height: 7px; border-radius: 50%; margin: 0 auto; }
-
-  /* ========== SECTION TITLE ========== */
-  .section-title {
-    padding: 16px 16px 8px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted);
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-  }
-
-  /* ========== EVENT CARDS ========== */
-  .event-card {
-    margin: 0 12px 10px;
-    background: var(--card);
-    border-radius: 16px;
-    border: 0.5px solid var(--border);
-    overflow: hidden;
-    cursor: pointer;
-    display: flex;
-    transition: transform 0.12s;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-  }
-  .event-card:active { transform: scale(0.97); }
-  .event-thumb {
-    width: 76px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-  }
-  .event-thumb.music { background: #EEEDFE; }
-  .event-thumb.tech  { background: #E1F5EE; }
-  .event-thumb.art   { background: #FBEAF0; }
-  .event-thumb.food  { background: #FAEEDA; }
-  .event-info { padding: 12px 14px; flex: 1; min-width: 0; }
-  .event-name {
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 1.3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .event-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
-  .event-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
-  }
-  .price-tag {
-    background: var(--brand);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 9px;
-    border-radius: 8px;
-    font-family: 'Space Grotesk', sans-serif;
-  }
-  .price-tag.free { background: var(--green); }
-  .venue-tag { font-size: 11px; color: var(--muted); font-weight: 500; }
-
-  /* ========== CHECKOUT ========== */
-  .checkout-hero {
-    background: var(--brand);
-    padding: 20px 20px 24px;
-    color: #fff;
-    position: relative;
-    overflow: hidden;
-  }
-  .checkout-hero::before {
-    content: '';
-    position: absolute;
-    right: -40px;
-    top: -40px;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.07);
-  }
-  .checkout-hero::after {
-    content: '';
-    position: absolute;
-    right: 30px;
-    bottom: -20px;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.05);
-  }
-  .co-cat {
-    font-size: 11px;
-    opacity: 0.7;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
-    position: relative;
-  }
-  .checkout-hero h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 19px;
-    font-weight: 700;
-    line-height: 1.2;
-    position: relative;
-  }
-  .checkout-hero .co-date {
-    font-size: 13px;
-    opacity: 0.8;
-    margin-top: 4px;
-    position: relative;
-  }
-  .checkout-hero .price-big {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 30px;
-    font-weight: 700;
-    margin-top: 10px;
-    position: relative;
-  }
-
-  .checkout-body { padding: 16px; }
-  .pay-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 10px;
-  }
-  .pay-option {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: 14px;
-    padding: 13px 14px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.18s;
-    user-select: none;
-  }
-  .pay-option:active { transform: scale(0.98); }
-  .pay-option.selected {
-    border-color: var(--brand);
-    border-width: 1.5px;
-    background: #FFF5F2;
-  }
-  .pay-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 800;
-    color: #fff;
-    flex-shrink: 0;
-    letter-spacing: -0.3px;
-  }
-  .pay-icon.mpesa    { background: #4CAF50; }
-  .pay-icon.tigo     { background: #1565C0; }
-  .pay-icon.airtel   { background: #CC0000; font-size: 9px; }
-  .pay-name  { font-weight: 600; font-size: 14px; }
-  .pay-sub   { font-size: 12px; color: var(--muted); margin-top: 1px; }
-  .pay-radio {
-    margin-left: auto;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.2s;
-  }
-  .pay-radio.checked { border-color: var(--brand); background: var(--brand); }
-  .pay-radio.checked::after {
-    content: '';
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #fff;
-  }
-
-  .qty-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 0;
-    border-top: 0.5px solid var(--border);
-    margin-top: 4px;
-  }
-  .qty-label { font-weight: 500; font-size: 15px; }
-  .qty-ctrl  { display: flex; align-items: center; gap: 16px; }
-  .qty-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 0.5px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: 400;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.12s;
-    color: var(--text);
-    line-height: 1;
-  }
-  .qty-btn:active { background: var(--border); }
-  .qty-num {
-    font-size: 20px;
-    font-weight: 700;
-    font-family: 'Space Grotesk', sans-serif;
-    min-width: 24px;
-    text-align: center;
-  }
-
-  .total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-top: 0.5px solid var(--border);
-    font-size: 14px;
-  }
-  .total-val {
-    font-weight: 700;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 16px;
-    color: var(--brand);
-  }
-
-  .buy-btn {
-    width: 100%;
-    background: var(--brand);
-    color: #fff;
-    border: none;
-    border-radius: 16px;
-    padding: 17px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 14px;
-    transition: background 0.2s, transform 0.1s;
-    letter-spacing: -0.2px;
-  }
-  .buy-btn:active { background: var(--brand-dark); transform: scale(0.98); }
-  .buy-hint {
-    text-align: center;
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 8px;
-  }
-
-  /* ========== STK OVERLAY ========== */
-  .overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    align-items: flex-end;
-    z-index: 100;
-    display: none;
-    backdrop-filter: blur(2px);
-  }
-  .sheet {
-    background: #fff;
-    width: 100%;
-    border-radius: 24px 24px 0 0;
-    padding: 28px 24px 40px;
-  }
-  .sheet-handle {
-    width: 40px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 0 auto 20px;
-  }
-  .stk-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 4px;
-  }
-  .stk-sub {
-    font-size: 13px;
-    color: var(--muted);
-    text-align: center;
-    margin-bottom: 20px;
-    line-height: 1.4;
-  }
-  .stk-amount-card {
-    background: var(--bg);
-    border-radius: 14px;
-    padding: 16px;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .stk-amount-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-  .stk-amount-val {
-    font-size: 26px;
-    font-weight: 700;
-    font-family: 'Space Grotesk', sans-serif;
-    color: var(--brand);
-  }
-  .pin-dots {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin: 16px 0 8px;
-  }
-  .dot {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--border);
-    transition: background 0.25s;
-  }
-  .dot.filled { background: var(--brand); }
-  .pin-hint { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 20px; }
-  .stk-confirm {
-    width: 100%;
-    background: var(--green);
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    padding: 15px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    transition: opacity 0.2s, transform 0.1s;
-  }
-  .stk-confirm:active { opacity: 0.88; transform: scale(0.98); }
-  .stk-cancel {
-    width: 100%;
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 12px;
-    padding: 6px;
-  }
-
-  /* ========== SUCCESS ========== */
-  .success-overlay {
-    position: absolute;
-    inset: 0;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 32px;
-    z-index: 200;
-    text-align: center;
-    display: none;
-  }
-  .success-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: var(--green-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 36px;
-    margin-bottom: 24px;
-    animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-  }
-  @keyframes popIn {
-    from { transform: scale(0); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-  }
-  .success-overlay h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--green-text);
-  }
-  .success-overlay p {
-    font-size: 14px;
-    color: var(--muted);
-    margin-top: 10px;
-    line-height: 1.6;
-  }
-  .success-btn {
-    margin-top: 28px;
-    background: var(--brand);
-    color: #fff;
-    border: none;
-    border-radius: 16px;
-    padding: 15px 36px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    transition: background 0.2s;
-  }
-  .success-btn:active { background: var(--brand-dark); }
-
-  /* ========== WALLET ========== */
-  .wallet-hero {
-    background: var(--brand);
-    padding: 16px 20px 20px;
-    color: #fff;
-    text-align: center;
-  }
-  .wallet-hero h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-  }
-  .wallet-hero p { font-size: 12px; opacity: 0.75; margin-top: 3px; }
-
-  .ticket-card {
-    margin: 12px 12px 0;
-    background: var(--card);
-    border-radius: 18px;
-    border: 0.5px solid var(--border);
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-  .ticket-top {
-    padding: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  .ticket-name {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-  }
-  .ticket-date { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .status-pill {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 4px 9px;
-    border-radius: 6px;
-    background: var(--green-bg);
-    color: var(--green-text);
-    flex-shrink: 0;
-    margin-left: 8px;
-  }
-  .status-pill.used { background: var(--bg); color: var(--muted); }
-  .dashed-divider {
-    border: none;
-    border-top: 2px dashed var(--border);
-    margin: 0 16px;
-  }
-  .ticket-qr-area {
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .qr-box {
-    width: 80px;
-    height: 80px;
-    background: #1A1A1A;
-    border-radius: 10px;
-    flex-shrink: 0;
-    padding: 7px;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 1.5px;
-  }
-  .qr-cell { border-radius: 1px; }
-  .qr-cell.on  { background: #fff; }
-  .qr-cell.off { background: transparent; }
-  .qr-info {}
-  .qr-holder { font-size: 11px; color: var(--muted); }
-  .qr-holder-name { font-weight: 600; font-size: 15px; margin-top: 2px; }
-  .offline-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    background: var(--green-bg);
-    color: var(--green-text);
-    padding: 4px 9px;
-    border-radius: 6px;
-  }
-  .offline-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--green);
-  }
-  .ticket-footer {
-    padding: 10px 16px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--muted);
-    border-top: 0.5px solid var(--border);
-  }
-  .ticket-id { font-family: monospace; font-size: 11px; }
-
-  .empty-wallet {
-    padding: 60px 24px 24px;
-    text-align: center;
-    color: var(--muted);
-  }
-  .empty-wallet .icon { font-size: 48px; margin-bottom: 14px; }
-  .empty-wallet .title { font-weight: 600; font-size: 16px; color: var(--text); }
-  .empty-wallet .subtitle { font-size: 13px; margin-top: 6px; line-height: 1.5; }
-  .empty-wallet .cta {
-    display: inline-block;
-    margin-top: 20px;
-    background: var(--brand);
-    color: #fff;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    font-family: 'Space Grotesk', sans-serif;
-    border: none;
-    transition: background 0.2s;
-  }
-  .empty-wallet .cta:active { background: var(--brand-dark); }
-
-  /* ========== BOTTOM NAV AREA ========== */
-  .bottom-safe {
-    background: var(--card);
-    height: env(safe-area-inset-bottom, 8px);
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .home-bar {
-    width: 100px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 4px 0;
-  }
-
-  /* ========== SCROLL PADDING ========== */
-  .scroll-pad { height: 20px; }
+/* WALLET */
+.wallet-hero{background:var(--brand);padding:14px 18px 18px;color:#fff;text-align:center;flex-shrink:0}
+.wallet-hero h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
+.wallet-hero p{font-size:12px;opacity:0.75;margin-top:2px}
+.wallet-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:16px}
+.ticket-card{margin:12px 12px 0;background:var(--card);border-radius:16px;border:0.5px solid var(--border);overflow:hidden}
+.ticket-top{padding:14px 15px;display:flex;justify-content:space-between;align-items:flex-start}
+.ticket-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;line-height:1.2}
+.ticket-date{font-size:12px;color:var(--muted);margin-top:3px}
+.status-pill{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;background:var(--green-bg);color:var(--green-text);flex-shrink:0;margin-left:8px}
+.dashed{border:none;border-top:2px dashed var(--border);margin:0 14px}
+.ticket-qr-area{padding:14px 15px;display:flex;align-items:center;gap:14px}
+.qr-box{width:76px;height:76px;background:#181818;border-radius:10px;flex-shrink:0;padding:7px;display:grid;grid-template-columns:repeat(7,1fr);gap:1.5px}
+.qr-cell{border-radius:1px}
+.qr-on{background:#fff}
+.qr-off{background:transparent}
+.qr-holder{font-size:11px;color:var(--muted)}
+.qr-holder-name{font-weight:600;font-size:14px;margin-top:1px}
+.offline-tag{display:inline-flex;align-items:center;gap:5px;margin-top:7px;font-size:11px;font-weight:600;background:var(--green-bg);color:var(--green-text);padding:4px 9px;border-radius:6px}
+.offline-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.ticket-foot{padding:9px 15px 13px;display:flex;align-items:center;justify-content:space-between;border-top:0.5px solid var(--border);font-size:12px;color:var(--muted)}
+.ticket-id{font-family:monospace;font-size:11px}
+.empty-wallet{padding:52px 24px;text-align:center;color:var(--muted)}
+.empty-wallet .icon{font-size:44px;margin-bottom:12px}
+.empty-wallet .title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--text)}
+.empty-wallet .sub{font-size:13px;margin-top:5px;line-height:1.5}
+.empty-wallet .cta{display:inline-block;margin-top:18px;background:var(--brand);color:#fff;padding:11px 22px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;font-family:'Syne',sans-serif;border:none}
+.bottom-safe{background:var(--card);padding-bottom:env(safe-area-inset-bottom,0);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.home-bar{width:90px;height:4px;background:var(--border);border-radius:2px;margin:5px 0}
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- Status Bar -->
   <div class="status-bar">
     <span id="live-time">9:41</span>
     <span>Dar es Salaam</span>
-    <span>●●●● 100%</span>
+    <span>●●●● 4G</span>
   </div>
 
-  <!-- Header -->
   <div class="app-header">
-    <h1>TicketBure</h1>
-    <p>Pata tiketi yako haraka — Get your ticket fast</p>
+    <div class="header-left">
+      <h1>TicketBure</h1>
+      <p>Pata tiketi yako haraka <span class="live-badge"><span class="live-dot"></span>LIVE</span></p>
+    </div>
+    <button class="icon-btn" onclick="locateMe()" title="My location">📍</button>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
     <div class="tab active" onclick="switchTab('discover')">🗺 Discover</div>
     <div class="tab" onclick="switchTab('checkout')">🎟 Buy</div>
     <div class="tab" onclick="switchTab('wallet')">👜 Wallet</div>
   </div>
 
-  <!-- ====== DISCOVER SCREEN ====== -->
+  <!-- DISCOVER -->
   <div class="screen active" id="screen-discover">
-
-    <!-- Map -->
-    <div class="map-area">
-      <div class="map-bg"></div>
-      <div class="map-grid"></div>
-
-      <!-- Roads -->
-      <div class="road h" style="top:36%"></div>
-      <div class="road h" style="top:62%"></div>
-      <div class="road v" style="left:28%"></div>
-      <div class="road v" style="left:68%"></div>
-
-      <!-- Area labels -->
-      <div class="map-label" style="top:39%;left:30%">Masaki</div>
-      <div class="map-label" style="top:64%;left:70%">Kariakoo</div>
-      <div class="map-label" style="top:12%;left:8%">Sinza</div>
-      <div class="map-label" style="top:39%;left:70%">Upanga</div>
-
-      <!-- Search bar -->
-      <div class="map-search">
-        <span>🔍</span>
-        <span>Search events near you...</span>
-      </div>
-
-      <!-- Pins -->
-      <div class="pin" style="top:26%;left:36%" onclick="selectEvent(0)">
-        <div class="pin-bubble" style="background:var(--purple)">TSh 15k 🎵</div>
-        <div class="pin-stem" style="background:var(--purple)"></div>
-        <div class="pin-dot"  style="background:var(--purple)"></div>
-      </div>
-
-      <div class="pin" style="top:48%;left:62%" onclick="selectEvent(1)">
-        <div class="pin-bubble" style="background:var(--teal)">TSh 25k 💻</div>
-        <div class="pin-stem" style="background:var(--teal)"></div>
-        <div class="pin-dot"  style="background:var(--teal)"></div>
-      </div>
-
-      <div class="pin" style="top:14%;left:12%" onclick="selectEvent(2)">
-        <div class="pin-bubble" style="background:var(--pink)">TSh 10k 🎨</div>
-        <div class="pin-stem" style="background:var(--pink)"></div>
-        <div class="pin-dot"  style="background:var(--pink)"></div>
-      </div>
-
-      <div class="pin" style="top:68%;left:18%" onclick="selectEvent(3)">
-        <div class="pin-bubble" style="background:var(--amber)">FREE 🍲</div>
-        <div class="pin-stem" style="background:var(--amber)"></div>
-        <div class="pin-dot"  style="background:var(--amber)"></div>
-      </div>
-
-      <div class="map-badge">4 events nearby</div>
+    <div id="map"></div>
+    <div class="filter-bar">
+      <div class="chip active" onclick="filterEvents(this,'all')">All Events</div>
+      <div class="chip music" onclick="filterEvents(this,'music')">🎵 Music</div>
+      <div class="chip tech"  onclick="filterEvents(this,'tech')">💻 Tech</div>
+      <div class="chip art"   onclick="filterEvents(this,'art')">🎨 Art</div>
+      <div class="chip food"  onclick="filterEvents(this,'food')">🍲 Food</div>
     </div>
-
-    <div class="section-title">Happening This Weekend</div>
-
-    <div class="event-card" onclick="selectEvent(0)">
-      <div class="event-thumb music">🎵</div>
-      <div class="event-info">
-        <div class="event-name">Afrobeat Night — Live Band</div>
-        <div class="event-meta">Sat 26 Apr · 8:00 PM · Masaki</div>
-        <div class="event-footer">
-          <span class="price-tag">TSh 15,000</span>
-          <span class="venue-tag">New Msasani Club</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="event-card" onclick="selectEvent(1)">
-      <div class="event-thumb tech">💻</div>
-      <div class="event-info">
-        <div class="event-name">DSM Tech Meetup #12</div>
-        <div class="event-meta">Sat 26 Apr · 2:00 PM · Upanga</div>
-        <div class="event-footer">
-          <span class="price-tag">TSh 25,000</span>
-          <span class="venue-tag">Serena Hotel</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="event-card" onclick="selectEvent(2)">
-      <div class="event-thumb art">🎨</div>
-      <div class="event-info">
-        <div class="event-name">Sanaa Ya Mitaa Exhibition</div>
-        <div class="event-meta">Sun 27 Apr · 11:00 AM · Sinza</div>
-        <div class="event-footer">
-          <span class="price-tag">TSh 10,000</span>
-          <span class="venue-tag">Cultural Centre</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="event-card" onclick="selectEvent(3)">
-      <div class="event-thumb food">🍲</div>
-      <div class="event-info">
-        <div class="event-name">Kariakoo Street Food Fest</div>
-        <div class="event-meta">Sun 27 Apr · 12:00 PM · Kariakoo</div>
-        <div class="event-footer">
-          <span class="price-tag free">FREE</span>
-          <span class="venue-tag">Kariakoo Market</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="scroll-pad"></div>
+    <div class="section-title" id="count-label">6 events this weekend</div>
+    <div class="events-scroll" id="events-list"></div>
   </div>
 
-  <!-- ====== CHECKOUT SCREEN ====== -->
+  <!-- CHECKOUT -->
   <div class="screen" id="screen-checkout">
-    <div class="checkout-hero">
+    <div class="checkout-hero" id="co-hero" style="background:var(--purple)">
       <div class="co-cat" id="co-cat">🎵 Music</div>
-      <h2 id="co-name">Afrobeat Night — Live Band</h2>
-      <div class="co-date" id="co-date">Sat 26 Apr · 8:00 PM · Masaki</div>
-      <div class="price-big" id="co-price">TSh 15,000</div>
+      <div class="co-name" id="co-name">Afrobeat Night</div>
+      <div class="co-date" id="co-date">Sat 26 Apr · 8:00 PM</div>
+      <div class="co-venue" id="co-venue">New Msasani Club · Masaki</div>
+      <div class="co-price" id="co-price">TSh 15,000</div>
     </div>
-
     <div class="checkout-body">
       <div class="pay-label">Pay with Mobile Money</div>
-
-      <div class="pay-option selected" id="opt-mpesa" onclick="selectPay('mpesa')">
+      <div class="pay-opt selected" id="opt-mpesa" onclick="selectPay('mpesa')">
         <div class="pay-icon mpesa">M-PESA</div>
-        <div>
-          <div class="pay-name">M-Pesa</div>
-          <div class="pay-sub">+255 71x xxx xxx</div>
-        </div>
+        <div><div class="pay-name">M-Pesa</div><div class="pay-sub">+255 71x xxx xxx</div></div>
         <div class="pay-radio checked" id="radio-mpesa"></div>
       </div>
-
-      <div class="pay-option" id="opt-tigo" onclick="selectPay('tigo')">
+      <div class="pay-opt" id="opt-tigo" onclick="selectPay('tigo')">
         <div class="pay-icon tigo">TIGO</div>
-        <div>
-          <div class="pay-name">Tigo Pesa</div>
-          <div class="pay-sub">Link your number</div>
-        </div>
+        <div><div class="pay-name">Tigo Pesa</div><div class="pay-sub">Link your number</div></div>
         <div class="pay-radio" id="radio-tigo"></div>
       </div>
-
-      <div class="pay-option" id="opt-airtel" onclick="selectPay('airtel')">
+      <div class="pay-opt" id="opt-airtel" onclick="selectPay('airtel')">
         <div class="pay-icon airtel">AIRTEL</div>
-        <div>
-          <div class="pay-name">Airtel Money</div>
-          <div class="pay-sub">Link your number</div>
-        </div>
+        <div><div class="pay-name">Airtel Money</div><div class="pay-sub">Link your number</div></div>
         <div class="pay-radio" id="radio-airtel"></div>
       </div>
-
       <div class="qty-row">
-        <span class="qty-label">Tickets</span>
+        <span style="font-weight:500;font-size:15px">Tickets</span>
         <div class="qty-ctrl">
           <div class="qty-btn" onclick="changeQty(-1)">−</div>
-          <div class="qty-num" id="qty-display">1</div>
+          <div class="qty-num" id="qty">1</div>
           <div class="qty-btn" onclick="changeQty(1)">+</div>
         </div>
       </div>
-
       <div class="total-row">
-        <span style="color:var(--muted);font-size:13px">Total</span>
-        <span class="total-val" id="total-display">TSh 15,000</span>
+        <span style="color:var(--muted)">Total</span>
+        <span class="total-val" id="total">TSh 15,000</span>
       </div>
-
       <button class="buy-btn" onclick="showSTK()">
-        <span>📱</span>
-        <span id="buy-btn-text">Pay with M-Pesa STK Push</span>
+        <span>📱</span><span id="buy-btn-txt">Pay with M-Pesa STK Push</span>
       </button>
       <div class="buy-hint">You'll receive a PIN popup on your phone instantly</div>
     </div>
-
-    <div class="scroll-pad"></div>
   </div>
 
-  <!-- ====== WALLET SCREEN ====== -->
+  <!-- WALLET -->
   <div class="screen" id="screen-wallet">
     <div class="wallet-hero">
       <h2>My Tickets</h2>
-      <p id="wallet-subtitle">0 active tickets</p>
+      <p id="wallet-sub">0 active tickets</p>
     </div>
-
-    <div id="wallet-list"></div>
-
-    <div class="empty-wallet" id="empty-wallet">
-      <div class="icon">🎟</div>
-      <div class="title">No tickets yet</div>
-      <div class="subtitle">Find events on the map and buy one in under 30 seconds.</div>
-      <button class="cta" onclick="switchTab('discover')">Browse Events →</button>
-    </div>
-
-    <div class="scroll-pad"></div>
+    <div class="wallet-scroll" id="wallet-list"></div>
   </div>
 
-  <!-- ====== STK OVERLAY ====== -->
+  <!-- STK Overlay -->
   <div class="overlay" id="stk-overlay">
     <div class="sheet">
       <div class="sheet-handle"></div>
       <div class="stk-title">Enter your M-Pesa PIN</div>
-      <div class="stk-sub" id="stk-sub">Paying TSh 15,000 to TicketBure for 1 ticket</div>
-      <div class="stk-amount-card">
-        <div class="stk-amount-label">Amount to pay</div>
-        <div class="stk-amount-val" id="stk-val">TSh 15,000</div>
+      <div class="stk-sub" id="stk-sub">Paying TSh 15,000 to TicketBure</div>
+      <div class="stk-amt-card">
+        <div class="stk-amt-lbl">Amount</div>
+        <div class="stk-amt-val" id="stk-val">TSh 15,000</div>
       </div>
       <div class="pin-dots">
-        <div class="dot" id="d0"></div>
-        <div class="dot" id="d1"></div>
-        <div class="dot" id="d2"></div>
-        <div class="dot" id="d3"></div>
+        <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+        <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
       </div>
       <div class="pin-hint">Tap Confirm to simulate PIN entry</div>
       <button class="stk-confirm" onclick="confirmPay()">✓ &nbsp;Confirm Payment</button>
@@ -1003,222 +284,201 @@
     </div>
   </div>
 
-  <!-- ====== SUCCESS OVERLAY ====== -->
+  <!-- Success -->
   <div class="success-overlay" id="success-overlay">
     <div class="success-circle">✓</div>
     <h2>Tiketi Yako Iko Ready!</h2>
-    <p>Your ticket has been added to your wallet. Show the QR code at the entrance — it works even without internet.</p>
+    <p>Your ticket is in your wallet. Show the QR code at the entrance — works offline too.</p>
     <button class="success-btn" onclick="goWallet()">Open My Wallet 👜</button>
   </div>
 
   <div class="bottom-safe"><div class="home-bar"></div></div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-/* =====================
-   DATA
-   ===================== */
+/* ── DATA: real DSM coordinates ── */
 const EVENTS = [
-  { name:'Afrobeat Night — Live Band', date:'Sat 26 Apr · 8:00 PM · Masaki', price:15000, cat:'🎵 Music', venue:'New Msasani Club' },
-  { name:'DSM Tech Meetup #12',        date:'Sat 26 Apr · 2:00 PM · Upanga', price:25000, cat:'💻 Tech',  venue:'Serena Hotel' },
-  { name:'Sanaa Ya Mitaa Exhibition',  date:'Sun 27 Apr · 11:00 AM · Sinza', price:10000, cat:'🎨 Art',   venue:'Cultural Centre' },
-  { name:'Kariakoo Street Food Fest',  date:'Sun 27 Apr · 12:00 PM · Kariakoo', price:0,  cat:'🍲 Food',  venue:'Kariakoo Market' },
+  { id:0, name:'Afrobeat Night — Live Band', date:'Sat 26 Apr · 8:00 PM', venue:'New Msasani Club', hood:'Masaki', cat:'music', emoji:'🎵', price:15000, lat:-6.7590, lng:39.2695, color:'#4F45B0' },
+  { id:1, name:'DSM Tech Meetup #12', date:'Sat 26 Apr · 2:00 PM', venue:'Serena Hotel', hood:'Upanga', cat:'tech', emoji:'💻', price:25000, lat:-6.8150, lng:39.2900, color:'#0D6B56' },
+  { id:2, name:'Sanaa Ya Mitaa Exhibition', date:'Sun 27 Apr · 11:00 AM', venue:'Alliance Française', hood:'Upanga', cat:'art', emoji:'🎨', price:10000, lat:-6.8105, lng:39.2825, color:'#92314F' },
+  { id:3, name:'Kariakoo Street Food Fest', date:'Sun 27 Apr · 12:00 PM', venue:'Kariakoo Market Square', hood:'Kariakoo', cat:'food', emoji:'🍲', price:0, lat:-6.8220, lng:39.2730, color:'#B87316' },
+  { id:4, name:'Jazz & Cocktails Evening', date:'Fri 25 Apr · 7:30 PM', venue:'Hyatt Regency Dar', hood:'Oyster Bay', cat:'music', emoji:'🎺', price:35000, lat:-6.7710, lng:39.2785, color:'#4F45B0' },
+  { id:5, name:'Startup Pitch Night DSM', date:'Thu 24 Apr · 6:00 PM', venue:'Buni Innovation Hub', hood:'Mikocheni', cat:'tech', emoji:'🚀', price:5000, lat:-6.7860, lng:39.2600, color:'#0D6B56' },
 ];
 
-/* QR pattern (7×7 grid, 49 cells) */
-const QR_PATTERN = [1,1,1,1,1,1,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,1,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1];
+const QR_PAT = [1,1,1,1,1,1,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,1,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1];
 
-let selEvent = 0;
-let qty = 1;
-let walletItems = [];
-let currentPayMethod = 'mpesa';
-let pinTimer = null;
+let selIdx=0, qty=1, payMethod='mpesa', walletItems=[], pinTimer=null, activeFilter='all';
+let map, markers=[];
 
-/* =====================
-   LIVE CLOCK
-   ===================== */
-function updateClock() {
-  const now = new Date();
-  const h = now.getHours().toString().padStart(2,'0');
-  const m = now.getMinutes().toString().padStart(2,'0');
-  document.getElementById('live-time').textContent = h + ':' + m;
-}
-updateClock();
-setInterval(updateClock, 10000);
+/* ── CLOCK ── */
+function tick(){const n=new Date();document.getElementById('live-time').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
+tick();setInterval(tick,10000);
 
-/* =====================
-   TAB NAVIGATION
-   ===================== */
-function switchTab(name) {
-  const tabs = document.querySelectorAll('.tab');
-  const names = ['discover','checkout','wallet'];
-  tabs.forEach((t,i) => t.classList.toggle('active', names[i] === name));
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + name).classList.add('active');
-  document.getElementById('success-overlay').style.display = 'none';
+/* ── FORMAT ── */
+function fmt(n){return n===0?'FREE':'TSh '+n.toLocaleString();}
+function catLabel(c){return{music:'🎵 Music',tech:'💻 Tech',art:'🎨 Art',food:'🍲 Food'}[c]||c;}
+
+/* ── MAP ── */
+function initMap(){
+  map=L.map('map',{center:[-6.7924,39.2083],zoom:13,zoomControl:true,attributionControl:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+    subdomains:'abcd',maxZoom:19
+  }).addTo(map);
+  L.control.attribution({prefix:false,position:'bottomright'}).addTo(map);
+  EVENTS.forEach(addPin);
+  const bounds=L.latLngBounds(EVENTS.map(e=>[e.lat,e.lng]));
+  map.fitBounds(bounds,{padding:[28,28]});
 }
 
-/* =====================
-   FORMAT PRICE
-   ===================== */
-function fmt(n) {
-  if (n === 0) return 'FREE';
-  return 'TSh ' + n.toLocaleString();
+function addPin(e){
+  const icon=L.divIcon({
+    className:'',
+    html:`<div class="custom-pin"><div class="pin-label" style="background:${e.color}">${fmt(e.price)} ${e.emoji}</div><div class="pin-stem" style="background:${e.color}"></div><div class="pin-dot" style="background:${e.color}"></div></div>`,
+    iconSize:[null,null],iconAnchor:[38,36],popupAnchor:[0,-36]
+  });
+  const marker=L.marker([e.lat,e.lng],{icon}).addTo(map);
+  marker.bindPopup(`<div class="popup-top" style="background:${e.color}"><div class="popup-cat">${catLabel(e.cat)}</div><div class="popup-name">${e.name}</div><div class="popup-date">${e.date} · ${e.hood}</div></div><div class="popup-bottom"><div class="popup-price${e.price===0?' free':''}">${fmt(e.price)}</div><button class="popup-buy" onclick="selectEvent(${e.id})">Buy →</button></div>`,
+    {maxWidth:250,minWidth:210,className:'tb-popup'});
+  marker.on('click',()=>marker.openPopup());
+  markers.push({marker,event:e});
 }
 
-/* =====================
-   SELECT EVENT → go to checkout
-   ===================== */
-function selectEvent(i) {
-  selEvent = i;
-  qty = 1;
-  const e = EVENTS[i];
-  document.getElementById('co-cat').textContent   = e.cat;
-  document.getElementById('co-name').textContent  = e.name;
-  document.getElementById('co-date').textContent  = e.date;
-  document.getElementById('co-price').textContent = fmt(e.price);
-  document.getElementById('qty-display').textContent = '1';
-  document.getElementById('total-display').textContent = fmt(e.price);
+function locateMe(){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(pos=>{
+    map.setView([pos.coords.latitude,pos.coords.longitude],15);
+    L.circleMarker([pos.coords.latitude,pos.coords.longitude],{radius:8,fillColor:'#E8450A',color:'#fff',weight:2,fillOpacity:1}).addTo(map).bindPopup('You are here').openPopup();
+  });
+}
+
+/* ── RENDER CARDS ── */
+function renderCards(){
+  const vis=EVENTS.filter(e=>activeFilter==='all'||e.cat===activeFilter);
+  document.getElementById('count-label').textContent=vis.length+' event'+(vis.length!==1?'s':'')+' this weekend';
+  document.getElementById('events-list').innerHTML=vis.map(e=>`
+    <div class="event-card" onclick="selectEvent(${e.id})">
+      <div class="event-thumb ${e.cat}">${e.emoji}</div>
+      <div class="event-info">
+        <div class="event-name">${e.name}</div>
+        <div class="event-meta">${e.date} · ${e.hood}</div>
+        <div class="event-footer">
+          <span class="price-pill${e.price===0?' free':''}">${fmt(e.price)}</span>
+          <span class="venue-tag">${e.venue}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── FILTER ── */
+function filterEvents(el,cat){
+  activeFilter=cat;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderCards();
+  markers.forEach(({marker,event:e})=>{
+    if(cat==='all'||e.cat===cat){if(!map.hasLayer(marker))marker.addTo(map);}
+    else{if(map.hasLayer(marker))map.removeLayer(marker);}
+  });
+}
+
+/* ── SELECT EVENT ── */
+function selectEvent(i){
+  selIdx=i;qty=1;
+  const e=EVENTS[i];
+  document.getElementById('co-hero').style.background=e.color;
+  document.getElementById('co-cat').textContent=catLabel(e.cat);
+  document.getElementById('co-name').textContent=e.name;
+  document.getElementById('co-date').textContent=e.date;
+  document.getElementById('co-venue').textContent=e.venue+' · '+e.hood;
+  document.getElementById('co-price').textContent=fmt(e.price);
+  document.getElementById('qty').textContent='1';
+  document.getElementById('total').textContent=fmt(e.price);
+  map&&map.closePopup();
   switchTab('checkout');
 }
 
-/* =====================
-   PAYMENT METHOD
-   ===================== */
-function selectPay(id) {
-  ['mpesa','tigo','airtel'].forEach(m => {
-    document.getElementById('opt-'   + m).classList.toggle('selected', m === id);
-    const r = document.getElementById('radio-' + m);
-    r.classList.toggle('checked', m === id);
+/* ── PAYMENT ── */
+function selectPay(id){
+  payMethod=id;
+  ['mpesa','tigo','airtel'].forEach(m=>{
+    document.getElementById('opt-'+m).classList.toggle('selected',m===id);
+    document.getElementById('radio-'+m).classList.toggle('checked',m===id);
   });
-  currentPayMethod = id;
-  const labels = { mpesa:'M-Pesa', tigo:'Tigo Pesa', airtel:'Airtel Money' };
-  document.getElementById('buy-btn-text').textContent = 'Pay with ' + labels[id] + ' STK Push';
+  const n={mpesa:'M-Pesa',tigo:'Tigo Pesa',airtel:'Airtel Money'};
+  document.getElementById('buy-btn-txt').textContent='Pay with '+n[id]+' STK Push';
 }
 
-/* =====================
-   QUANTITY
-   ===================== */
-function changeQty(d) {
-  qty = Math.max(1, Math.min(10, qty + d));
-  document.getElementById('qty-display').textContent = qty;
-  const total = EVENTS[selEvent].price * qty;
-  document.getElementById('total-display').textContent = fmt(total);
+function changeQty(d){
+  qty=Math.max(1,Math.min(10,qty+d));
+  document.getElementById('qty').textContent=qty;
+  document.getElementById('total').textContent=fmt(EVENTS[selIdx].price*qty);
 }
 
-/* =====================
-   STK PUSH SIMULATION
-   ===================== */
-function showSTK() {
-  const total = EVENTS[selEvent].price * qty;
-  const labels = { mpesa:'M-Pesa', tigo:'Tigo Pesa', airtel:'Airtel Money' };
-  document.getElementById('stk-sub').textContent =
-    'Paying ' + fmt(total) + ' to TicketBure via ' + labels[currentPayMethod] + ' for ' + qty + ' ticket' + (qty > 1 ? 's' : '');
-  document.getElementById('stk-val').textContent = fmt(total);
-  document.getElementById('stk-overlay').style.display = 'flex';
-
-  // Animate pin dots
-  [0,1,2,3].forEach(i => document.getElementById('d'+i).classList.remove('filled'));
-  let n = 0;
-  if (pinTimer) clearInterval(pinTimer);
-  pinTimer = setInterval(() => {
-    if (n < 4) {
-      document.getElementById('d' + n).classList.add('filled');
-      n++;
-    } else {
-      clearInterval(pinTimer);
-    }
-  }, 320);
+/* ── STK ── */
+function showSTK(){
+  const total=EVENTS[selIdx].price*qty;
+  const n={mpesa:'M-Pesa',tigo:'Tigo Pesa',airtel:'Airtel Money'};
+  document.getElementById('stk-sub').textContent='Paying '+fmt(total)+' via '+n[payMethod]+' for '+qty+' ticket'+(qty>1?'s':'');
+  document.getElementById('stk-val').textContent=fmt(total);
+  document.getElementById('stk-overlay').style.display='flex';
+  [0,1,2,3].forEach(i=>document.getElementById('d'+i).classList.remove('filled'));
+  let n2=0;if(pinTimer)clearInterval(pinTimer);
+  pinTimer=setInterval(()=>{if(n2<4)document.getElementById('d'+n2++).classList.add('filled');else clearInterval(pinTimer);},320);
 }
-
-function cancelSTK() {
-  document.getElementById('stk-overlay').style.display = 'none';
-  if (pinTimer) clearInterval(pinTimer);
-}
-
-/* =====================
-   CONFIRM PAYMENT → add to wallet
-   ===================== */
-function confirmPay() {
-  document.getElementById('stk-overlay').style.display = 'none';
-  if (pinTimer) clearInterval(pinTimer);
-
-  // Add to wallet
-  for (let i = 0; i < qty; i++) {
-    walletItems.push({
-      eventIdx: selEvent,
-      id: 'TB-' + Math.random().toString(36).substring(2,8).toUpperCase(),
-    });
-  }
-
+function cancelSTK(){document.getElementById('stk-overlay').style.display='none';if(pinTimer)clearInterval(pinTimer);}
+function confirmPay(){
+  document.getElementById('stk-overlay').style.display='none';
+  if(pinTimer)clearInterval(pinTimer);
+  for(let i=0;i<qty;i++)walletItems.push({eventIdx:selIdx,id:'TB-'+Math.random().toString(36).substring(2,8).toUpperCase()});
   renderWallet();
-
-  // Show success
-  const s = document.getElementById('success-overlay');
-  s.style.display = 'flex';
+  document.getElementById('success-overlay').style.display='flex';
 }
+function goWallet(){document.getElementById('success-overlay').style.display='none';switchTab('wallet');}
 
-function goWallet() {
-  document.getElementById('success-overlay').style.display = 'none';
-  switchTab('wallet');
-}
-
-/* =====================
-   RENDER WALLET
-   ===================== */
-function renderWallet() {
-  const count = walletItems.length;
-  document.getElementById('wallet-subtitle').textContent =
-    count + ' active ticket' + (count !== 1 ? 's' : '');
-
-  const list = document.getElementById('wallet-list');
-  const empty = document.getElementById('empty-wallet');
-
-  if (count === 0) {
-    list.innerHTML = '';
-    empty.style.display = 'block';
+/* ── WALLET ── */
+function renderWallet(){
+  const count=walletItems.length;
+  document.getElementById('wallet-sub').textContent=count+' active ticket'+(count!==1?'s':'');
+  const list=document.getElementById('wallet-list');
+  if(!count){
+    list.innerHTML='<div class="empty-wallet"><div class="icon">🎟</div><div class="title">No tickets yet</div><div class="sub">Find events on the map and buy one in under 30 seconds.</div><button class="cta" onclick="switchTab(\'discover\')">Browse Events →</button></div>';
     return;
   }
-
-  empty.style.display = 'none';
-  list.innerHTML = walletItems.map((item, idx) => {
-    const e = EVENTS[item.eventIdx];
-    const qrCells = QR_PATTERN.slice(0, 49).map((b, ci) =>
-      `<div class="qr-cell ${b ? 'on' : 'off'}"></div>`
-    ).join('');
-    return `
-      <div class="ticket-card">
-        <div class="ticket-top">
-          <div>
-            <div class="ticket-name">${e.name}</div>
-            <div class="ticket-date">${e.date}</div>
-          </div>
-          <div class="status-pill">VALID</div>
-        </div>
-        <hr class="dashed-divider">
-        <div class="ticket-qr-area">
-          <div class="qr-box">${qrCells}</div>
-          <div class="qr-info">
-            <div class="qr-holder">Ticket holder</div>
-            <div class="qr-holder-name">Emmanuel</div>
-            <div class="offline-tag">
-              <div class="offline-dot"></div>
-              Offline ready
-            </div>
-          </div>
-        </div>
-        <div class="ticket-footer">
-          <span>${e.venue}</span>
-          <span class="ticket-id">${item.id}</span>
+  const qrCells=QR_PAT.map(b=>`<div class="qr-cell ${b?'qr-on':'qr-off'}"></div>`).join('');
+  list.innerHTML=walletItems.map(item=>{const e=EVENTS[item.eventIdx];return`
+    <div class="ticket-card">
+      <div class="ticket-top">
+        <div><div class="ticket-name">${e.name}</div><div class="ticket-date">${e.date} · ${e.hood}</div></div>
+        <div class="status-pill">VALID</div>
+      </div>
+      <hr class="dashed">
+      <div class="ticket-qr-area">
+        <div class="qr-box">${qrCells}</div>
+        <div>
+          <div class="qr-holder">Ticket holder</div>
+          <div class="qr-holder-name">Emmanuel</div>
+          <div class="offline-tag"><div class="offline-dot"></div>Offline ready</div>
         </div>
       </div>
-    `;
-  }).join('');
+      <div class="ticket-foot"><span>${e.venue}</span><span class="ticket-id">${item.id}</span></div>
+    </div>`;}).join('');
 }
 
-/* =====================
-   INIT
-   ===================== */
+/* ── TABS ── */
+function switchTab(name){
+  const names=['discover','checkout','wallet'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',names[i]===name));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.getElementById('success-overlay').style.display='none';
+  if(name==='discover')setTimeout(()=>map&&map.invalidateSize(),60);
+}
+
+/* ── BOOT ── */
+initMap();
+renderCards();
 renderWallet();
 </script>
 </body>
