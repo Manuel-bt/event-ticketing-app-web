@@ -13,13 +13,16 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --brand:#E8450A;--brand-dark:#B33208;
+  --brand:#E8450A;--brand-dark:#B33208;--brand-light:#FF6B35;
   --bg:#F4F1ED;--card:#FFFFFF;--text:#191917;--muted:#7A7870;
   --border:#E2DED8;--green:#1A9268;--green-bg:#E0F2EB;--green-text:#0D6B4A;
   --amber:#B87316;--purple:#4F45B0;--teal:#0D6B56;--pink:#92314F;
+  --red:#C0392B;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
 .app{max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
+
+/* STATUS + HEADER */
 .status-bar{background:var(--brand);padding:env(safe-area-inset-top,10px) 20px 6px;display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:11px;font-weight:600;flex-shrink:0}
 .app-header{background:var(--brand);padding:2px 16px 14px;color:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
 .header-left h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px}
@@ -27,22 +30,27 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .live-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.2);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-left:5px;vertical-align:middle}
 .live-dot{width:5px;height:5px;border-radius:50%;background:#fff;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.4)}}
-.icon-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;border:none;color:#fff}
+.header-right{display:flex;gap:6px}
+.icon-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;border:none;color:#fff;flex-shrink:0}
+
+/* TABS */
 .tabs{display:flex;background:var(--card);border-bottom:0.5px solid var(--border);flex-shrink:0}
-.tab{flex:1;padding:12px 4px;text-align:center;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;transition:all 0.18s;user-select:none}
+.tab{flex:1;padding:11px 2px;text-align:center;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;transition:all 0.18s;user-select:none}
 .tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+
+/* SCREENS */
 .screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
 .screen.active{display:flex;flex-direction:column}
 
 /* MAP */
-#map{width:100%;height:260px;flex-shrink:0;z-index:1}
+#map{width:100%;height:240px;flex-shrink:0;z-index:1}
 .leaflet-container{font-family:'DM Sans',sans-serif}
 .leaflet-control-zoom{border:none!important;box-shadow:0 2px 10px rgba(0,0,0,0.15)!important}
 .leaflet-control-zoom a{border-radius:8px!important;border:none!important;font-weight:700!important;color:var(--text)!important}
 .leaflet-popup-content-wrapper{border-radius:14px!important;padding:0!important;box-shadow:0 6px 24px rgba(0,0,0,0.2)!important;border:none!important;overflow:hidden}
 .leaflet-popup-content{margin:0!important;min-width:210px}
 .leaflet-popup-tip-container{display:none}
-.leaflet-popup-close-button{top:7px!important;right:10px!important;font-size:16px!important;color:rgba(255,255,255,0.85)!important;font-weight:400!important;z-index:10}
+.leaflet-popup-close-button{top:7px!important;right:10px!important;font-size:16px!important;color:rgba(255,255,255,0.85)!important;z-index:10}
 .popup-top{padding:12px 14px 10px;color:#fff}
 .popup-cat{font-size:10px;font-weight:700;opacity:0.8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
 .popup-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;line-height:1.2}
@@ -51,13 +59,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .popup-price{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--brand)}
 .popup-price.free{color:var(--green)}
 .popup-buy{background:var(--brand);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
-.popup-buy:active{background:var(--brand-dark)}
 .custom-pin{display:flex;flex-direction:column;align-items:center;cursor:pointer}
 .pin-label{color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:10px;white-space:nowrap;font-family:'Syne',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.25);border:1.5px solid rgba(255,255,255,0.25)}
 .pin-stem{width:2px;height:7px;margin:0 auto}
 .pin-dot{width:6px;height:6px;border-radius:50%;margin:0 auto}
 
-/* FILTERS */
+/* FILTER */
 .filter-bar{padding:10px 12px 6px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-shrink:0;scrollbar-width:none}
 .filter-bar::-webkit-scrollbar{display:none}
 .chip{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:all 0.15s;user-select:none}
@@ -66,15 +73,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .chip.tech.active{border-color:var(--teal);background:#E0F2EB;color:var(--teal)}
 .chip.art.active{border-color:var(--pink);background:#FBEAF0;color:var(--pink)}
 .chip.food.active{border-color:var(--amber);background:#FEF3E2;color:var(--amber)}
+
 .section-title{padding:12px 14px 6px;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.8px;text-transform:uppercase;flex-shrink:0}
 .events-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:16px}
+
+/* EVENT CARD */
 .event-card{margin:0 12px 8px;background:var(--card);border-radius:16px;border:0.5px solid var(--border);overflow:hidden;cursor:pointer;display:flex;transition:transform 0.12s;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
 .event-card:active{transform:scale(0.975)}
 .event-thumb{width:74px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px}
-.event-thumb.music{background:#EEEDFE}
-.event-thumb.tech{background:#E0F2EB}
-.event-thumb.art{background:#FBEAF0}
-.event-thumb.food{background:#FEF3E2}
+.event-thumb.music{background:#EEEDFE}.event-thumb.tech{background:#E0F2EB}.event-thumb.art{background:#FBEAF0}.event-thumb.food{background:#FEF3E2}
 .event-info{padding:11px 13px;flex:1;min-width:0}
 .event-name{font-weight:600;font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .event-meta{font-size:12px;color:var(--muted);margin-top:2px}
@@ -82,14 +89,75 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .price-pill{background:var(--brand);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px;font-family:'Syne',sans-serif}
 .price-pill.free{background:var(--green)}
 .venue-tag{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+.custom-badge{background:#FFF0EB;color:var(--brand);font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;border:1px solid rgba(232,69,10,0.2);margin-left:4px;vertical-align:middle}
+
+/* ══════════════════════════════
+   ADD EVENT SCREEN
+══════════════════════════════ */
+.add-hero{background:var(--brand);padding:16px 18px 20px;color:#fff;flex-shrink:0;position:relative;overflow:hidden}
+.add-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,0.07)}
+.add-hero h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;position:relative}
+.add-hero p{font-size:12px;opacity:0.75;margin-top:3px;position:relative}
+
+.form-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px 32px}
+
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block}
+.form-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:border-color 0.15s;-webkit-appearance:none}
+.form-input:focus{border-color:var(--brand);border-width:1.5px}
+.form-input::placeholder{color:var(--muted)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Category picker */
+.cat-picker{display:flex;gap:8px;flex-wrap:wrap}
+.cat-opt{flex:1;min-width:72px;padding:10px 6px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);text-align:center;cursor:pointer;transition:all 0.15s;user-select:none}
+.cat-opt .cat-icon{font-size:20px;display:block;margin-bottom:3px}
+.cat-opt .cat-name{font-size:11px;font-weight:600;color:var(--muted)}
+.cat-opt.selected{border-width:2px}
+.cat-opt.music.selected{border-color:var(--purple);background:#EEEDFE}
+.cat-opt.music.selected .cat-name{color:var(--purple)}
+.cat-opt.tech.selected{border-color:var(--teal);background:#E0F2EB}
+.cat-opt.tech.selected .cat-name{color:var(--teal)}
+.cat-opt.art.selected{border-color:var(--pink);background:#FBEAF0}
+.cat-opt.art.selected .cat-name{color:var(--pink)}
+.cat-opt.food.selected{border-color:var(--amber);background:#FEF3E2}
+.cat-opt.food.selected .cat-name{color:var(--amber)}
+
+/* Hood picker */
+.hood-picker{display:flex;gap:6px;flex-wrap:wrap}
+.hood-opt{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:all 0.15s;user-select:none;white-space:nowrap}
+.hood-opt.selected{border-color:var(--brand);background:#FFF0EB;color:var(--brand)}
+
+/* Price toggle */
+.price-toggle{display:flex;gap:8px;margin-bottom:10px}
+.price-toggle-btn{flex:1;padding:9px;border-radius:10px;font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;text-align:center;transition:all 0.15s}
+.price-toggle-btn.selected{border-color:var(--brand);background:#FFF0EB;color:var(--brand)}
+.price-toggle-btn.free-sel.selected{border-color:var(--green);background:var(--green-bg);color:var(--green-text)}
+#price-input-wrap{transition:opacity 0.2s}
+
+/* Submit */
+.submit-btn{width:100%;background:var(--brand);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;transition:background 0.15s,transform 0.1s}
+.submit-btn:active{background:var(--brand-dark);transform:scale(0.98)}
+
+/* My events list */
+.my-events-section{margin-top:16px}
+.my-events-header{display:flex;align-items:center;justify-content:space-between;padding:0 2px;margin-bottom:8px}
+.my-events-header h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700}
+.clear-btn{font-size:11px;color:var(--red);font-weight:600;cursor:pointer;border:none;background:none;padding:4px 8px}
+.my-event-item{display:flex;align-items:center;gap:10px;background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:7px}
+.my-event-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.my-event-info{flex:1;min-width:0}
+.my-event-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.my-event-meta{font-size:11px;color:var(--muted);margin-top:1px}
+.my-event-del{background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;padding:2px 4px;flex-shrink:0}
+.my-event-del:active{color:var(--red)}
 
 /* CHECKOUT */
 .checkout-hero{padding:20px 18px 22px;color:#fff;position:relative;overflow:hidden;flex-shrink:0}
 .checkout-hero::before{content:'';position:absolute;right:-50px;top:-50px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.06)}
 .co-cat{font-size:10px;opacity:0.7;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;position:relative}
 .co-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;line-height:1.2;position:relative}
-.co-date{font-size:12px;opacity:0.8;margin-top:4px;position:relative}
-.co-venue{font-size:12px;opacity:0.7;margin-top:2px;position:relative}
+.co-date,.co-venue{font-size:12px;opacity:0.8;margin-top:3px;position:relative}
 .co-price{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;margin-top:10px;position:relative}
 .checkout-body{padding:14px;flex:1;overflow-y:auto}
 .pay-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
@@ -97,11 +165,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .pay-opt:active{transform:scale(0.98)}
 .pay-opt.selected{border-color:var(--brand);border-width:1.5px;background:#FFF5F2}
 .pay-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
-.pay-icon.mpesa{background:#2E7D32}
-.pay-icon.tigo{background:#1565C0}
-.pay-icon.airtel{background:#B71C1C;font-size:9px}
-.pay-name{font-weight:600;font-size:14px}
-.pay-sub{font-size:11px;color:var(--muted)}
+.pay-icon.mpesa{background:#2E7D32}.pay-icon.tigo{background:#1565C0}.pay-icon.airtel{background:#B71C1C;font-size:9px}
+.pay-name{font-weight:600;font-size:14px}.pay-sub{font-size:11px;color:var(--muted)}
 .pay-radio{margin-left:auto;width:19px;height:19px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
 .pay-radio.checked{border-color:var(--brand);background:var(--brand)}
 .pay-radio.checked::after{content:'';width:7px;height:7px;border-radius:50%;background:#fff}
@@ -137,10 +202,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .success-overlay{position:absolute;inset:0;background:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;z-index:1000;text-align:center}
 .success-circle{width:76px;height:76px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:20px;animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both}
 @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.success-overlay h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--green-text)}
+.success-overlay h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800}
 .success-overlay p{font-size:14px;color:var(--muted);margin-top:9px;line-height:1.6}
 .success-btn{margin-top:26px;background:var(--brand);color:#fff;border:none;border-radius:14px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
-.success-btn:active{background:var(--brand-dark)}
+
+/* EVENT ADDED SUCCESS */
+.event-success-overlay{position:absolute;inset:0;background:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;z-index:1000;text-align:center}
+.event-success-overlay .success-circle{background:#EEEDFE}
+.event-success-overlay h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--purple)}
+.event-success-overlay p{font-size:14px;color:var(--muted);margin-top:9px;line-height:1.6}
+.event-success-btn{margin-top:22px;background:var(--brand);color:#fff;border:none;border-radius:14px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+.event-success-btn2{margin-top:10px;background:none;border:1.5px solid var(--border);border-radius:14px;padding:13px 28px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);font-family:'DM Sans',sans-serif}
 
 /* WALLET */
 .wallet-hero{background:var(--brand);padding:14px 18px 18px;color:#fff;text-align:center;flex-shrink:0}
@@ -155,9 +227,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .dashed{border:none;border-top:2px dashed var(--border);margin:0 14px}
 .ticket-qr-area{padding:14px 15px;display:flex;align-items:center;gap:14px}
 .qr-box{width:76px;height:76px;background:#181818;border-radius:10px;flex-shrink:0;padding:7px;display:grid;grid-template-columns:repeat(7,1fr);gap:1.5px}
-.qr-cell{border-radius:1px}
-.qr-on{background:#fff}
-.qr-off{background:transparent}
+.qr-cell{border-radius:1px}.qr-on{background:#fff}.qr-off{background:transparent}
 .qr-holder{font-size:11px;color:var(--muted)}
 .qr-holder-name{font-weight:600;font-size:14px;margin-top:1px}
 .offline-tag{display:inline-flex;align-items:center;gap:5px;margin-top:7px;font-size:11px;font-weight:600;background:var(--green-bg);color:var(--green-text);padding:4px 9px;border-radius:6px}
@@ -169,6 +239,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .empty-wallet .title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--text)}
 .empty-wallet .sub{font-size:13px;margin-top:5px;line-height:1.5}
 .empty-wallet .cta{display:inline-block;margin-top:18px;background:var(--brand);color:#fff;padding:11px 22px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;font-family:'Syne',sans-serif;border:none}
+
+/* TOAST */
+.toast{position:absolute;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#191917;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:all 0.3s;z-index:2000;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
 .bottom-safe{background:var(--card);padding-bottom:env(safe-area-inset-bottom,0);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .home-bar{width:90px;height:4px;background:var(--border);border-radius:2px;margin:5px 0}
 </style>
@@ -187,16 +262,20 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
       <h1>TicketBure</h1>
       <p>Pata tiketi yako haraka <span class="live-badge"><span class="live-dot"></span>LIVE</span></p>
     </div>
-    <button class="icon-btn" onclick="locateMe()" title="My location">📍</button>
+    <div class="header-right">
+      <button class="icon-btn" onclick="locateMe()" title="My location">📍</button>
+      <button class="icon-btn" onclick="switchTab('add')" title="Add event" style="background:rgba(255,255,255,0.25)">＋</button>
+    </div>
   </div>
 
   <div class="tabs">
     <div class="tab active" onclick="switchTab('discover')">🗺 Discover</div>
+    <div class="tab" onclick="switchTab('add')">＋ Add Event</div>
     <div class="tab" onclick="switchTab('checkout')">🎟 Buy</div>
     <div class="tab" onclick="switchTab('wallet')">👜 Wallet</div>
   </div>
 
-  <!-- DISCOVER -->
+  <!-- ══════════ DISCOVER ══════════ -->
   <div class="screen active" id="screen-discover">
     <div id="map"></div>
     <div class="filter-bar">
@@ -206,18 +285,106 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
       <div class="chip art"   onclick="filterEvents(this,'art')">🎨 Art</div>
       <div class="chip food"  onclick="filterEvents(this,'food')">🍲 Food</div>
     </div>
-    <div class="section-title" id="count-label">6 events this weekend</div>
+    <div class="section-title" id="count-label">Loading events...</div>
     <div class="events-scroll" id="events-list"></div>
   </div>
 
-  <!-- CHECKOUT -->
+  <!-- ══════════ ADD EVENT ══════════ -->
+  <div class="screen" id="screen-add">
+    <div class="add-hero">
+      <h2>Add Your Event</h2>
+      <p>It goes live on the map instantly — no approval needed</p>
+    </div>
+    <div class="form-scroll">
+
+      <div class="form-group">
+        <label class="form-label">Event Name</label>
+        <input class="form-input" id="f-name" type="text" placeholder="e.g. Bongo Flava Night at Q Bar" maxlength="60">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <div class="cat-picker">
+          <div class="cat-opt music selected" onclick="selectCat(this,'music')">
+            <span class="cat-icon">🎵</span><span class="cat-name">Music</span>
+          </div>
+          <div class="cat-opt tech" onclick="selectCat(this,'tech')">
+            <span class="cat-icon">💻</span><span class="cat-name">Tech</span>
+          </div>
+          <div class="cat-opt art" onclick="selectCat(this,'art')">
+            <span class="cat-icon">🎨</span><span class="cat-name">Art</span>
+          </div>
+          <div class="cat-opt food" onclick="selectCat(this,'food')">
+            <span class="cat-icon">🍲</span><span class="cat-name">Food</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Venue Name</label>
+        <input class="form-input" id="f-venue" type="text" placeholder="e.g. Mlimani City, Q Bar, Serena Hotel" maxlength="50">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Neighborhood</label>
+        <div class="hood-picker" id="hood-picker">
+          <div class="hood-opt selected" onclick="selectHood(this,'Masaki')">Masaki</div>
+          <div class="hood-opt" onclick="selectHood(this,'Kariakoo')">Kariakoo</div>
+          <div class="hood-opt" onclick="selectHood(this,'Upanga')">Upanga</div>
+          <div class="hood-opt" onclick="selectHood(this,'Oyster Bay')">Oyster Bay</div>
+          <div class="hood-opt" onclick="selectHood(this,'Mikocheni')">Mikocheni</div>
+          <div class="hood-opt" onclick="selectHood(this,'Sinza')">Sinza</div>
+          <div class="hood-opt" onclick="selectHood(this,'Kinondoni')">Kinondoni</div>
+          <div class="hood-opt" onclick="selectHood(this,'Ilala')">Ilala</div>
+          <div class="hood-opt" onclick="selectHood(this,'Tabata')">Tabata</div>
+          <div class="hood-opt" onclick="selectHood(this,'Mbagala')">Mbagala</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Date &amp; Time</label>
+        <div class="form-row">
+          <input class="form-input" id="f-date" type="date">
+          <input class="form-input" id="f-time" type="time" value="19:00">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Ticket Price</label>
+        <div class="price-toggle">
+          <div class="price-toggle-btn selected" id="pt-paid" onclick="setPriceType('paid')">Paid Ticket</div>
+          <div class="price-toggle-btn free-sel" id="pt-free" onclick="setPriceType('free')">Free Entry</div>
+        </div>
+        <div id="price-input-wrap">
+          <input class="form-input" id="f-price" type="number" placeholder="e.g. 15000" min="0" step="500">
+          <div style="font-size:11px;color:var(--muted);margin-top:5px">Amount in Tanzanian Shillings (TSh)</div>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="submitEvent()">
+        <span>🗺</span><span>Publish to Map</span>
+      </button>
+
+      <!-- My events -->
+      <div class="my-events-section" id="my-events-section" style="display:none">
+        <div class="my-events-header">
+          <h3>Your Events <span id="my-events-count" style="color:var(--muted);font-size:12px;font-weight:500"></span></h3>
+          <button class="clear-btn" onclick="clearMyEvents()">Clear all</button>
+        </div>
+        <div id="my-events-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ CHECKOUT ══════════ -->
   <div class="screen" id="screen-checkout">
     <div class="checkout-hero" id="co-hero" style="background:var(--purple)">
       <div class="co-cat" id="co-cat">🎵 Music</div>
-      <div class="co-name" id="co-name">Afrobeat Night</div>
-      <div class="co-date" id="co-date">Sat 26 Apr · 8:00 PM</div>
-      <div class="co-venue" id="co-venue">New Msasani Club · Masaki</div>
-      <div class="co-price" id="co-price">TSh 15,000</div>
+      <div class="co-name" id="co-name">Select an event</div>
+      <div class="co-date" id="co-date"></div>
+      <div class="co-venue" id="co-venue"></div>
+      <div class="co-price" id="co-price">TSh 0</div>
     </div>
     <div class="checkout-body">
       <div class="pay-label">Pay with Mobile Money</div>
@@ -246,7 +413,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
       </div>
       <div class="total-row">
         <span style="color:var(--muted)">Total</span>
-        <span class="total-val" id="total">TSh 15,000</span>
+        <span class="total-val" id="total">TSh 0</span>
       </div>
       <button class="buy-btn" onclick="showSTK()">
         <span>📱</span><span id="buy-btn-txt">Pay with M-Pesa STK Push</span>
@@ -255,7 +422,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
     </div>
   </div>
 
-  <!-- WALLET -->
+  <!-- ══════════ WALLET ══════════ -->
   <div class="screen" id="screen-wallet">
     <div class="wallet-hero">
       <h2>My Tickets</h2>
@@ -269,10 +436,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
     <div class="sheet">
       <div class="sheet-handle"></div>
       <div class="stk-title">Enter your M-Pesa PIN</div>
-      <div class="stk-sub" id="stk-sub">Paying TSh 15,000 to TicketBure</div>
+      <div class="stk-sub" id="stk-sub">Paying to TicketBure</div>
       <div class="stk-amt-card">
         <div class="stk-amt-lbl">Amount</div>
-        <div class="stk-amt-val" id="stk-val">TSh 15,000</div>
+        <div class="stk-amt-val" id="stk-val">TSh 0</div>
       </div>
       <div class="pin-dots">
         <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
@@ -284,85 +451,170 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
     </div>
   </div>
 
-  <!-- Success -->
+  <!-- Ticket Success -->
   <div class="success-overlay" id="success-overlay">
     <div class="success-circle">✓</div>
-    <h2>Tiketi Yako Iko Ready!</h2>
-    <p>Your ticket is in your wallet. Show the QR code at the entrance — works offline too.</p>
+    <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--green-text)">Tiketi Yako Iko Ready!</h2>
+    <p style="font-size:14px;color:var(--muted);margin-top:9px;line-height:1.6">Your ticket is in your wallet. Show the QR code at the entrance — works offline too.</p>
     <button class="success-btn" onclick="goWallet()">Open My Wallet 👜</button>
   </div>
+
+  <!-- Event Added Success -->
+  <div class="event-success-overlay" id="event-success-overlay">
+    <div class="success-circle" style="background:#EEEDFE;animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both">🗺</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--purple)" id="es-name">Event Added!</h2>
+    <p style="font-size:14px;color:var(--muted);margin-top:9px;line-height:1.6">Your event is now live on the map. Share the app link and people can find and buy tickets immediately.</p>
+    <button class="event-success-btn" onclick="goDiscover()">View on Map 🗺</button>
+    <button class="event-success-btn2" onclick="addAnother()">Add Another Event</button>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
   <div class="bottom-safe"><div class="home-bar"></div></div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-/* ── DATA: real DSM coordinates ── */
-const EVENTS = [
-  { id:0, name:'Afrobeat Night — Live Band', date:'Sat 26 Apr · 8:00 PM', venue:'New Msasani Club', hood:'Masaki', cat:'music', emoji:'🎵', price:15000, lat:-6.7590, lng:39.2695, color:'#4F45B0' },
-  { id:1, name:'DSM Tech Meetup #12', date:'Sat 26 Apr · 2:00 PM', venue:'Serena Hotel', hood:'Upanga', cat:'tech', emoji:'💻', price:25000, lat:-6.8150, lng:39.2900, color:'#0D6B56' },
-  { id:2, name:'Sanaa Ya Mitaa Exhibition', date:'Sun 27 Apr · 11:00 AM', venue:'Alliance Française', hood:'Upanga', cat:'art', emoji:'🎨', price:10000, lat:-6.8105, lng:39.2825, color:'#92314F' },
-  { id:3, name:'Kariakoo Street Food Fest', date:'Sun 27 Apr · 12:00 PM', venue:'Kariakoo Market Square', hood:'Kariakoo', cat:'food', emoji:'🍲', price:0, lat:-6.8220, lng:39.2730, color:'#B87316' },
-  { id:4, name:'Jazz & Cocktails Evening', date:'Fri 25 Apr · 7:30 PM', venue:'Hyatt Regency Dar', hood:'Oyster Bay', cat:'music', emoji:'🎺', price:35000, lat:-6.7710, lng:39.2785, color:'#4F45B0' },
-  { id:5, name:'Startup Pitch Night DSM', date:'Thu 24 Apr · 6:00 PM', venue:'Buni Innovation Hub', hood:'Mikocheni', cat:'tech', emoji:'🚀', price:5000, lat:-6.7860, lng:39.2600, color:'#0D6B56' },
+/* ══════════════════════════════════════
+   SEED EVENTS (built-in)
+══════════════════════════════════════ */
+const SEED = [
+  { id:'s0', name:'Afrobeat Night — Live Band', date:'2026-04-26', time:'20:00', venue:'New Msasani Club', hood:'Masaki', cat:'music', price:15000, lat:-6.7590, lng:39.2695, custom:false },
+  { id:'s1', name:'DSM Tech Meetup #12', date:'2026-04-26', time:'14:00', venue:'Serena Hotel', hood:'Upanga', cat:'tech', price:25000, lat:-6.8150, lng:39.2900, custom:false },
+  { id:'s2', name:'Sanaa Ya Mitaa Exhibition', date:'2026-04-27', time:'11:00', venue:'Alliance Française', hood:'Upanga', cat:'art', price:10000, lat:-6.8105, lng:39.2825, custom:false },
+  { id:'s3', name:'Kariakoo Street Food Fest', date:'2026-04-27', time:'12:00', venue:'Kariakoo Market Square', hood:'Kariakoo', cat:'food', price:0, lat:-6.8220, lng:39.2730, custom:false },
+  { id:'s4', name:'Jazz & Cocktails Evening', date:'2026-04-25', time:'19:30', venue:'Hyatt Regency Dar', hood:'Oyster Bay', cat:'music', price:35000, lat:-6.7710, lng:39.2785, custom:false },
+  { id:'s5', name:'Startup Pitch Night DSM', date:'2026-04-24', time:'18:00', venue:'Buni Innovation Hub', hood:'Mikocheni', cat:'tech', price:5000, lat:-6.7860, lng:39.2600, custom:false },
 ];
 
+/* Neighborhood → approx coordinates */
+const HOOD_COORDS = {
+  'Masaki':    [-6.7590, 39.2695],
+  'Kariakoo':  [-6.8220, 39.2730],
+  'Upanga':    [-6.8120, 39.2850],
+  'Oyster Bay':[-6.7720, 39.2780],
+  'Mikocheni': [-6.7840, 39.2580],
+  'Sinza':     [-6.7760, 39.2460],
+  'Kinondoni': [-6.7930, 39.2520],
+  'Ilala':     [-6.8280, 39.2870],
+  'Tabata':    [-6.8470, 39.2640],
+  'Mbagala':   [-6.8680, 39.2960],
+};
+
+const CAT_COLORS = { music:'#4F45B0', tech:'#0D6B56', art:'#92314F', food:'#B87316' };
+const CAT_EMOJI  = { music:'🎵', tech:'💻', art:'🎨', food:'🍲' };
+const CAT_LABELS = { music:'🎵 Music', tech:'💻 Tech', art:'🎨 Art', food:'🍲 Food' };
 const QR_PAT = [1,1,1,1,1,1,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,1,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1];
 
-let selIdx=0, qty=1, payMethod='mpesa', walletItems=[], pinTimer=null, activeFilter='all';
-let map, markers=[];
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let selEventId = 's0';
+let qty = 1, payMethod = 'mpesa';
+let walletItems = [];
+let pinTimer = null;
+let activeFilter = 'all';
+let map, markerMap = {}; // id → leaflet marker
 
-/* ── CLOCK ── */
+/* form state */
+let fCat = 'music', fHood = 'Masaki', fPriceType = 'paid';
+
+/* ══════════════════════════════════════
+   STORAGE
+══════════════════════════════════════ */
+function loadCustomEvents() {
+  try { return JSON.parse(localStorage.getItem('tb_custom_events') || '[]'); } catch(e){ return []; }
+}
+function saveCustomEvents(arr) {
+  try { localStorage.setItem('tb_custom_events', JSON.stringify(arr)); } catch(e){}
+}
+function allEvents() {
+  return [...SEED, ...loadCustomEvents()];
+}
+
+/* ══════════════════════════════════════
+   CLOCK
+══════════════════════════════════════ */
 function tick(){const n=new Date();document.getElementById('live-time').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
 tick();setInterval(tick,10000);
 
-/* ── FORMAT ── */
-function fmt(n){return n===0?'FREE':'TSh '+n.toLocaleString();}
-function catLabel(c){return{music:'🎵 Music',tech:'💻 Tech',art:'🎨 Art',food:'🍲 Food'}[c]||c;}
+/* ══════════════════════════════════════
+   FORMAT HELPERS
+══════════════════════════════════════ */
+function fmt(n){ return n===0?'FREE':'TSh '+Number(n).toLocaleString(); }
+function fmtDate(date,time){
+  if(!date) return '';
+  const d = new Date(date+'T'+time);
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const h=d.getHours(), m=String(d.getMinutes()).padStart(2,'0');
+  const ampm=h>=12?'PM':'AM', hh=h%12||12;
+  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} · ${hh}:${m} ${ampm}`;
+}
 
-/* ── MAP ── */
+/* ══════════════════════════════════════
+   MAP
+══════════════════════════════════════ */
 function initMap(){
-  map=L.map('map',{center:[-6.7924,39.2083],zoom:13,zoomControl:true,attributionControl:false});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
-    subdomains:'abcd',maxZoom:19
-  }).addTo(map);
+  map = L.map('map',{center:[-6.7924,39.2083],zoom:13,zoomControl:true,attributionControl:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19}).addTo(map);
   L.control.attribution({prefix:false,position:'bottomright'}).addTo(map);
-  EVENTS.forEach(addPin);
-  const bounds=L.latLngBounds(EVENTS.map(e=>[e.lat,e.lng]));
+  allEvents().forEach(e => addPin(e));
+  const bounds = L.latLngBounds(SEED.map(e=>[e.lat,e.lng]));
   map.fitBounds(bounds,{padding:[28,28]});
 }
 
 function addPin(e){
-  const icon=L.divIcon({
+  const col = CAT_COLORS[e.cat];
+  const icon = L.divIcon({
     className:'',
-    html:`<div class="custom-pin"><div class="pin-label" style="background:${e.color}">${fmt(e.price)} ${e.emoji}</div><div class="pin-stem" style="background:${e.color}"></div><div class="pin-dot" style="background:${e.color}"></div></div>`,
-    iconSize:[null,null],iconAnchor:[38,36],popupAnchor:[0,-36]
+    html:`<div class="custom-pin"><div class="pin-label" style="background:${col}">${fmt(e.price)} ${CAT_EMOJI[e.cat]}${e.custom?' ✦':''}</div><div class="pin-stem" style="background:${col}"></div><div class="pin-dot" style="background:${col}"></div></div>`,
+    iconSize:[null,null],iconAnchor:[40,36],popupAnchor:[0,-36]
   });
-  const marker=L.marker([e.lat,e.lng],{icon}).addTo(map);
-  marker.bindPopup(`<div class="popup-top" style="background:${e.color}"><div class="popup-cat">${catLabel(e.cat)}</div><div class="popup-name">${e.name}</div><div class="popup-date">${e.date} · ${e.hood}</div></div><div class="popup-bottom"><div class="popup-price${e.price===0?' free':''}">${fmt(e.price)}</div><button class="popup-buy" onclick="selectEvent(${e.id})">Buy →</button></div>`,
+  const marker = L.marker([e.lat,e.lng],{icon}).addTo(map);
+  const dateStr = fmtDate(e.date,e.time);
+  marker.bindPopup(`
+    <div class="popup-top" style="background:${col}">
+      <div class="popup-cat">${CAT_LABELS[e.cat]}${e.custom?' · Your Event':''}</div>
+      <div class="popup-name">${e.name}</div>
+      <div class="popup-date">${dateStr} · ${e.hood}</div>
+    </div>
+    <div class="popup-bottom">
+      <div class="popup-price${e.price===0?' free':''}">${fmt(e.price)}</div>
+      <button class="popup-buy" onclick="selectEvent('${e.id}')">Buy →</button>
+    </div>`,
     {maxWidth:250,minWidth:210,className:'tb-popup'});
   marker.on('click',()=>marker.openPopup());
-  markers.push({marker,event:e});
+  markerMap[e.id] = marker;
+}
+
+function removePin(id){
+  if(markerMap[id]){ map.removeLayer(markerMap[id]); delete markerMap[id]; }
 }
 
 function locateMe(){
   if(!navigator.geolocation)return;
   navigator.geolocation.getCurrentPosition(pos=>{
     map.setView([pos.coords.latitude,pos.coords.longitude],15);
-    L.circleMarker([pos.coords.latitude,pos.coords.longitude],{radius:8,fillColor:'#E8450A',color:'#fff',weight:2,fillOpacity:1}).addTo(map).bindPopup('You are here').openPopup();
+    L.circleMarker([pos.coords.latitude,pos.coords.longitude],
+      {radius:8,fillColor:'#E8450A',color:'#fff',weight:2,fillOpacity:1}
+    ).addTo(map).bindPopup('You are here').openPopup();
   });
 }
 
-/* ── RENDER CARDS ── */
+/* ══════════════════════════════════════
+   RENDER EVENT CARDS
+══════════════════════════════════════ */
 function renderCards(){
-  const vis=EVENTS.filter(e=>activeFilter==='all'||e.cat===activeFilter);
-  document.getElementById('count-label').textContent=vis.length+' event'+(vis.length!==1?'s':'')+' this weekend';
-  document.getElementById('events-list').innerHTML=vis.map(e=>`
-    <div class="event-card" onclick="selectEvent(${e.id})">
-      <div class="event-thumb ${e.cat}">${e.emoji}</div>
+  const evts = allEvents().filter(e => activeFilter==='all' || e.cat===activeFilter);
+  document.getElementById('count-label').textContent = evts.length+' event'+(evts.length!==1?'s':'')+' this weekend';
+  document.getElementById('events-list').innerHTML = evts.map(e=>`
+    <div class="event-card" onclick="selectEvent('${e.id}')">
+      <div class="event-thumb ${e.cat}">${CAT_EMOJI[e.cat]}</div>
       <div class="event-info">
-        <div class="event-name">${e.name}</div>
-        <div class="event-meta">${e.date} · ${e.hood}</div>
+        <div class="event-name">${e.name}${e.custom?'<span class="custom-badge">YOURS</span>':''}</div>
+        <div class="event-meta">${fmtDate(e.date,e.time)} · ${e.hood}</div>
         <div class="event-footer">
           <span class="price-pill${e.price===0?' free':''}">${fmt(e.price)}</span>
           <span class="venue-tag">${e.venue}</span>
@@ -371,35 +623,165 @@ function renderCards(){
     </div>`).join('');
 }
 
-/* ── FILTER ── */
-function filterEvents(el,cat){
-  activeFilter=cat;
+/* ══════════════════════════════════════
+   FILTER
+══════════════════════════════════════ */
+function filterEvents(el, cat){
+  activeFilter = cat;
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   renderCards();
-  markers.forEach(({marker,event:e})=>{
-    if(cat==='all'||e.cat===cat){if(!map.hasLayer(marker))marker.addTo(map);}
-    else{if(map.hasLayer(marker))map.removeLayer(marker);}
+  const evts = allEvents();
+  Object.entries(markerMap).forEach(([id,marker])=>{
+    const e = evts.find(ev=>ev.id===id);
+    if(!e) return;
+    if(cat==='all'||e.cat===cat){ if(!map.hasLayer(marker)) marker.addTo(map); }
+    else { if(map.hasLayer(marker)) map.removeLayer(marker); }
   });
 }
 
-/* ── SELECT EVENT ── */
-function selectEvent(i){
-  selIdx=i;qty=1;
-  const e=EVENTS[i];
-  document.getElementById('co-hero').style.background=e.color;
-  document.getElementById('co-cat').textContent=catLabel(e.cat);
-  document.getElementById('co-name').textContent=e.name;
-  document.getElementById('co-date').textContent=e.date;
-  document.getElementById('co-venue').textContent=e.venue+' · '+e.hood;
-  document.getElementById('co-price').textContent=fmt(e.price);
-  document.getElementById('qty').textContent='1';
-  document.getElementById('total').textContent=fmt(e.price);
+/* ══════════════════════════════════════
+   SELECT EVENT → checkout
+══════════════════════════════════════ */
+function selectEvent(id){
+  const e = allEvents().find(ev=>ev.id===id);
+  if(!e) return;
+  selEventId = id; qty = 1;
+  const col = CAT_COLORS[e.cat];
+  document.getElementById('co-hero').style.background = col;
+  document.getElementById('co-cat').textContent   = CAT_LABELS[e.cat];
+  document.getElementById('co-name').textContent  = e.name;
+  document.getElementById('co-date').textContent  = fmtDate(e.date,e.time);
+  document.getElementById('co-venue').textContent = e.venue+' · '+e.hood;
+  document.getElementById('co-price').textContent = fmt(e.price);
+  document.getElementById('qty').textContent = '1';
+  document.getElementById('total').textContent = fmt(e.price);
   map&&map.closePopup();
   switchTab('checkout');
 }
 
-/* ── PAYMENT ── */
+/* ══════════════════════════════════════
+   FORM STATE
+══════════════════════════════════════ */
+function selectCat(el, cat){
+  fCat = cat;
+  document.querySelectorAll('.cat-opt').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function selectHood(el, hood){
+  fHood = hood;
+  document.querySelectorAll('.hood-opt').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function setPriceType(type){
+  fPriceType = type;
+  document.getElementById('pt-paid').classList.toggle('selected', type==='paid');
+  document.getElementById('pt-free').classList.toggle('selected', type==='free');
+  document.getElementById('price-input-wrap').style.opacity = type==='free'?'0.4':'1';
+  document.getElementById('price-input-wrap').style.pointerEvents = type==='free'?'none':'auto';
+}
+
+/* ══════════════════════════════════════
+   SUBMIT EVENT
+══════════════════════════════════════ */
+function submitEvent(){
+  const name  = document.getElementById('f-name').value.trim();
+  const venue = document.getElementById('f-venue').value.trim();
+  const date  = document.getElementById('f-date').value;
+  const time  = document.getElementById('f-time').value;
+  const priceRaw = document.getElementById('f-price').value;
+
+  if(!name){ showToast('Please enter an event name'); return; }
+  if(!venue){ showToast('Please enter a venue name'); return; }
+  if(!date){ showToast('Please select a date'); return; }
+  if(fPriceType==='paid' && (!priceRaw || isNaN(Number(priceRaw)))){ showToast('Please enter a valid ticket price'); return; }
+
+  const price = fPriceType==='free' ? 0 : Number(priceRaw);
+
+  // Jitter coords slightly so pins don't stack perfectly
+  const base = HOOD_COORDS[fHood] || [-6.7924, 39.2083];
+  const lat = base[0] + (Math.random()-0.5)*0.012;
+  const lng = base[1] + (Math.random()-0.5)*0.012;
+
+  const newEvent = {
+    id: 'c_' + Date.now(),
+    name, venue, hood: fHood, cat: fCat,
+    date, time, price, lat, lng,
+    custom: true,
+  };
+
+  const customs = loadCustomEvents();
+  customs.push(newEvent);
+  saveCustomEvents(customs);
+
+  // Add pin to live map
+  addPin(newEvent);
+
+  // Show success
+  document.getElementById('es-name').textContent = '🗺 "'+name+'" is live!';
+  document.getElementById('event-success-overlay').style.display = 'flex';
+
+  // Reset form
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-venue').value = '';
+  document.getElementById('f-price').value = '';
+
+  renderCards();
+  renderMyEvents();
+}
+
+/* ══════════════════════════════════════
+   MY EVENTS LIST
+══════════════════════════════════════ */
+function renderMyEvents(){
+  const customs = loadCustomEvents();
+  const section = document.getElementById('my-events-section');
+  if(!customs.length){ section.style.display='none'; return; }
+  section.style.display='block';
+  document.getElementById('my-events-count').textContent = '('+customs.length+')';
+  document.getElementById('my-events-list').innerHTML = customs.map(e=>`
+    <div class="my-event-item">
+      <div class="my-event-dot" style="background:${CAT_COLORS[e.cat]}"></div>
+      <div class="my-event-info">
+        <div class="my-event-name">${e.name}</div>
+        <div class="my-event-meta">${fmtDate(e.date,e.time)} · ${e.hood} · ${fmt(e.price)}</div>
+      </div>
+      <button class="my-event-del" onclick="deleteMyEvent('${e.id}')">✕</button>
+    </div>`).join('');
+}
+
+function deleteMyEvent(id){
+  const customs = loadCustomEvents().filter(e=>e.id!==id);
+  saveCustomEvents(customs);
+  removePin(id);
+  renderCards();
+  renderMyEvents();
+  showToast('Event removed');
+}
+
+function clearMyEvents(){
+  const customs = loadCustomEvents();
+  customs.forEach(e=>removePin(e.id));
+  saveCustomEvents([]);
+  renderCards();
+  renderMyEvents();
+  showToast('All your events cleared');
+}
+
+/* ══════════════════════════════════════
+   POST-ADD NAVIGATION
+══════════════════════════════════════ */
+function goDiscover(){
+  document.getElementById('event-success-overlay').style.display='none';
+  switchTab('discover');
+}
+function addAnother(){
+  document.getElementById('event-success-overlay').style.display='none';
+}
+
+/* ══════════════════════════════════════
+   PAYMENT
+══════════════════════════════════════ */
 function selectPay(id){
   payMethod=id;
   ['mpesa','tigo','airtel'].forEach(m=>{
@@ -413,31 +795,37 @@ function selectPay(id){
 function changeQty(d){
   qty=Math.max(1,Math.min(10,qty+d));
   document.getElementById('qty').textContent=qty;
-  document.getElementById('total').textContent=fmt(EVENTS[selIdx].price*qty);
+  const e=allEvents().find(ev=>ev.id===selEventId);
+  document.getElementById('total').textContent=fmt(e?e.price*qty:0);
 }
 
-/* ── STK ── */
+/* ══════════════════════════════════════
+   STK PUSH
+══════════════════════════════════════ */
 function showSTK(){
-  const total=EVENTS[selIdx].price*qty;
+  const e=allEvents().find(ev=>ev.id===selEventId);
+  const total=e?e.price*qty:0;
   const n={mpesa:'M-Pesa',tigo:'Tigo Pesa',airtel:'Airtel Money'};
   document.getElementById('stk-sub').textContent='Paying '+fmt(total)+' via '+n[payMethod]+' for '+qty+' ticket'+(qty>1?'s':'');
   document.getElementById('stk-val').textContent=fmt(total);
   document.getElementById('stk-overlay').style.display='flex';
   [0,1,2,3].forEach(i=>document.getElementById('d'+i).classList.remove('filled'));
   let n2=0;if(pinTimer)clearInterval(pinTimer);
-  pinTimer=setInterval(()=>{if(n2<4)document.getElementById('d'+n2++).classList.add('filled');else clearInterval(pinTimer);},320);
+  pinTimer=setInterval(()=>{ if(n2<4)document.getElementById('d'+n2++).classList.add('filled'); else clearInterval(pinTimer); },320);
 }
-function cancelSTK(){document.getElementById('stk-overlay').style.display='none';if(pinTimer)clearInterval(pinTimer);}
+function cancelSTK(){ document.getElementById('stk-overlay').style.display='none'; if(pinTimer)clearInterval(pinTimer); }
 function confirmPay(){
   document.getElementById('stk-overlay').style.display='none';
   if(pinTimer)clearInterval(pinTimer);
-  for(let i=0;i<qty;i++)walletItems.push({eventIdx:selIdx,id:'TB-'+Math.random().toString(36).substring(2,8).toUpperCase()});
+  for(let i=0;i<qty;i++) walletItems.push({eventId:selEventId,id:'TB-'+Math.random().toString(36).substring(2,8).toUpperCase()});
   renderWallet();
   document.getElementById('success-overlay').style.display='flex';
 }
-function goWallet(){document.getElementById('success-overlay').style.display='none';switchTab('wallet');}
+function goWallet(){ document.getElementById('success-overlay').style.display='none'; switchTab('wallet'); }
 
-/* ── WALLET ── */
+/* ══════════════════════════════════════
+   WALLET
+══════════════════════════════════════ */
 function renderWallet(){
   const count=walletItems.length;
   document.getElementById('wallet-sub').textContent=count+' active ticket'+(count!==1?'s':'');
@@ -447,10 +835,11 @@ function renderWallet(){
     return;
   }
   const qrCells=QR_PAT.map(b=>`<div class="qr-cell ${b?'qr-on':'qr-off'}"></div>`).join('');
-  list.innerHTML=walletItems.map(item=>{const e=EVENTS[item.eventIdx];return`
-    <div class="ticket-card">
+  list.innerHTML=walletItems.map(item=>{
+    const e=allEvents().find(ev=>ev.id===item.eventId)||{name:'Event',date:'',time:'00:00',hood:'',venue:'',price:0};
+    return`<div class="ticket-card">
       <div class="ticket-top">
-        <div><div class="ticket-name">${e.name}</div><div class="ticket-date">${e.date} · ${e.hood}</div></div>
+        <div><div class="ticket-name">${e.name}</div><div class="ticket-date">${fmtDate(e.date,e.time)} · ${e.hood}</div></div>
         <div class="status-pill">VALID</div>
       </div>
       <hr class="dashed">
@@ -463,23 +852,43 @@ function renderWallet(){
         </div>
       </div>
       <div class="ticket-foot"><span>${e.venue}</span><span class="ticket-id">${item.id}</span></div>
-    </div>`;}).join('');
+    </div>`;
+  }).join('');
 }
 
-/* ── TABS ── */
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+/* ══════════════════════════════════════
+   TAB NAVIGATION
+══════════════════════════════════════ */
 function switchTab(name){
-  const names=['discover','checkout','wallet'];
+  const names=['discover','add','checkout','wallet'];
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',names[i]===name));
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
   document.getElementById('success-overlay').style.display='none';
-  if(name==='discover')setTimeout(()=>map&&map.invalidateSize(),60);
+  document.getElementById('event-success-overlay').style.display='none';
+  if(name==='discover') setTimeout(()=>map&&map.invalidateSize(),60);
+  if(name==='add') renderMyEvents();
 }
 
-/* ── BOOT ── */
+/* ══════════════════════════════════════
+   BOOT
+══════════════════════════════════════ */
+// Set today as default date
+document.getElementById('f-date').valueAsDate = new Date();
 initMap();
 renderCards();
 renderWallet();
+renderMyEvents();
 </script>
 </body>
 </html>
