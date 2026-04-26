@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#E8450A">
+<meta name="description" content="TicketBure — The easiest way to sell tickets and check in guests at your event in Dar es Salaam. Mobile Money. No equipment needed.">
+<title>TicketBure — List Your Event in Dar es Salaam</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#E8450A;--brand-dark:#B33208;--brand-light:#FF6B35;
+  --ink:#0E0D0B;--paper:#FAF7F2;--cream:#F2EDE4;--warm:#E8E0D4;
+  --muted:#7A7062;--border:#DDD6C8;
+  --green:#1A6B4A;--green-bg:#E6F4EE;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);overflow-x:hidden}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1000;opacity:0.5;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:16px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(250,247,242,0.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{font-family:'Fraunces',serif;font-size:20px;font-weight:900;letter-spacing:-0.5px;color:var(--ink)}
+.nav-logo span{color:var(--brand)}
+.nav-cta{
+  background:var(--brand);color:#fff;
+  padding:8px 18px;border-radius:100px;
+  font-size:13px;font-weight:600;
+  text-decoration:none;
+  transition:background 0.2s,transform 0.1s;
+  display:inline-block;
+}
+.nav-cta:hover{background:var(--brand-dark)}
+.nav-cta:active{transform:scale(0.97)}
+
+/* ── HERO ── */
+.hero{
+  min-height:100svh;
+  padding:100px 24px 60px;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 90% 10%, rgba(232,69,10,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 10% 90%, rgba(232,69,10,0.07) 0%, transparent 60%),
+    var(--paper);
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--cream);border:1px solid var(--border);
+  border-radius:100px;padding:6px 14px;
+  font-size:12px;font-weight:600;color:var(--muted);
+  margin-bottom:28px;width:fit-content;
+  animation:fadeUp 0.6s ease both;
+}
+.hero-tag-dot{width:7px;height:7px;border-radius:50%;background:var(--brand);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.3)}}
+
+.hero-headline{
+  font-family:'Fraunces',serif;
+  font-size:clamp(44px,12vw,72px);
+  font-weight:900;
+  line-height:1.0;
+  letter-spacing:-2px;
+  max-width:600px;
+  position:relative;
+  animation:fadeUp 0.6s 0.1s ease both;
+}
+.hero-headline em{
+  font-style:italic;color:var(--brand);
+  font-weight:700;
+}
+.hero-headline .underline-word{
+  position:relative;display:inline-block;
+}
+.hero-headline .underline-word::after{
+  content:'';position:absolute;left:0;bottom:-4px;right:0;
+  height:5px;background:var(--brand);border-radius:2px;
+  transform:scaleX(0);transform-origin:left;
+  animation:underlineIn 0.6s 0.8s cubic-bezier(0.34,1.2,0.64,1) forwards;
+}
+@keyframes underlineIn{to{transform:scaleX(1)}}
+
+.hero-sub{
+  font-size:17px;color:var(--muted);
+  max-width:440px;margin-top:24px;line-height:1.6;
+  font-weight:400;
+  animation:fadeUp 0.6s 0.2s ease both;
+}
+.hero-sub strong{color:var(--ink);font-weight:600}
+
+.hero-actions{
+  display:flex;flex-wrap:wrap;gap:12px;margin-top:36px;
+  animation:fadeUp 0.6s 0.3s ease both;
+}
+.btn-primary{
+  background:var(--brand);color:#fff;
+  padding:15px 28px;border-radius:100px;
+  font-size:15px;font-weight:700;
+  text-decoration:none;display:inline-block;
+  transition:all 0.2s;box-shadow:0 4px 20px rgba(232,69,10,0.3);
+}
+.btn-primary:hover{background:var(--brand-dark);transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,69,10,0.35)}
+.btn-primary:active{transform:translateY(0)}
+.btn-secondary{
+  background:transparent;color:var(--ink);
+  padding:15px 24px;border-radius:100px;
+  font-size:15px;font-weight:600;
+  text-decoration:none;display:inline-block;
+  border:1.5px solid var(--border);
+  transition:all 0.2s;
+}
+.btn-secondary:hover{border-color:var(--ink);background:var(--cream)}
+
+.hero-stats{
+  display:flex;gap:32px;margin-top:48px;padding-top:32px;
+  border-top:1px solid var(--border);flex-wrap:wrap;
+  animation:fadeUp 0.6s 0.4s ease both;
+}
+.hero-stat-val{font-family:'Fraunces',serif;font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--brand)}
+.hero-stat-label{font-size:12px;color:var(--muted);margin-top:2px;font-weight:500}
+
+/* Floating phone mockup */
+.hero-phone{
+  position:absolute;right:-20px;bottom:0;
+  width:220px;
+  animation:floatIn 0.8s 0.5s cubic-bezier(0.34,1.2,0.64,1) both, floatBob 4s 1.3s ease-in-out infinite;
+  display:none;
+}
+@media(min-width:640px){.hero-phone{display:block}}
+@keyframes floatIn{from{transform:translateY(60px) rotate(4deg);opacity:0}to{transform:translateY(0) rotate(-3deg);opacity:1}}
+@keyframes floatBob{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(-3deg) translateY(-10px)}}
+.phone-frame{
+  background:#0E0D0B;border-radius:36px;
+  padding:12px;box-shadow:0 40px 80px rgba(0,0,0,0.25);
+  border:6px solid #1A1A18;
+}
+.phone-screen{
+  background:var(--brand);border-radius:26px;
+  overflow:hidden;aspect-ratio:9/19;
+  display:flex;flex-direction:column;
+}
+.phone-status{padding:12px 16px 6px;display:flex;justify-content:space-between;font-size:9px;font-weight:700;color:#fff;opacity:0.8}
+.phone-header{padding:4px 16px 14px;color:#fff}
+.phone-header-title{font-family:'Fraunces',serif;font-size:18px;font-weight:900;letter-spacing:-0.5px}
+.phone-header-sub{font-size:9px;opacity:0.7;margin-top:1px}
+.phone-body{background:var(--paper);flex:1;padding:10px}
+.phone-card{background:#fff;border-radius:10px;padding:10px;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.phone-card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.phone-card-icon.music{background:#EEEDFE}
+.phone-card-icon.food{background:#FEF3E2}
+.phone-card-name{font-size:10px;font-weight:700;line-height:1.2}
+.phone-card-meta{font-size:8px;color:#888;margin-top:1px}
+.phone-card-price{margin-left:auto;background:var(--brand);color:#fff;font-size:8px;font-weight:700;padding:3px 6px;border-radius:4px;white-space:nowrap}
+.phone-map-placeholder{
+  height:70px;border-radius:8px;margin-bottom:8px;
+  background:linear-gradient(180deg,#C8E6C9,#8BC34A);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:#fff;font-weight:600;
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── MARQUEE ── */
+.marquee-strip{
+  background:var(--brand);color:#fff;
+  padding:14px 0;overflow:hidden;
+  display:flex;white-space:nowrap;
+}
+.marquee-inner{
+  display:flex;gap:0;
+  animation:marquee 18s linear infinite;
+}
+.marquee-inner span{
+  display:inline-block;padding:0 24px;
+  font-family:'Fraunces',serif;font-size:16px;font-weight:700;
+  font-style:italic;
+}
+.marquee-inner .sep{opacity:0.4}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── SECTION SHARED ── */
+section{padding:80px 24px;max-width:720px;margin:0 auto}
+.section-tag{
+  display:inline-block;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;color:var(--brand);
+  margin-bottom:16px;
+}
+.section-title{
+  font-family:'Fraunces',serif;
+  font-size:clamp(32px,6vw,48px);
+  font-weight:900;line-height:1.05;letter-spacing:-1.5px;
+  margin-bottom:16px;
+}
+.section-sub{font-size:16px;color:var(--muted);line-height:1.6;max-width:480px}
+
+/* ── HOW IT WORKS ── */
+.how-section{background:var(--cream);padding:80px 0}
+.how-inner{max-width:720px;margin:0 auto;padding:0 24px}
+.steps{display:flex;flex-direction:column;gap:0;margin-top:48px}
+.step{
+  display:grid;grid-template-columns:48px 1fr;gap:20px;
+  padding:24px 0;border-bottom:1px solid var(--border);
+  position:relative;
+  opacity:0;transform:translateX(-16px);
+  transition:opacity 0.5s,transform 0.5s;
+}
+.step.visible{opacity:1;transform:none}
+.step:last-child{border-bottom:none}
+.step-num{
+  font-family:'Fraunces',serif;font-size:36px;font-weight:900;
+  color:var(--brand);line-height:1;letter-spacing:-1px;
+  padding-top:2px;
+}
+.step-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:6px;letter-spacing:-0.5px}
+.step-body{font-size:15px;color:var(--muted);line-height:1.6}
+.step-tag{
+  display:inline-block;margin-top:10px;
+  background:var(--paper);border:1px solid var(--border);
+  border-radius:100px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--muted);
+}
+
+/* ── FEATURES GRID ── */
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px;margin-top:48px;
+}
+.feature-card{
+  background:var(--cream);border:1px solid var(--border);
+  border-radius:20px;padding:24px;
+  transition:transform 0.2s,box-shadow 0.2s;
+  opacity:0;transform:translateY(16px);
+  transition:opacity 0.4s,transform 0.4s,box-shadow 0.2s;
+}
+.feature-card.visible{opacity:1;transform:translateY(0)}
+.feature-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.08)}
+.feature-icon{font-size:28px;margin-bottom:14px}
+.feature-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin-bottom:8px;letter-spacing:-0.3px}
+.feature-body{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* ── TESTIMONIAL ── */
+.testimonial-section{
+  background:var(--ink);color:#fff;
+  padding:80px 24px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.testimonial-section::before{
+  content:'';position:absolute;
+  top:-60px;left:50%;transform:translateX(-50%);
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,69,10,0.2),transparent 70%);
+  pointer-events:none;
+}
+.testimonial-quote{
+  font-family:'Fraunces',serif;
+  font-size:clamp(22px,5vw,36px);
+  font-weight:700;font-style:italic;
+  line-height:1.3;max-width:580px;margin:0 auto;
+  letter-spacing:-0.5px;position:relative;
+}
+.testimonial-quote::before{
+  content:'\201C';font-size:80px;color:var(--brand);
+  position:absolute;top:-30px;left:-10px;
+  font-family:'Fraunces',serif;line-height:1;
+  opacity:0.8;
+}
+.testimonial-author{margin-top:24px;font-size:14px;color:rgba(255,255,255,0.5)}
+.testimonial-author strong{color:rgba(255,255,255,0.85);font-weight:600}
+
+/* ── PRICING ── */
+.pricing-card{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:24px;padding:32px;margin-top:40px;
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;
+}
+@media(max-width:500px){.pricing-card{grid-template-columns:1fr}}
+.pricing-main{}
+.pricing-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.pricing-amount{font-family:'Fraunces',serif;font-size:48px;font-weight:900;letter-spacing:-2px;color:var(--brand);line-height:1}
+.pricing-period{font-size:14px;color:var(--muted);margin-top:4px}
+.pricing-features{margin-top:20px;display:flex;flex-direction:column;gap:8px}
+.pricing-feature{display:flex;align-items:center;gap:8px;font-size:14px}
+.pricing-check{color:var(--green);font-size:16px;flex-shrink:0}
+.pricing-action{}
+.pricing-cta{
+  background:var(--brand);color:#fff;
+  padding:16px 28px;border-radius:100px;
+  font-size:15px;font-weight:700;
+  text-decoration:none;display:inline-block;
+  white-space:nowrap;
+  transition:all 0.2s;
+  box-shadow:0 4px 20px rgba(232,69,10,0.25);
+}
+.pricing-cta:hover{background:var(--brand-dark);transform:translateY(-2px)}
+.free-badge{
+  display:inline-block;background:var(--green-bg);color:var(--green);
+  font-size:12px;font-weight:700;padding:4px 12px;border-radius:100px;
+  margin-bottom:8px;border:1px solid rgba(26,107,74,0.2);
+}
+
+/* ── SIGN UP FORM ── */
+.signup-section{
+  background:var(--brand);
+  padding:80px 24px;
+  position:relative;overflow:hidden;
+}
+.signup-section::before{
+  content:'';position:absolute;
+  right:-80px;top:-80px;width:300px;height:300px;border-radius:50%;
+  background:rgba(255,255,255,0.06);
+}
+.signup-section::after{
+  content:'';position:absolute;
+  left:-60px;bottom:-60px;width:220px;height:220px;border-radius:50%;
+  background:rgba(0,0,0,0.08);
+}
+.signup-inner{max-width:480px;margin:0 auto;position:relative}
+.signup-title{
+  font-family:'Fraunces',serif;
+  font-size:clamp(32px,7vw,48px);font-weight:900;
+  color:#fff;line-height:1.05;letter-spacing:-1.5px;
+  margin-bottom:12px;
+}
+.signup-title em{font-style:italic;opacity:0.75}
+.signup-sub{font-size:15px;color:rgba(255,255,255,0.75);margin-bottom:32px;line-height:1.5}
+
+.signup-form{display:flex;flex-direction:column;gap:12px}
+.form-field{
+  background:rgba(255,255,255,0.12);
+  border:1.5px solid rgba(255,255,255,0.2);
+  border-radius:14px;padding:14px 18px;
+  font-size:15px;font-family:'DM Sans',sans-serif;
+  color:#fff;outline:none;width:100%;
+  transition:border-color 0.15s,background 0.15s;
+  -webkit-appearance:none;
+}
+.form-field::placeholder{color:rgba(255,255,255,0.5)}
+.form-field:focus{border-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.18)}
+.form-field option{background:var(--brand-dark);color:#fff}
+.form-submit{
+  background:#fff;color:var(--brand);
+  border:none;border-radius:14px;padding:16px;
+  font-size:16px;font-weight:700;cursor:pointer;
+  font-family:'Fraunces',serif;letter-spacing:-0.3px;
+  transition:all 0.2s;margin-top:4px;
+}
+.form-submit:hover{background:var(--cream);transform:translateY(-2px)}
+.form-submit:active{transform:none}
+.form-note{font-size:12px;color:rgba(255,255,255,0.55);text-align:center;margin-top:8px}
+
+/* Success state */
+.signup-success{
+  display:none;text-align:center;padding:32px 0;
+}
+.signup-success .check{font-size:48px;margin-bottom:16px}
+.signup-success h3{font-family:'Fraunces',serif;font-size:28px;font-weight:900;color:#fff;letter-spacing:-0.5px}
+.signup-success p{color:rgba(255,255,255,0.75);margin-top:8px;font-size:15px;line-height:1.5}
+.whatsapp-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:20px;background:#25D366;color:#fff;
+  padding:14px 24px;border-radius:100px;
+  font-size:14px;font-weight:700;text-decoration:none;
+  transition:all 0.2s;
+}
+.whatsapp-btn:hover{background:#128C7E;transform:translateY(-2px)}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--ink);color:rgba(255,255,255,0.4);
+  padding:32px 24px;text-align:center;font-size:13px;
+}
+footer a{color:rgba(255,255,255,0.6);text-decoration:none}
+footer strong{color:rgba(255,255,255,0.85)}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.5s,transform 0.5s}
+.reveal.visible{opacity:1;transform:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  .hero{padding:90px 20px 48px}
+  section{padding:60px 20px}
+  .hero-stats{gap:20px}
+  .pricing-card{padding:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Ticket<span>Bure</span></div>
+  <a href="#signup" class="nav-cta">List Your Event →</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+
+  <div class="hero-tag">
+    <div class="hero-tag-dot"></div>
+    Built for Dar es Salaam
+  </div>
+
+  <h1 class="hero-headline">
+    Your event.<br>
+    <em>Fully sold</em><br>
+    before the<br>
+    <span class="underline-word">night starts.</span>
+  </h1>
+
+  <p class="hero-sub">
+    TicketBure puts your event on a live map, collects payments via
+    <strong>M-Pesa, Tigo Pesa &amp; Airtel Money</strong>,
+    and lets you check in guests with just your phone. No card machines. No paper tickets.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#signup" class="btn-primary">List My Event — It's Free</a>
+    <a href="index.html" class="btn-secondary" target="_blank">See Live App ↗</a>
+  </div>
+
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-val">30s</div>
+      <div class="hero-stat-label">to publish your event</div>
+    </div>
+    <div>
+      <div class="hero-stat-val">0%</div>
+      <div class="hero-stat-label">setup fee</div>
+    </div>
+    <div>
+      <div class="hero-stat-val">DSM</div>
+      <div class="hero-stat-label">first, then beyond</div>
+    </div>
+  </div>
+
+  <!-- Floating phone -->
+  <div class="hero-phone">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-status"><span>9:41</span><span>●●●● 4G</span></div>
+        <div class="phone-header">
+          <div class="phone-header-title">TicketBure</div>
+          <div class="phone-header-sub">Pata tiketi yako haraka</div>
+        </div>
+        <div class="phone-body">
+          <div class="phone-map-placeholder">🗺 Dar es Salaam</div>
+          <div class="phone-card">
+            <div class="phone-card-icon music">🎵</div>
+            <div>
+              <div class="phone-card-name">Afrobeat Night</div>
+              <div class="phone-card-meta">Masaki · Sat 8 PM</div>
+            </div>
+            <div class="phone-card-price">TSh 15K</div>
+          </div>
+          <div class="phone-card">
+            <div class="phone-card-icon food">🍲</div>
+            <div>
+              <div class="phone-card-name">Street Food Fest</div>
+              <div class="phone-card-meta">Kariakoo · Sun 12 PM</div>
+            </div>
+            <div class="phone-card-price" style="background:var(--green)">FREE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span>Mobile Money Payments</span><span class="sep">·</span>
+    <span>Live Map Discovery</span><span class="sep">·</span>
+    <span>QR Ticket Scanning</span><span class="sep">·</span>
+    <span>Offline Tickets</span><span class="sep">·</span>
+    <span>Real-time Sales Dashboard</span><span class="sep">·</span>
+    <span>No Equipment Needed</span><span class="sep">·</span>
+    <span>M-Pesa · Tigo · Airtel</span><span class="sep">·</span>
+    <span>Dar es Salaam First</span><span class="sep">·</span>
+    <!-- duplicate for seamless loop -->
+    <span>Mobile Money Payments</span><span class="sep">·</span>
+    <span>Live Map Discovery</span><span class="sep">·</span>
+    <span>QR Ticket Scanning</span><span class="sep">·</span>
+    <span>Offline Tickets</span><span class="sep">·</span>
+    <span>Real-time Sales Dashboard</span><span class="sep">·</span>
+    <span>No Equipment Needed</span><span class="sep">·</span>
+    <span>M-Pesa · Tigo · Airtel</span><span class="sep">·</span>
+    <span>Dar es Salaam First</span><span class="sep">·</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-section">
+  <div class="how-inner">
+    <div class="section-tag">How it works</div>
+    <h2 class="section-title">From poster to<br>scanned entry.</h2>
+    <p class="section-sub">The complete journey — for you and your guests — in three steps.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div>
+          <div class="step-title">You list your event</div>
+          <div class="step-body">Fill in the name, venue, date, price. Hit publish. Your event appears on the TicketBure map with a price pin — visible to everyone browsing Dar es Salaam events right now.</div>
+          <span class="step-tag">Takes 30 seconds</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div>
+          <div class="step-title">Guests buy with Mobile Money</div>
+          <div class="step-body">They tap your pin on the map, tap Buy, and get an instant STK Push on their phone. They enter their M-Pesa PIN. Done. A QR code ticket lands in their wallet — no bank card needed.</div>
+          <span class="step-tag">Under 30 seconds to buy</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div>
+          <div class="step-title">You scan them in at the door</div>
+          <div class="step-body">Open your Organizer Dashboard on any smartphone. Point the camera at their QR code. Green means in, red means fake. No card machine, no printed list, no "let me check my spreadsheet."</div>
+          <span class="step-tag">Works offline too</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section>
+  <div class="section-tag">Built for this market</div>
+  <h2 class="section-title">Everything your<br>event actually needs.</h2>
+  <p class="section-sub">Designed specifically for the way events work in Dar es Salaam — not copied from a Western template.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🗺</div>
+      <div class="feature-title">Map-First Discovery</div>
+      <div class="feature-body">Guests find you on a live map of DSM — not buried in a list. Your event pin shows the price, so the right people click.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">STK Push Checkout</div>
+      <div class="feature-body">M-Pesa, Tigo Pesa, Airtel Money. The payment popup appears on their phone. They enter a PIN. You get the money. Simple.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📴</div>
+      <div class="feature-title">Offline QR Tickets</div>
+      <div class="feature-body">Network at the venue entrance is always terrible. Guests' tickets are cached on their phone and work without internet.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Live Sales Dashboard</div>
+      <div class="feature-body">Watch ticket sales, revenue, and check-ins in real time from your phone. Know exactly how full your event is before it starts.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🚫</div>
+      <div class="feature-title">Anti-Fake Protection</div>
+      <div class="feature-body">Each QR code is unique and single-use. Duplicates are flagged instantly. No one gets in on a screenshot of someone else's ticket.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Zero Equipment</div>
+      <div class="feature-body">Your staff scan with their own phones. No card readers, no printers, no borrowed laptops. Just the app and the door.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<div class="testimonial-section">
+  <div class="testimonial-quote reveal">
+    "We used to collect cash at the door and spend the whole night chasing floats. With TicketBure the money is there before the first guest arrives."
+  </div>
+  <div class="testimonial-author reveal" style="transition-delay:0.1s">
+    <strong>Beta organizer</strong> · Dar es Salaam
+  </div>
+</div>
+
+<!-- PRICING -->
+<section>
+  <div class="section-tag">Pricing</div>
+  <h2 class="section-title">Start free.<br>Grow together.</h2>
+  <p class="section-sub">We make money when you make money — not before.</p>
+
+  <div class="pricing-card reveal">
+    <div class="pricing-main">
+      <div class="free-badge">✓ Currently Free</div>
+      <div class="pricing-label">Per event commission</div>
+      <div class="pricing-amount">5%</div>
+      <div class="pricing-period">of ticket revenue · no upfront cost</div>
+      <div class="pricing-features">
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Unlimited events</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Unlimited tickets per event</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Mobile Money collection</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Organizer dashboard + QR scanner</div>
+        <div class="pricing-feature"><span class="pricing-check">✓</span> Real-time sales tracking</div>
+        <div class="pricing-feature" style="color:var(--muted)"><span class="pricing-check" style="color:var(--muted)">→</span> <em>Free during beta — join now to lock in early terms</em></div>
+      </div>
+    </div>
+    <div class="pricing-action">
+      <a href="#signup" class="pricing-cta">Get Started →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SIGN UP FORM -->
+<div class="signup-section" id="signup">
+  <div class="signup-inner">
+    <h2 class="signup-title">Ready to list<br><em>your event?</em></h2>
+    <p class="signup-sub">Join the first organizers on TicketBure. We'll set you up personally and make sure your first event runs smoothly.</p>
+
+    <div id="signup-form-wrap">
+      <div class="signup-form">
+        <input class="form-field" id="f-organizer-name" type="text" placeholder="Your name" required>
+        <input class="form-field" id="f-phone" type="tel" placeholder="WhatsApp number (+255...)" required>
+        <input class="form-field" id="f-event-name" type="text" placeholder="Your event name">
+        <select class="form-field" id="f-event-type">
+          <option value="" disabled selected>Type of events you run</option>
+          <option>Music / Nightlife</option>
+          <option>Food &amp; Markets</option>
+          <option>Tech / Business</option>
+          <option>Arts &amp; Culture</option>
+          <option>Sports</option>
+          <option>Other</option>
+        </select>
+        <button class="form-submit" onclick="submitSignup()">Join TicketBure — It's Free →</button>
+        <div class="form-note">No spam. We'll WhatsApp you within 24 hours to get you set up.</div>
+      </div>
+    </div>
+
+    <div class="signup-success" id="signup-success">
+      <div class="check">🎉</div>
+      <h3>Asante sana!</h3>
+      <p>We've got your details. Expect a WhatsApp from the TicketBure team within 24 hours to get your first event live.</p>
+      <a class="whatsapp-btn" href="https://wa.me/255700000000?text=Hi%20TicketBure!%20I%20just%20signed%20up%20to%20list%20my%20event." target="_blank">
+        💬 Message us on WhatsApp
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div style="margin-bottom:8px">
+    <strong>TicketBure</strong> · Dar es Salaam, Tanzania
+  </div>
+  <div>
+    <a href="index.html">Open App</a> &nbsp;·&nbsp;
+    <a href="organizer.html">Organizer Dashboard</a>
+  </div>
+  <div style="margin-top:12px;font-size:11px">
+    Built with ❤️ for the DSM event scene · 2026
+  </div>
+</footer>
+
+<script>
+/* ── SCROLL REVEAL ── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      // Stagger children if parent has steps/feature-card children
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal, .step, .feature-card').forEach(el => observer.observe(el));
+
+// Stagger feature cards
+document.querySelectorAll('.feature-card').forEach((el, i) => {
+  el.style.transitionDelay = (i * 0.08) + 's';
+});
+
+// Stagger steps
+document.querySelectorAll('.step').forEach((el, i) => {
+  el.style.transitionDelay = (i * 0.1) + 's';
+});
+
+/* ── FORM SUBMIT ── */
+function submitSignup() {
+  const name  = document.getElementById('f-organizer-name').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+
+  if(!name){ alert('Please enter your name'); return; }
+  if(!phone){ alert('Please enter your WhatsApp number'); return; }
+
+  // Save to localStorage for now (Day 7 → real backend)
+  const leads = JSON.parse(localStorage.getItem('tb_leads') || '[]');
+  leads.push({
+    name,
+    phone,
+    event: document.getElementById('f-event-name').value.trim(),
+    type:  document.getElementById('f-event-type').value,
+    ts:    new Date().toISOString()
+  });
+  localStorage.setItem('tb_leads', JSON.stringify(leads));
+
+  // Show success
+  document.getElementById('signup-form-wrap').style.display = 'none';
+  document.getElementById('signup-success').style.display   = 'block';
+
+  // Update WhatsApp link with their name
+  const msg = encodeURIComponent(`Hi TicketBure! I'm ${name} and I just signed up to list my event. My number is ${phone}.`);
+  document.querySelector('.whatsapp-btn').href = `https://wa.me/255700000000?text=${msg}`;
+}
+
+/* ── SMOOTH SCROLL for nav links ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if(target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth'}); }
+  });
+});
+</script>
+</body>
+</html>
