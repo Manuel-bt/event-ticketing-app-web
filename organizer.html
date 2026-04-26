@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TB Organizer">
+<meta name="theme-color" content="#0F0F0E">
+<title>TicketBure — Organizer Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0F0F0E;--surface:#1A1A18;--surface2:#222220;--surface3:#2C2C29;
+  --brand:#E8450A;--brand-dim:rgba(232,69,10,0.15);--brand-glow:rgba(232,69,10,0.3);
+  --green:#1DBF7A;--green-dim:rgba(29,191,122,0.12);
+  --amber:#F0A500;--amber-dim:rgba(240,165,0,0.12);
+  --red:#E05252;--red-dim:rgba(224,82,82,0.12);
+  --blue:#4F8EF7;--blue-dim:rgba(79,142,247,0.12);
+  --text:#F0EDE8;--muted:#7A7870;--border:rgba(255,255,255,0.07);
+  --radius:14px;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+.app{max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
+
+/* ── STATUS ── */
+.status-bar{padding:env(safe-area-inset-top,10px) 20px 6px;display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:600;flex-shrink:0;color:var(--muted)}
+
+/* ── HEADER ── */
+.dash-header{padding:4px 18px 16px;flex-shrink:0}
+.dash-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.dash-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.5px}
+.dash-title span{color:var(--brand)}
+.role-badge{background:var(--brand-dim);color:var(--brand);font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.3px;border:1px solid var(--brand-glow)}
+.dash-sub{font-size:12px;color:var(--muted)}
+
+/* ── TABS ── */
+.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;padding:0 2px}
+.tab{flex:1;padding:12px 4px;text-align:center;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.18s;user-select:none;letter-spacing:0.2px}
+.tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+
+/* ── SCREENS ── */
+.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.screen.active{display:flex;flex-direction:column}
+
+/* ══════════════════════════════
+   SCANNER SCREEN
+══════════════════════════════ */
+.scanner-wrap{flex:1;display:flex;flex-direction:column;padding:16px 14px;gap:14px;overflow-y:auto}
+
+.event-selector{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.ev-sel-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
+.ev-sel-row{display:flex;align-items:center;gap:10px;cursor:pointer}
+.ev-sel-dot{width:10px;height:10px;border-radius:50%;background:var(--brand);flex-shrink:0}
+.ev-sel-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;flex:1}
+.ev-sel-chevron{color:var(--muted);font-size:14px}
+.ev-sel-meta{font-size:12px;color:var(--muted);margin-top:4px;padding-left:20px}
+
+/* Camera viewfinder */
+.viewfinder-card{background:var(--surface);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);position:relative}
+.viewfinder-header{padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+.vf-title{font-size:13px;font-weight:600}
+.vf-status{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600}
+.vf-dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.vf-dot.active{background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.5}}
+
+.camera-box{position:relative;width:100%;aspect-ratio:1;background:#000;overflow:hidden}
+#camera-video{width:100%;height:100%;object-fit:cover;display:block}
+.camera-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.scan-frame{width:200px;height:200px;position:relative}
+.scan-frame::before,.scan-frame::after{content:'';position:absolute;width:30px;height:30px;border-color:var(--brand);border-style:solid}
+.scan-frame::before{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.scan-frame::after{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+.scan-corner{position:absolute;width:30px;height:30px;border-color:var(--brand);border-style:solid}
+.scan-corner.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
+.scan-corner.bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
+.scan-line{position:absolute;left:4px;right:4px;height:2px;background:linear-gradient(90deg,transparent,var(--brand),transparent);animation:scanline 2s linear infinite;opacity:0}
+.scan-line.active{opacity:1}
+@keyframes scanline{0%{top:4px}100%{top:calc(100% - 6px)}}
+.camera-off-msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px}
+.camera-off-msg .icon{font-size:36px;opacity:0.4}
+
+.scan-btn{width:100%;padding:14px;border:none;border-radius:0;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;letter-spacing:-0.2px;display:flex;align-items:center;justify-content:center;gap:8px}
+.scan-btn.start{background:var(--brand);color:#fff}
+.scan-btn.start:active{background:#B33208}
+.scan-btn.stop{background:var(--surface2);color:var(--muted)}
+
+/* Manual entry */
+.manual-entry{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.manual-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
+.manual-row{display:flex;gap:8px}
+.manual-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;font-size:14px;font-family:'IBM Plex Mono',monospace;color:var(--text);outline:none;text-transform:uppercase;letter-spacing:1px}
+.manual-input:focus{border-color:var(--brand)}
+.manual-input::placeholder{text-transform:none;letter-spacing:0;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px}
+.manual-btn{background:var(--brand);color:#fff;border:none;border-radius:10px;padding:11px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;white-space:nowrap}
+.manual-btn:active{background:#B33208}
+
+/* Scan result */
+.scan-result{border-radius:var(--radius);padding:16px;border:1.5px solid;display:none;animation:slideUp 0.3s cubic-bezier(0.34,1.2,0.64,1) both}
+.scan-result.valid{background:var(--green-dim);border-color:var(--green)}
+.scan-result.invalid{background:var(--red-dim);border-color:var(--red)}
+.scan-result.duplicate{background:var(--amber-dim);border-color:var(--amber)}
+@keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.sr-icon{font-size:28px;margin-bottom:8px}
+.sr-status{font-family:'Syne',sans-serif;font-size:17px;font-weight:800}
+.sr-name{font-size:14px;margin-top:4px;font-weight:500}
+.sr-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.sr-id{font-family:'IBM Plex Mono',monospace;font-size:11px;margin-top:6px;opacity:0.6}
+.sr-close{margin-top:12px;background:none;border:1px solid var(--border);border-radius:8px;padding:7px 16px;font-size:13px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* Scan log */
+.scan-log{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.scan-log-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.scan-log-title{font-size:12px;font-weight:600;color:var(--muted)}
+.scan-log-count{font-size:12px;font-weight:700;color:var(--brand)}
+.log-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+.log-item{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;animation:fadeIn 0.2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.log-item:last-child{border-bottom:none}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.log-dot.valid{background:var(--green)}
+.log-dot.invalid{background:var(--red)}
+.log-dot.duplicate{background:var(--amber)}
+.log-info{flex:1;min-width:0}
+.log-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.log-id{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+.log-time{font-size:11px;color:var(--muted);flex-shrink:0}
+
+/* ══════════════════════════════
+   DASHBOARD SCREEN
+══════════════════════════════ */
+.dash-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 24px;display:flex;flex-direction:column;gap:12px}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;opacity:0.08}
+.stat-card.revenue::before{background:var(--brand)}
+.stat-card.sold::before{background:var(--green)}
+.stat-card.scanned::before{background:var(--blue)}
+.stat-card.remaining::before{background:var(--amber)}
+.stat-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.stat-val{font-family:'IBM Plex Mono',sans-serif;font-size:22px;font-weight:600;line-height:1;letter-spacing:-0.5px}
+.stat-val.brand{color:var(--brand)}
+.stat-val.green{color:var(--green)}
+.stat-val.blue{color:var(--blue)}
+.stat-val.amber{color:var(--amber)}
+.stat-change{font-size:11px;color:var(--muted);margin-top:5px}
+.stat-change.up{color:var(--green)}
+
+/* Progress bar */
+.progress-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.progress-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.progress-title{font-size:13px;font-weight:600}
+.progress-pct{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--green)}
+.progress-track{height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),#2EE89A);border-radius:3px;transition:width 0.6s cubic-bezier(0.34,1.2,0.64,1)}
+.progress-sub{font-size:11px;color:var(--muted);margin-top:6px}
+
+/* Revenue chart (simple bars) */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.chart-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:4px 4px 0 0;background:var(--surface3);transition:height 0.5s cubic-bezier(0.34,1.2,0.64,1),background 0.3s;min-height:4px;position:relative}
+.bar.active{background:var(--brand)}
+.bar.today{background:linear-gradient(180deg,var(--brand-light),var(--brand))}
+.bar-label{font-size:10px;color:var(--muted);font-weight:500}
+
+/* Sales feed */
+.feed-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.feed-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.feed-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+.live-indicator{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--green)}
+.live-dot2{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite}
+.feed-item{padding:11px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.feed-item:last-child{border-bottom:none}
+.feed-avatar{width:32px;height:32px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.feed-info{flex:1;min-width:0}
+.feed-name{font-size:13px;font-weight:600}
+.feed-detail{font-size:11px;color:var(--muted);margin-top:1px}
+.feed-amount{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--green);flex-shrink:0}
+.feed-empty{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+
+/* Event picker sheet */
+.picker-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:flex-end;z-index:500;backdrop-filter:blur(4px)}
+.picker-sheet{background:var(--surface);width:100%;border-radius:20px 20px 0 0;padding:20px 16px 36px}
+.picker-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.picker-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:14px}
+.picker-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;cursor:pointer;transition:background 0.15s;margin-bottom:4px}
+.picker-item:active{background:var(--surface2)}
+.picker-item.selected{background:var(--brand-dim);border:1px solid var(--brand-glow)}
+.picker-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.picker-info{flex:1}
+.picker-name{font-weight:600;font-size:14px}
+.picker-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.picker-check{color:var(--brand);font-size:16px;opacity:0}
+.picker-item.selected .picker-check{opacity:1}
+
+/* Toast */
+.toast{position:absolute;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface3);color:var(--text);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:all 0.3s;z-index:2000;white-space:nowrap;pointer-events:none;border:1px solid var(--border)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+.toast.error{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+
+.bottom-safe{padding-bottom:env(safe-area-inset-bottom,0);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg)}
+.home-bar{width:90px;height:4px;background:var(--border);border-radius:2px;margin:5px 0}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="status-bar">
+    <span id="live-time">9:41</span>
+    <span style="color:var(--brand);font-weight:700">ORGANIZER MODE</span>
+    <span>●●●● 4G</span>
+  </div>
+
+  <div class="dash-header">
+    <div class="dash-header-top">
+      <div class="dash-title">Ticket<span>Bure</span></div>
+      <div class="role-badge">ORGANIZER</div>
+    </div>
+    <div class="dash-sub" id="active-event-sub">No event selected — tap Scanner to choose</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('scanner')">📷 Scanner</div>
+    <div class="tab" onclick="switchTab('dashboard')">📊 Dashboard</div>
+  </div>
+
+  <!-- ══════════ SCANNER ══════════ -->
+  <div class="screen active" id="screen-scanner">
+    <div class="scanner-wrap">
+
+      <!-- Event selector -->
+      <div class="event-selector" onclick="openPicker()">
+        <div class="ev-sel-label">Scanning tickets for</div>
+        <div class="ev-sel-row">
+          <div class="ev-sel-dot" id="sel-dot"></div>
+          <div class="ev-sel-name" id="sel-name">Tap to select event</div>
+          <div class="ev-sel-chevron">›</div>
+        </div>
+        <div class="ev-sel-meta" id="sel-meta">Choose the event you're checking people into</div>
+      </div>
+
+      <!-- Viewfinder -->
+      <div class="viewfinder-card">
+        <div class="viewfinder-header">
+          <div class="vf-title">QR Scanner</div>
+          <div class="vf-status">
+            <div class="vf-dot" id="vf-dot"></div>
+            <span id="vf-status-txt">Camera off</span>
+          </div>
+        </div>
+        <div class="camera-box">
+          <video id="camera-video" autoplay muted playsinline></video>
+          <div class="camera-overlay">
+            <div class="scan-frame">
+              <div class="scan-corner tr"></div>
+              <div class="scan-corner bl"></div>
+              <div class="scan-line" id="scan-line"></div>
+            </div>
+          </div>
+          <div class="camera-off-msg" id="camera-off-msg">
+            <div class="icon">📷</div>
+            <div>Tap Start Scanner below</div>
+          </div>
+        </div>
+        <button class="scan-btn start" id="scan-btn" onclick="toggleCamera()">
+          <span>📷</span><span id="scan-btn-txt">Start Scanner</span>
+        </button>
+      </div>
+
+      <!-- Manual entry -->
+      <div class="manual-entry">
+        <div class="manual-label">Manual Ticket ID Entry</div>
+        <div class="manual-row">
+          <input class="manual-input" id="manual-input" placeholder="e.g. TB-A3F7K2" maxlength="9">
+          <button class="manual-btn" onclick="manualVerify()">Verify</button>
+        </div>
+      </div>
+
+      <!-- Scan result -->
+      <div class="scan-result" id="scan-result">
+        <div class="sr-icon" id="sr-icon">✓</div>
+        <div class="sr-status" id="sr-status">Valid Ticket</div>
+        <div class="sr-name" id="sr-name"></div>
+        <div class="sr-meta" id="sr-meta"></div>
+        <div class="sr-id" id="sr-id"></div>
+        <button class="sr-close" onclick="closeScanResult()">Dismiss</button>
+      </div>
+
+      <!-- Scan log -->
+      <div class="scan-log">
+        <div class="scan-log-header">
+          <div class="scan-log-title">Entry Log</div>
+          <div class="scan-log-count" id="log-count">0 scanned</div>
+        </div>
+        <div id="log-list"><div class="log-empty">No scans yet — start scanning tickets</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ DASHBOARD ══════════ -->
+  <div class="screen" id="screen-dashboard">
+    <div class="dash-scroll">
+
+      <div class="stat-grid">
+        <div class="stat-card revenue">
+          <div class="stat-label">Revenue</div>
+          <div class="stat-val brand" id="stat-revenue">TSh 0</div>
+          <div class="stat-change up" id="stat-revenue-sub">+0 today</div>
+        </div>
+        <div class="stat-card sold">
+          <div class="stat-label">Tickets Sold</div>
+          <div class="stat-val green" id="stat-sold">0</div>
+          <div class="stat-change" id="stat-sold-sub">of 200 capacity</div>
+        </div>
+        <div class="stat-card scanned">
+          <div class="stat-label">Scanned In</div>
+          <div class="stat-val blue" id="stat-scanned">0</div>
+          <div class="stat-change" id="stat-scanned-sub">0% checked in</div>
+        </div>
+        <div class="stat-card remaining">
+          <div class="stat-label">Available</div>
+          <div class="stat-val amber" id="stat-remaining">200</div>
+          <div class="stat-change">tickets left</div>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-header">
+          <div class="progress-title">Capacity</div>
+          <div class="progress-pct" id="cap-pct">0%</div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="cap-fill" style="width:0%"></div>
+        </div>
+        <div class="progress-sub" id="cap-sub">0 of 200 seats sold</div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Ticket Sales — Last 7 Days</div>
+        <div class="bar-chart" id="bar-chart"></div>
+      </div>
+
+      <div class="feed-card">
+        <div class="feed-header">
+          <div class="feed-title">Recent Sales</div>
+          <div class="live-indicator"><div class="live-dot2"></div>LIVE</div>
+        </div>
+        <div id="feed-list"><div class="feed-empty">No sales yet for this event</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Event Picker Sheet -->
+  <div class="picker-overlay" id="picker-overlay">
+    <div class="picker-sheet">
+      <div class="picker-handle"></div>
+      <div class="picker-title">Select Your Event</div>
+      <div id="picker-list"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="bottom-safe"><div class="home-bar"></div></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   EVENTS (mirrors ticketbure.html seeds + loads localStorage customs)
+══════════════════════════════════════ */
+const SEED_EVENTS = [
+  { id:'s0', name:'Afrobeat Night — Live Band', date:'2026-04-26', time:'20:00', venue:'New Msasani Club', hood:'Masaki', cat:'music', price:15000, capacity:200 },
+  { id:'s1', name:'DSM Tech Meetup #12',        date:'2026-04-26', time:'14:00', venue:'Serena Hotel',        hood:'Upanga', cat:'tech',  price:25000, capacity:150 },
+  { id:'s2', name:'Sanaa Ya Mitaa Exhibition',  date:'2026-04-27', time:'11:00', venue:'Alliance Française',  hood:'Upanga', cat:'art',   price:10000, capacity:100 },
+  { id:'s3', name:'Kariakoo Street Food Fest',  date:'2026-04-27', time:'12:00', venue:'Kariakoo Market',     hood:'Kariakoo', cat:'food', price:0,    capacity:500 },
+  { id:'s4', name:'Jazz & Cocktails Evening',   date:'2026-04-25', time:'19:30', venue:'Hyatt Regency Dar',   hood:'Oyster Bay', cat:'music', price:35000, capacity:80 },
+  { id:'s5', name:'Startup Pitch Night DSM',    date:'2026-04-24', time:'18:00', venue:'Buni Innovation Hub', hood:'Mikocheni', cat:'tech', price:5000, capacity:120 },
+];
+
+const CAT_COLORS = { music:'#4F45B0', tech:'#0D6B56', art:'#92314F', food:'#B87316' };
+const CAT_EMOJI  = { music:'🎵', tech:'💻', art:'🎨', food:'🍲' };
+
+function loadCustomEvents(){
+  try{ return JSON.parse(localStorage.getItem('tb_custom_events')||'[]').map(e=>({...e,capacity:e.capacity||100})); }catch(e){ return []; }
+}
+function allEvents(){ return [...SEED_EVENTS,...loadCustomEvents()]; }
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let selectedEventId = null;
+let scanLog = []; // {id, status, name, time}
+let scannedIds = new Set();
+let cameraStream = null;
+let cameraActive = false;
+let scanInterval = null;
+
+// Simulated sold tickets per event (seeded with realistic numbers)
+const soldData = {
+  s0: { sold:134, revenue:134*15000 },
+  s1: { sold:67,  revenue:67*25000 },
+  s2: { sold:43,  revenue:43*10000 },
+  s3: { sold:289, revenue:0 },
+  s4: { sold:58,  revenue:58*35000 },
+  s5: { sold:91,  revenue:91*5000 },
+};
+
+// Simulated ticket IDs for demo scanning
+const VALID_TICKETS = {
+  s0:['TB-A3F7K2','TB-B9XQ41','TB-C2MP87','TB-D5RN16','TB-E8WL93','TB-F1ZT58','TB-G4YP25','TB-H7VK62'],
+  s1:['TB-J2SA49','TB-K5QB86','TB-L8XC13','TB-M1ND70','TB-N4PW37'],
+  s2:['TB-P7YH84','TB-Q0ZK21','TB-R3VG58'],
+  s3:['TB-S6TF95','TB-T9UE32','TB-U2RF69'],
+  s4:['TB-V5QD06','TB-W8PC43','TB-X1OA80','TB-Y4NB17'],
+  s5:['TB-Z7MA54','TB-AA3K91','TB-AB6J28','TB-AC9H65'],
+};
+
+// Simulated recent sales feed
+const FEED_DATA = {
+  s0:[
+    {name:'Amina M.',    detail:'1 ticket · M-Pesa', amount:15000, time:'2min ago',  emoji:'👩🏾'},
+    {name:'Julius K.',   detail:'2 tickets · Tigo',  amount:30000, time:'8min ago',  emoji:'👨🏿'},
+    {name:'Fatuma H.',   detail:'1 ticket · M-Pesa', amount:15000, time:'15min ago', emoji:'👩🏽'},
+    {name:'David N.',    detail:'1 ticket · Airtel',  amount:15000, time:'22min ago', emoji:'👨🏾'},
+    {name:'Zainab A.',   detail:'3 tickets · M-Pesa', amount:45000, time:'31min ago', emoji:'👩🏿'},
+  ],
+  s1:[
+    {name:'Patrick S.',  detail:'1 ticket · M-Pesa',  amount:25000, time:'5min ago',  emoji:'👨🏽'},
+    {name:'Grace L.',    detail:'2 tickets · Tigo',   amount:50000, time:'18min ago', emoji:'👩🏾'},
+  ],
+  s4:[
+    {name:'Roberto M.',  detail:'2 tickets · M-Pesa', amount:70000, time:'1min ago',  emoji:'👨🏾'},
+    {name:'Sophia T.',   detail:'1 ticket · M-Pesa',  amount:35000, time:'9min ago',  emoji:'👩🏽'},
+    {name:'Omar K.',     detail:'1 ticket · Tigo',    amount:35000, time:'14min ago', emoji:'👨🏿'},
+  ],
+};
+
+/* ══════════════════════════════════════
+   CLOCK
+══════════════════════════════════════ */
+function tick(){
+  const n=new Date();
+  document.getElementById('live-time').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+}
+tick(); setInterval(tick,10000);
+
+/* ══════════════════════════════════════
+   FORMAT
+══════════════════════════════════════ */
+function fmt(n){ return n===0?'FREE':'TSh '+Number(n).toLocaleString(); }
+function fmtDate(date,time){
+  if(!date)return '';
+  const d=new Date(date+'T'+time);
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0');
+  const ampm=h>=12?'PM':'AM',hh=h%12||12;
+  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} · ${hh}:${m} ${ampm}`;
+}
+function now(){
+  const d=new Date();
+  return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+
+/* ══════════════════════════════════════
+   EVENT PICKER
+══════════════════════════════════════ */
+function openPicker(){
+  const evts = allEvents();
+  document.getElementById('picker-list').innerHTML = evts.map(e=>`
+    <div class="picker-item ${e.id===selectedEventId?'selected':''}" onclick="selectEvent('${e.id}')">
+      <div class="picker-dot" style="background:${CAT_COLORS[e.cat]}"></div>
+      <div class="picker-info">
+        <div class="picker-name">${CAT_EMOJI[e.cat]} ${e.name}</div>
+        <div class="picker-meta">${fmtDate(e.date,e.time)} · ${e.venue}</div>
+      </div>
+      <div class="picker-check">✓</div>
+    </div>`).join('');
+  document.getElementById('picker-overlay').style.display='flex';
+}
+
+function selectEvent(id){
+  selectedEventId = id;
+  const e = allEvents().find(ev=>ev.id===id);
+  if(!e) return;
+  document.getElementById('picker-overlay').style.display='none';
+  document.getElementById('sel-dot').style.background = CAT_COLORS[e.cat];
+  document.getElementById('sel-name').textContent = e.name;
+  document.getElementById('sel-meta').textContent = fmtDate(e.date,e.time)+' · '+e.venue+' · '+e.hood;
+  document.getElementById('active-event-sub').textContent = e.name+' · '+e.venue;
+  // reset scan state for new event
+  scanLog=[];
+  scannedIds=new Set();
+  renderLog();
+  renderDashboard();
+}
+
+document.getElementById('picker-overlay').addEventListener('click',function(e){
+  if(e.target===this) this.style.display='none';
+});
+
+/* ══════════════════════════════════════
+   CAMERA / SCANNER
+══════════════════════════════════════ */
+async function toggleCamera(){
+  if(cameraActive){ stopCamera(); return; }
+  if(!selectedEventId){ showToast('Select an event first','error'); return; }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+    cameraStream = stream;
+    const video = document.getElementById('camera-video');
+    video.srcObject = stream;
+    await video.play();
+    cameraActive = true;
+    document.getElementById('camera-off-msg').style.display='none';
+    document.getElementById('vf-dot').classList.add('active');
+    document.getElementById('vf-status-txt').textContent='Scanning...';
+    document.getElementById('scan-btn-txt').textContent='Stop Scanner';
+    document.getElementById('scan-btn').className='scan-btn stop';
+    document.getElementById('scan-line').classList.add('active');
+    // Simulate auto-scan after 3-5s (demo)
+    simulateScan();
+  } catch(err){
+    // Camera denied or not available — show manual mode tip
+    showToast('Camera not available — use manual entry','error');
+    document.getElementById('camera-off-msg').innerHTML='<div class="icon">🚫</div><div>Camera access denied</div><div style="font-size:11px;margin-top:4px;color:var(--muted)">Use manual ticket ID entry below</div>';
+  }
+}
+
+function stopCamera(){
+  if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); cameraStream=null; }
+  if(scanInterval){ clearTimeout(scanInterval); scanInterval=null; }
+  const video=document.getElementById('camera-video');
+  video.srcObject=null;
+  cameraActive=false;
+  document.getElementById('camera-off-msg').style.display='flex';
+  document.getElementById('vf-dot').classList.remove('active');
+  document.getElementById('vf-status-txt').textContent='Camera off';
+  document.getElementById('scan-btn-txt').textContent='Start Scanner';
+  document.getElementById('scan-btn').className='scan-btn start';
+  document.getElementById('scan-line').classList.remove('active');
+}
+
+// Demo: simulate a QR scan every 4-7 seconds while camera is open
+function simulateScan(){
+  if(!cameraActive) return;
+  const delay = 4000 + Math.random()*3000;
+  scanInterval = setTimeout(()=>{
+    if(!cameraActive) return;
+    const validIds = VALID_TICKETS[selectedEventId]||[];
+    const unscanned = validIds.filter(id=>!scannedIds.has(id));
+    let ticketId;
+    if(unscanned.length>0 && Math.random()>0.15){
+      ticketId = unscanned[Math.floor(Math.random()*unscanned.length)];
+    } else if(scannedIds.size>0 && Math.random()<0.15){
+      ticketId = [...scannedIds][0]; // duplicate
+    } else {
+      ticketId = 'TB-FAKE'+Math.random().toString(36).substring(2,6).toUpperCase();
+    }
+    processTicket(ticketId);
+    simulateScan();
+  }, delay);
+}
+
+/* ══════════════════════════════════════
+   TICKET VERIFICATION
+══════════════════════════════════════ */
+function processTicket(ticketId){
+  if(!selectedEventId){ showToast('Select an event first','error'); return; }
+  ticketId = ticketId.toUpperCase().trim();
+
+  const validIds = VALID_TICKETS[selectedEventId]||[];
+  let status, icon, statusText, name, meta;
+
+  if(scannedIds.has(ticketId)){
+    status='duplicate'; icon='⚠️';
+    statusText='Already Scanned';
+    name='This ticket was already used for entry';
+    meta='Possible duplicate — verify with holder';
+    showToast('⚠️ Already scanned!','');
+  } else if(validIds.includes(ticketId)){
+    status='valid'; icon='✓';
+    statusText='Valid Ticket — Let Them In!';
+    name='Authenticated holder';
+    meta='Paid '+fmt(allEvents().find(e=>e.id===selectedEventId)?.price||0);
+    scannedIds.add(ticketId);
+    // update stats
+    if(!soldData[selectedEventId]) soldData[selectedEventId]={sold:0,revenue:0};
+    showToast('✓ Valid — admitted!','success');
+    renderDashboard();
+  } else {
+    status='invalid'; icon='✕';
+    statusText='Invalid Ticket';
+    name='This ticket ID was not found';
+    meta='Could be fake or wrong event — do not admit';
+    showToast('✕ Invalid ticket','error');
+  }
+
+  const result = document.getElementById('scan-result');
+  result.className='scan-result '+status;
+  result.style.display='block';
+  document.getElementById('sr-icon').textContent=icon;
+  document.getElementById('sr-status').textContent=statusText;
+  document.getElementById('sr-name').textContent=name;
+  document.getElementById('sr-meta').textContent=meta;
+  document.getElementById('sr-id').textContent='ID: '+ticketId;
+
+  // Add to log
+  scanLog.unshift({id:ticketId, status, time:now()});
+  renderLog();
+}
+
+function manualVerify(){
+  const val=document.getElementById('manual-input').value.trim();
+  if(!val){ showToast('Enter a ticket ID','error'); return; }
+  // Normalise: allow with or without TB- prefix
+  const id = val.startsWith('TB-')?val:'TB-'+val;
+  processTicket(id);
+  document.getElementById('manual-input').value='';
+}
+
+document.getElementById('manual-input').addEventListener('keydown',e=>{ if(e.key==='Enter') manualVerify(); });
+
+function closeScanResult(){
+  document.getElementById('scan-result').style.display='none';
+}
+
+/* ══════════════════════════════════════
+   RENDER LOG
+══════════════════════════════════════ */
+function renderLog(){
+  const count = scannedIds.size;
+  document.getElementById('log-count').textContent=count+' scanned';
+  const list=document.getElementById('log-list');
+  if(!scanLog.length){ list.innerHTML='<div class="log-empty">No scans yet — start scanning tickets</div>'; return; }
+  list.innerHTML=scanLog.slice(0,20).map(l=>`
+    <div class="log-item">
+      <div class="log-dot ${l.status}"></div>
+      <div class="log-info">
+        <div class="log-name">${l.status==='valid'?'✓ Admitted':l.status==='duplicate'?'⚠ Duplicate':'✕ Rejected'}</div>
+        <div class="log-id">${l.id}</div>
+      </div>
+      <div class="log-time">${l.time}</div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════
+   RENDER DASHBOARD
+══════════════════════════════════════ */
+function renderDashboard(){
+  const e = selectedEventId ? allEvents().find(ev=>ev.id===selectedEventId) : null;
+  const cap = e?.capacity || 200;
+  const data = selectedEventId ? (soldData[selectedEventId]||{sold:0,revenue:0}) : {sold:0,revenue:0};
+  const sold = data.sold;
+  const revenue = data.revenue;
+  const scanned = scannedIds.size;
+  const remaining = Math.max(0, cap-sold);
+  const pct = Math.round(sold/cap*100);
+  const checkinPct = sold>0 ? Math.round(scanned/sold*100) : 0;
+
+  document.getElementById('stat-revenue').textContent = revenue===0?'FREE':('TSh '+Math.round(revenue/1000)+'K');
+  document.getElementById('stat-revenue-sub').textContent = '+TSh '+(Math.round(revenue*0.12/1000))+'K today';
+  document.getElementById('stat-sold').textContent = sold;
+  document.getElementById('stat-sold-sub').textContent = 'of '+cap+' capacity';
+  document.getElementById('stat-scanned').textContent = scanned;
+  document.getElementById('stat-scanned-sub').textContent = checkinPct+'% checked in';
+  document.getElementById('stat-remaining').textContent = remaining;
+
+  document.getElementById('cap-pct').textContent = pct+'%';
+  document.getElementById('cap-fill').style.width = pct+'%';
+  document.getElementById('cap-sub').textContent = sold+' of '+cap+' seats sold';
+
+  renderBarChart(sold, cap);
+  renderFeed();
+}
+
+function renderBarChart(sold, cap){
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Today'];
+  // Simulate a ramp-up curve
+  const base = Math.max(1, Math.round(sold/28));
+  const vals = [
+    Math.round(base*0.4), Math.round(base*0.7), Math.round(base*1.1),
+    Math.round(base*1.5), Math.round(base*2.2), Math.round(base*3.8), Math.round(base*4.1)
+  ];
+  const max = Math.max(...vals,1);
+  document.getElementById('bar-chart').innerHTML = days.map((d,i)=>{
+    const h = Math.max(4, Math.round(vals[i]/max*76));
+    const cls = i===6?'today':i===5?'active':'';
+    return `<div class="bar-col">
+      <div class="bar ${cls}" style="height:${h}px"></div>
+      <div class="bar-label">${d}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderFeed(){
+  const feed = selectedEventId ? (FEED_DATA[selectedEventId]||[]) : [];
+  const list=document.getElementById('feed-list');
+  if(!feed.length){ list.innerHTML='<div class="feed-empty">No sales data for this event yet</div>'; return; }
+  list.innerHTML=feed.map(f=>`
+    <div class="feed-item">
+      <div class="feed-avatar">${f.emoji}</div>
+      <div class="feed-info">
+        <div class="feed-name">${f.name}</div>
+        <div class="feed-detail">${f.detail} · ${f.time}</div>
+      </div>
+      <div class="feed-amount">+${fmt(f.amount)}</div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast '+(type||'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ══════════════════════════════════════
+   TABS
+══════════════════════════════════════ */
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['scanner','dashboard'][i]===name));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if(name==='dashboard') renderDashboard();
+}
+
+/* ══════════════════════════════════════
+   BOOT
+══════════════════════════════════════ */
+renderDashboard();
+</script>
+</body>
+</html>
