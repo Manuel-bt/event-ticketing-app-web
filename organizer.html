@@ -21,8 +21,8 @@
   --text:#F0EDE8;--muted:#7A7870;--border:rgba(255,255,255,0.07);
   --radius:14px;
 }
-html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
-.app{max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
+html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+.app{max-width:430px;margin:0 auto;height:100vh;height:100dvh;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
 
 /* ── STATUS ── */
 .status-bar{padding:env(safe-area-inset-top,10px) 20px 6px;display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:600;flex-shrink:0;color:var(--muted)}
@@ -41,13 +41,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 .tab.active{color:var(--brand);border-bottom-color:var(--brand)}
 
 /* ── SCREENS ── */
-.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.screen{display:none;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .screen.active{display:flex;flex-direction:column}
 
 /* ══════════════════════════════
    SCANNER SCREEN
 ══════════════════════════════ */
-.scanner-wrap{flex:1;display:flex;flex-direction:column;padding:16px 14px;gap:14px;overflow-y:auto}
+.scanner-wrap{flex:1;min-height:0;display:flex;flex-direction:column;padding:16px 14px;gap:14px;overflow-y:auto}
 
 .event-selector{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
 .ev-sel-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
@@ -131,7 +131,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans'
 /* ══════════════════════════════
    DASHBOARD SCREEN
 ══════════════════════════════ */
-.dash-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 24px;display:flex;flex-direction:column;gap:12px}
+.dash-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 24px;display:flex;flex-direction:column;gap:12px}
 
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;position:relative;overflow:hidden}
