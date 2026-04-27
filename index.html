@@ -57,7 +57,62 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
 }
 .add-btn:active{background:var(--brand-dark)}
 
-/* ── BOTTOM NAV ── */
+/* ── MAP TOGGLE (now inside top bar) ── */
+.map-pill{
+  height:32px;padding:0 12px;border-radius:100px;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:700;cursor:pointer;color:var(--text);
+  transition:background 0.15s;white-space:nowrap;
+}
+.map-pill:active{background:var(--surface3)}
+.map-pill-count{
+  background:var(--brand);color:#fff;font-size:9px;font-weight:800;
+  padding:2px 6px;border-radius:100px;
+}
+
+/* ── FILTER BUTTON ── */
+.filter-btn{
+  height:32px;padding:0 12px;border-radius:100px;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;gap:5px;
+  font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);
+  transition:all 0.15s;white-space:nowrap;
+}
+.filter-btn.has-filter{border-color:var(--brand);color:var(--brand);background:rgba(232,69,10,0.1)}
+.filter-btn:active{background:var(--surface3)}
+
+/* ── FILTER SHEET ── */
+.filter-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,0.7);
+  display:none;align-items:flex-end;z-index:600;backdrop-filter:blur(6px);
+}
+.filter-overlay.open{display:flex}
+.filter-sheet{
+  background:var(--surface);width:100%;border-radius:24px 24px 0 0;
+  padding:20px 20px calc(env(safe-area-inset-bottom,0px) + 24px);
+  animation:sheetUp 0.28s cubic-bezier(0.34,1.1,0.64,1) both;
+}
+.filter-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
+.filter-sheet-title{font-size:16px;font-weight:900;margin-bottom:14px}
+.filter-cats{display:flex;flex-direction:column;gap:8px}
+.filter-cat-opt{
+  display:flex;align-items:center;gap:12px;padding:13px 14px;
+  background:var(--surface2);border-radius:14px;cursor:pointer;
+  border:1px solid var(--border);transition:all 0.15s;
+}
+.filter-cat-opt:active{transform:scale(0.98)}
+.filter-cat-opt.selected{border-color:var(--brand);background:rgba(232,69,10,0.08)}
+.filter-cat-icon{font-size:20px;width:28px;text-align:center}
+.filter-cat-name{font-size:15px;font-weight:700;flex:1}
+.filter-cat-check{font-size:16px;color:var(--brand);opacity:0}
+.filter-cat-opt.selected .filter-cat-check{opacity:1}
+.filter-reset{
+  width:100%;background:none;border:1px solid var(--border);
+  border-radius:12px;padding:13px;font-size:14px;font-weight:700;
+  color:var(--muted);cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
+  margin-top:10px;
+}
 .bottom-nav{
   display:flex;background:var(--surface);
   border-top:1px solid var(--border);
@@ -85,35 +140,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
 ══════════════════════════════════════ */
 .events-screen{background:var(--bg)}
 
-/* Map toggle pill */
-.map-toggle-wrap{padding:0 14px 10px;flex-shrink:0}
-.map-toggle{
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:12px;padding:10px 14px;cursor:pointer;
-  transition:background 0.15s;
-}
-.map-toggle:active{background:var(--surface2)}
-.map-toggle-left{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
-.map-toggle-count{
-  background:var(--brand);color:#fff;font-size:10px;font-weight:800;
-  padding:2px 7px;border-radius:100px;margin-left:4px;
-}
-.map-toggle-right{font-size:11px;color:var(--muted);font-weight:600}
-
-/* Filter chips */
-.filter-bar{
-  display:flex;gap:6px;padding:0 14px 10px;
-  overflow-x:auto;scrollbar-width:none;flex-shrink:0;
-}
-.filter-bar::-webkit-scrollbar{display:none}
-.chip{
-  flex-shrink:0;padding:6px 14px;border-radius:100px;
-  font-size:12px;font-weight:700;cursor:pointer;
-  border:1px solid var(--border);background:var(--surface);
-  color:var(--muted);transition:all 0.15s;user-select:none;
-}
-.chip.active{background:var(--brand);border-color:var(--brand);color:#fff}
+/* Filter chips — kept for reference, replaced by filter sheet */
 
 /* Snap stories row */
 .snaps-row{
@@ -208,6 +235,84 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
   padding:10px 14px;display:flex;align-items:center;gap:10px;
   background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;
 }
+
+/* MAP SEARCH BAR */
+.map-search-bar{
+  flex:1;display:flex;align-items:center;gap:8px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:9px 14px;font-size:13px;
+  color:var(--muted);font-weight:500;
+}
+
+/* PIN VENUE LABEL */
+.pin-venue-name{
+  font-size:10px;font-weight:700;color:#fff;
+  background:rgba(0,0,0,0.6);padding:3px 8px;
+  border-radius:100px;margin-top:5px;white-space:nowrap;
+  backdrop-filter:blur(4px);max-width:110px;
+  overflow:hidden;text-overflow:ellipsis;text-align:center;
+}
+
+/* MAP CHECKOUT SHEET */
+.map-checkout-overlay{
+  position:absolute;bottom:0;left:0;right:0;
+  display:none;z-index:60;pointer-events:none;
+}
+.map-checkout-overlay.open{display:block;pointer-events:auto}
+.map-checkout-sheet{
+  background:var(--surface);
+  border-radius:24px 24px 0 0;
+  padding:0 0 calc(env(safe-area-inset-bottom,0px) + 16px);
+  box-shadow:0 -8px 40px rgba(0,0,0,0.6);
+  animation:sheetUp 0.28s cubic-bezier(0.34,1.1,0.64,1) both;
+}
+.mcs-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
+.mcs-event-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px 10px;border-bottom:1px solid var(--border);
+}
+.mcs-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.mcs-info{flex:1;min-width:0}
+.mcs-name{font-size:16px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mcs-meta{font-size:12px;color:var(--muted);margin-top:2px;font-weight:500}
+.mcs-close{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--surface3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;cursor:pointer;color:var(--muted);flex-shrink:0;
+}
+.mcs-body{padding:14px 16px 0}
+.mcs-qty-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--border);margin-bottom:12px;
+}
+.mcs-qty-label{font-size:14px;font-weight:700;color:var(--muted)}
+.mcs-qty-ctrl{display:flex;align-items:center;gap:14px}
+.mcs-qty-btn{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;color:var(--text);line-height:1;
+}
+.mcs-qty-btn:active{background:var(--surface3)}
+.mcs-qty-num{font-size:20px;font-weight:900;min-width:22px;text-align:center}
+.mcs-total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.mcs-total-label{font-size:13px;color:var(--muted);font-weight:600}
+.mcs-total-val{font-size:22px;font-weight:900;color:var(--green);letter-spacing:-0.5px}
+.mcs-pay-btn{
+  width:100%;background:var(--green);color:#fff;border:none;
+  border-radius:14px;padding:16px;font-size:16px;font-weight:800;
+  cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:opacity 0.15s,transform 0.1s;
+}
+.mcs-pay-btn:active{opacity:0.85;transform:scale(0.98)}
+.mcs-view-more{
+  width:100%;background:none;border:none;color:var(--muted);
+  font-size:13px;font-weight:600;cursor:pointer;padding:10px;
+  font-family:'Cabinet Grotesk',sans-serif;display:block;text-align:center;
+}
+.mcs-view-more:active{color:var(--text)}
 .map-close-btn{
   width:34px;height:34px;border-radius:50%;
   background:var(--surface2);border:1px solid var(--border);
@@ -249,14 +354,24 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
   font-weight:800;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
 }
 .custom-pin{display:flex;flex-direction:column;align-items:center;cursor:pointer}
-.pin-label{
-  color:#fff;font-size:11px;font-weight:800;
-  padding:4px 10px;border-radius:10px;white-space:nowrap;
-  box-shadow:0 2px 10px rgba(0,0,0,0.4);
-  border:1.5px solid rgba(255,255,255,0.15);
+.pin-glow{
+  width:14px;height:14px;border-radius:50%;
+  box-shadow:0 0 0 4px rgba(255,255,255,0.08);
+  position:relative;
 }
-.pin-stem{width:2px;height:7px;margin:0 auto}
-.pin-dot{width:6px;height:6px;border-radius:50%;margin:0 auto}
+.pin-glow::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  animation:pinPulse 2s infinite;
+}
+.pin-glow.quiet{background:var(--green)}
+.pin-glow.quiet::after{background:rgba(29,191,122,0.25)}
+.pin-glow.filling{background:var(--amber)}
+.pin-glow.filling::after{background:rgba(240,165,0,0.25)}
+.pin-glow.busy{background:#FF6B35}
+.pin-glow.busy::after{background:rgba(255,107,53,0.3)}
+.pin-glow.packed{background:#E8294A}
+.pin-glow.packed::after{background:rgba(232,41,74,0.35)}
+@keyframes pinPulse{0%,100%{transform:scale(1);opacity:0.8}50%{transform:scale(1.8);opacity:0}}
 
 /* ══════════════════════════════════════
    EVENT DETAIL SHEET
@@ -648,33 +763,16 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
   <div class="top-bar">
     <div class="wordmark">Ticket<span>Bure</span></div>
     <div class="top-actions">
+      <div class="map-pill" onclick="openMap()">🗺 <span class="map-pill-count" id="map-count">6</span></div>
+      <div class="filter-btn" id="filter-btn" onclick="openFilter()">⚙ Filter</div>
       <button class="top-btn" onclick="openProfile()" title="Profile">👤</button>
-      <button class="add-btn" onclick="openAdd()">＋ Add Event</button>
+      <button class="add-btn" onclick="openAdd()">＋</button>
     </div>
   </div>
 
   <!-- ══════════ EVENTS SCREEN ══════════ -->
   <div class="screen active events-screen" id="screen-events">
-
-    <div class="map-toggle-wrap">
-      <div class="map-toggle" onclick="openMap()">
-        <div class="map-toggle-left">
-          🗺 Map view <span class="map-toggle-count" id="map-count">6</span>
-        </div>
-        <div class="map-toggle-right">Tap to explore →</div>
-      </div>
-    </div>
-
-    <div class="filter-bar">
-      <div class="chip active" onclick="filterEvents(this,'all')">All</div>
-      <div class="chip" onclick="filterEvents(this,'music')">🎵 Music</div>
-      <div class="chip" onclick="filterEvents(this,'tech')">💻 Tech</div>
-      <div class="chip" onclick="filterEvents(this,'art')">🎨 Art</div>
-      <div class="chip" onclick="filterEvents(this,'food')">🍲 Food</div>
-    </div>
-
     <div class="snaps-row" id="snaps-row"></div>
-
     <div class="feed-scroll">
       <div class="masonry" id="masonry-feed"></div>
     </div>
@@ -707,9 +805,39 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
   <div class="map-overlay" id="map-overlay">
     <div class="map-bar">
       <button class="map-close-btn" onclick="closeMap()">✕</button>
-      <div class="map-title">Events in Dar es Salaam</div>
+      <div class="map-search-bar">🔍 Search Dar nightlife...</div>
     </div>
-    <div id="map"></div>
+    <div id="map" style="flex:1;min-height:0"></div>
+    <!-- Map checkout sheet — slides up over map -->
+    <div class="map-checkout-overlay" id="map-checkout-overlay">
+      <div class="map-checkout-sheet">
+        <div class="mcs-handle"></div>
+        <div class="mcs-event-bar">
+          <div class="mcs-dot" id="mcs-dot"></div>
+          <div class="mcs-info">
+            <div class="mcs-name" id="mcs-name">Event Name</div>
+            <div class="mcs-meta" id="mcs-meta">Venue · Neighborhood</div>
+          </div>
+          <div class="mcs-close" onclick="closeMapCheckout()">✕</div>
+        </div>
+        <div class="mcs-body">
+          <div class="mcs-qty-row">
+            <span class="mcs-qty-label">Number of Tickets</span>
+            <div class="mcs-qty-ctrl">
+              <div class="mcs-qty-btn" onclick="mapChangeQty(-1)">⊖</div>
+              <div class="mcs-qty-num" id="mcs-qty">1</div>
+              <div class="mcs-qty-btn" onclick="mapChangeQty(1)">⊕</div>
+            </div>
+          </div>
+          <div class="mcs-total-row">
+            <span class="mcs-total-label">Total</span>
+            <span class="mcs-total-val" id="mcs-total">TSh 0</span>
+          </div>
+          <button class="mcs-pay-btn" onclick="mapPay()">PAY WITH MOBILE MONEY</button>
+          <button class="mcs-view-more" onclick="mapViewDetail()">View full event details →</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- EVENT DETAIL SHEET -->
@@ -909,6 +1037,42 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
     <button class="success-btn" onclick="goTickets()">View My Tickets 🎟</button>
   </div>
 
+  <!-- FILTER SHEET -->
+  <div class="filter-overlay" id="filter-overlay">
+    <div class="filter-sheet">
+      <div class="filter-handle"></div>
+      <div class="filter-sheet-title">Filter Events</div>
+      <div class="filter-cats">
+        <div class="filter-cat-opt selected" onclick="applyFilter('all',this)">
+          <span class="filter-cat-icon">🎪</span>
+          <span class="filter-cat-name">All Events</span>
+          <span class="filter-cat-check">✓</span>
+        </div>
+        <div class="filter-cat-opt" onclick="applyFilter('music',this)">
+          <span class="filter-cat-icon">🎵</span>
+          <span class="filter-cat-name">Clubs & Concerts</span>
+          <span class="filter-cat-check">✓</span>
+        </div>
+        <div class="filter-cat-opt" onclick="applyFilter('tech',this)">
+          <span class="filter-cat-icon">💻</span>
+          <span class="filter-cat-name">Tech & Business</span>
+          <span class="filter-cat-check">✓</span>
+        </div>
+        <div class="filter-cat-opt" onclick="applyFilter('art',this)">
+          <span class="filter-cat-icon">🎨</span>
+          <span class="filter-cat-name">Arts & Culture</span>
+          <span class="filter-cat-check">✓</span>
+        </div>
+        <div class="filter-cat-opt" onclick="applyFilter('food',this)">
+          <span class="filter-cat-icon">🍲</span>
+          <span class="filter-cat-name">Food & Markets</span>
+          <span class="filter-cat-check">✓</span>
+        </div>
+      </div>
+      <button class="filter-reset" onclick="applyFilter('all',document.querySelector('.filter-cat-opt'))">Reset Filter</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 </div>
 
@@ -928,7 +1092,7 @@ const SEED = [
 
 const CAT_COLORS = { music:'#4F45B0', tech:'#0D6B56', art:'#92314F', food:'#B87316' };
 const CAT_EMOJI  = { music:'🎵', tech:'💻', art:'🎨', food:'🍲' };
-const CAT_LABELS = { music:'🎵 Music', tech:'💻 Tech', art:'🎨 Art', food:'🍲 Food' };
+const CAT_LABELS = { music:'🎵 Clubs & Concerts', tech:'💻 Tech & Business', art:'🎨 Arts & Culture', food:'🍲 Food & Markets' };
 const CROWD_LABEL = { quiet:'😴 Quiet', filling:'🚶 Filling up', busy:'🔥 Busy', packed:'🤩 Packed!' };
 const QR = [1,1,1,1,1,1,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,1,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1];
 
@@ -1002,17 +1166,75 @@ function initMap(){
 
 function addPin(e){
   if(typeof L==='undefined'||!map) return;
-  const col=CAT_COLORS[e.cat];
-  const icon=L.divIcon({
+  const crowd = e.crowd || 'quiet';
+  const crowdColors = { quiet:'#1DBF7A', filling:'#F0A500', busy:'#FF6B35', packed:'#E8294A' };
+  const col = crowdColors[crowd];
+  const icon = L.divIcon({
     className:'',
-    html:`<div class="custom-pin"><div class="pin-label" style="background:${col}">${fmt(e.price)} ${CAT_EMOJI[e.cat]}</div><div class="pin-stem" style="background:${col}"></div><div class="pin-dot" style="background:${col}"></div></div>`,
-    iconSize:[null,null],iconAnchor:[40,36],popupAnchor:[0,-36]
+    html:`<div class="custom-pin">
+      <div class="pin-glow ${crowd}" style="background:${col}"></div>
+      <div class="pin-venue-name">${e.venue||e.name.split('—')[0].trim()}</div>
+    </div>`,
+    iconSize:[null,null],iconAnchor:[55,18],popupAnchor:[0,-20]
   });
-  const marker=L.marker([e.lat,e.lng],{icon}).addTo(map);
-  marker.bindPopup(`<div class="map-popup-inner"><div class="map-popup-top" style="background:${col}"><div class="map-popup-name">${e.name}</div><div class="map-popup-meta">${fmtDate(e.date,e.time)} · ${e.hood}</div></div><div class="map-popup-bottom"><div class="map-popup-price">${fmt(e.price)}</div><button class="map-popup-btn" onclick="closeMap();openDetail('${e.id}')">View →</button></div></div>`,
-    {maxWidth:240,minWidth:200,className:'tb-popup'});
-  marker.on('click',()=>marker.openPopup());
+  const marker = L.marker([e.lat,e.lng],{icon}).addTo(map);
+  marker.on('click',()=>{
+    openMapCheckout(e.id);
+  });
   markerMap[e.id]=marker;
+}
+
+let mapSelEventId = null;
+let mapQty = 1;
+
+function openMapCheckout(id){
+  const e = allEvents().find(ev=>ev.id===id);
+  if(!e) return;
+  mapSelEventId = id;
+  mapQty = 1;
+  const crowdColors = { quiet:'#1DBF7A', filling:'#F0A500', busy:'#FF6B35', packed:'#E8294A' };
+  document.getElementById('mcs-dot').style.background = crowdColors[e.crowd||'quiet'];
+  document.getElementById('mcs-name').textContent = e.name;
+  document.getElementById('mcs-meta').textContent = e.venue+' · '+e.hood+' · '+fmtDate(e.date,e.time);
+  document.getElementById('mcs-qty').textContent = '1';
+  document.getElementById('mcs-total').textContent = fmt(e.price);
+  document.getElementById('map-checkout-overlay').classList.add('open');
+}
+
+function closeMapCheckout(){
+  document.getElementById('map-checkout-overlay').classList.remove('open');
+  mapSelEventId = null;
+}
+
+function mapChangeQty(d){
+  const e = allEvents().find(ev=>ev.id===mapSelEventId);
+  if(!e) return;
+  mapQty = Math.max(1, Math.min(10, mapQty+d));
+  document.getElementById('mcs-qty').textContent = mapQty;
+  document.getElementById('mcs-total').textContent = fmt(e.price*mapQty);
+}
+
+function mapPay(){
+  // transfer to STK flow
+  if(!mapSelEventId) return;
+  selEventId = mapSelEventId;
+  qty = mapQty;
+  const e = allEvents().find(ev=>ev.id===selEventId);
+  const total = e ? e.price*qty : 0;
+  const n={mpesa:'M-Pesa',tigo:'Tigo Pesa',airtel:'Airtel Money'};
+  document.getElementById('stk-sub').textContent='Paying '+fmt(total)+' via M-Pesa for '+qty+' ticket'+(qty>1?'s':'');
+  document.getElementById('stk-val').textContent = fmt(total);
+  document.getElementById('stk-overlay').style.display='flex';
+  [0,1,2,3].forEach(i=>document.getElementById('d'+i).classList.remove('filled'));
+  let n2=0; if(pinTimer)clearInterval(pinTimer);
+  pinTimer=setInterval(()=>{if(n2<4)document.getElementById('d'+n2++).classList.add('filled');else clearInterval(pinTimer)},320);
+}
+
+function mapViewDetail(){
+  if(!mapSelEventId) return;
+  closeMapCheckout();
+  closeMap();
+  openDetail(mapSelEventId);
 }
 
 function openMap(){
@@ -1024,13 +1246,29 @@ function closeMap(){
 }
 
 /* ══════════════════════════════════════
-   FILTER
+   FILTER SHEET
 ══════════════════════════════════════ */
-function filterEvents(el,cat){
-  activeFilter=cat;
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  renderFeed();
+function openFilter(){
+  document.getElementById('filter-overlay').classList.add('open');
+}
+function closeFilter(){
+  document.getElementById('filter-overlay').classList.remove('open');
+}
+document.getElementById('filter-overlay').addEventListener('click',function(ev){
+  if(ev.target===this) closeFilter();
+});
+
+function applyFilter(cat, el){
+  activeFilter = cat;
+  // update sheet selection
+  document.querySelectorAll('.filter-cat-opt').forEach(c=>c.classList.remove('selected'));
+  if(el) el.classList.add('selected');
+  // update filter button
+  const btn = document.getElementById('filter-btn');
+  const labels = {all:'⚙ Filter', music:'🎵 Clubs', tech:'💻 Tech', art:'🎨 Arts', food:'🍲 Food'};
+  btn.textContent = labels[cat];
+  btn.classList.toggle('has-filter', cat !== 'all');
+  // update map markers
   if(map){
     const evts=allEvents();
     Object.entries(markerMap).forEach(([id,marker])=>{
@@ -1040,6 +1278,8 @@ function filterEvents(el,cat){
       else{if(map.hasLayer(marker))map.removeLayer(marker)}
     });
   }
+  renderFeed();
+  closeFilter();
 }
 
 /* ══════════════════════════════════════
