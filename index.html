@@ -13,741 +13,286 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --brand:#E8450A;--brand-dark:#B33208;--brand-glow:rgba(232,69,10,0.25);
+  --brand:#E8450A;--brand-dark:#B33208;
   --bg:#0E0D0B;--surface:#161614;--surface2:#1E1D1A;--surface3:#272522;
   --text:#F0EDE8;--muted:#6B6860;--border:rgba(255,255,255,0.07);
-  --green:#1DBF7A;--green-dim:rgba(29,191,122,0.15);
-  --amber:#F0A500;--purple:#7B6EF6;--teal:#0FC4A4;--pink:#F06292;
-  --card-radius:18px;
+  --green:#1DBF7A;--green-dim:rgba(29,191,122,0.12);
+  --amber:#F0A500;
+  --crowd-quiet:#1DBF7A;--crowd-filling:#F0A500;--crowd-busy:#FF6B35;--crowd-packed:#E8294A;
 }
 html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-family:'Cabinet Grotesk',sans-serif;color:var(--text)}
 .app{max-width:430px;margin:0 auto;height:100vh;height:100dvh;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
 
 /* ── STATUS BAR ── */
-.status-bar{
-  padding:env(safe-area-inset-top,10px) 20px 0;
-  display:flex;justify-content:space-between;align-items:center;
-  font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0;
-  background:var(--bg);
-}
+.status-bar{padding:env(safe-area-inset-top,10px) 20px 0;display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0}
 
 /* ── TOP BAR ── */
-.top-bar{
-  padding:6px 16px 10px;display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;background:var(--bg);position:relative;z-index:10;
-}
+.top-bar{padding:6px 16px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .wordmark{font-family:'Instrument Serif',serif;font-size:26px;font-style:italic;color:var(--text);letter-spacing:-0.5px}
 .wordmark span{color:var(--brand)}
-.top-actions{display:flex;gap:8px;align-items:center}
-.top-btn{
-  width:36px;height:36px;border-radius:12px;
-  background:var(--surface2);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px;cursor:pointer;color:var(--text);flex-shrink:0;
-  transition:background 0.15s;
-}
-.top-btn:active{background:var(--surface3)}
-.add-btn{
-  height:36px;padding:0 14px;border-radius:12px;
-  background:var(--brand);border:none;
-  display:flex;align-items:center;gap:6px;
-  font-size:12px;font-weight:700;cursor:pointer;color:#fff;
-  font-family:'Cabinet Grotesk',sans-serif;
-  transition:background 0.15s;
-}
-.add-btn:active{background:var(--brand-dark)}
-
-/* ── MAP TOGGLE (now inside top bar) ── */
-.map-pill{
-  height:32px;padding:0 12px;border-radius:100px;
-  background:var(--surface2);border:1px solid var(--border);
-  display:flex;align-items:center;gap:6px;
-  font-size:12px;font-weight:700;cursor:pointer;color:var(--text);
-  transition:background 0.15s;white-space:nowrap;
-}
-.map-pill:active{background:var(--surface3)}
-.map-pill-count{
-  background:var(--brand);color:#fff;font-size:9px;font-weight:800;
-  padding:2px 6px;border-radius:100px;
-}
-
-/* ── FILTER BUTTON ── */
-.filter-btn{
-  height:32px;padding:0 12px;border-radius:100px;
-  background:var(--surface2);border:1px solid var(--border);
-  display:flex;align-items:center;gap:5px;
-  font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);
-  transition:all 0.15s;white-space:nowrap;
-}
-.filter-btn.has-filter{border-color:var(--brand);color:var(--brand);background:rgba(232,69,10,0.1)}
-.filter-btn:active{background:var(--surface3)}
-
-/* ── FILTER SHEET ── */
-.filter-overlay{
-  position:absolute;inset:0;background:rgba(0,0,0,0.7);
-  display:none;align-items:flex-end;z-index:600;backdrop-filter:blur(6px);
-}
-.filter-overlay.open{display:flex}
-.filter-sheet{
-  background:var(--surface);width:100%;border-radius:24px 24px 0 0;
-  padding:20px 20px calc(env(safe-area-inset-bottom,0px) + 24px);
-  animation:sheetUp 0.28s cubic-bezier(0.34,1.1,0.64,1) both;
-}
-.filter-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
-.filter-sheet-title{font-size:16px;font-weight:900;margin-bottom:14px}
-.filter-cats{display:flex;flex-direction:column;gap:8px}
-.filter-cat-opt{
-  display:flex;align-items:center;gap:12px;padding:13px 14px;
-  background:var(--surface2);border-radius:14px;cursor:pointer;
-  border:1px solid var(--border);transition:all 0.15s;
-}
-.filter-cat-opt:active{transform:scale(0.98)}
-.filter-cat-opt.selected{border-color:var(--brand);background:rgba(232,69,10,0.08)}
-.filter-cat-icon{font-size:20px;width:28px;text-align:center}
-.filter-cat-name{font-size:15px;font-weight:700;flex:1}
-.filter-cat-check{font-size:16px;color:var(--brand);opacity:0}
-.filter-cat-opt.selected .filter-cat-check{opacity:1}
-.filter-reset{
-  width:100%;background:none;border:1px solid var(--border);
-  border-radius:12px;padding:13px;font-size:14px;font-weight:700;
-  color:var(--muted);cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
-  margin-top:10px;
-}
-.bottom-nav{
-  display:flex;background:var(--surface);
-  border-top:1px solid var(--border);
-  padding-bottom:env(safe-area-inset-bottom,8px);
-  flex-shrink:0;
-}
-.nav-tab{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  padding:10px 4px 6px;cursor:pointer;user-select:none;
-  transition:all 0.15s;
-}
-.nav-tab .nav-icon{font-size:20px;margin-bottom:3px;transition:transform 0.2s}
-.nav-tab .nav-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.3px;text-transform:uppercase}
-.nav-tab.active .nav-label{color:var(--brand)}
-.nav-tab.active .nav-icon{transform:scale(1.1)}
-.nav-tab-bar{width:24px;height:3px;border-radius:2px;background:transparent;margin-top:4px;transition:background 0.2s}
-.nav-tab.active .nav-tab-bar{background:var(--brand)}
+.top-right{display:flex;gap:8px;align-items:center}
+.icon-btn{width:36px;height:36px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:var(--text);transition:background 0.15s}
+.icon-btn:active{background:var(--surface3)}
+.map-btn{height:36px;padding:0 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text);transition:background 0.15s}
+.map-btn:active{background:var(--surface3)}
+.map-btn-dot{width:7px;height:7px;border-radius:50%;background:var(--crowd-packed);animation:dotPulse 1.2s infinite}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.3)}}
 
 /* ── SCREENS ── */
-.screen{display:none;flex:1;min-height:0;flex-direction:column;overflow:hidden;position:relative}
+.screen{display:none;flex:1;min-height:0;flex-direction:column;overflow:hidden}
 .screen.active{display:flex}
 
 /* ══════════════════════════════════════
-   EVENTS SCREEN
+   FEED SCREEN
 ══════════════════════════════════════ */
-.events-screen{background:var(--bg)}
+.feed-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 12px 24px}
+.masonry{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
-/* Filter chips — kept for reference, replaced by filter sheet */
-
-/* Snap stories row */
-.snaps-row{
-  display:flex;gap:10px;padding:0 14px 12px;
-  overflow-x:auto;scrollbar-width:none;flex-shrink:0;
-}
-.snaps-row::-webkit-scrollbar{display:none}
-.snap-bubble{
-  flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;
-  cursor:pointer;
-}
-.snap-ring{
-  width:60px;height:60px;border-radius:50%;padding:2.5px;
-  background:conic-gradient(var(--brand),var(--amber),var(--brand));
-  transition:transform 0.15s;
-}
-.snap-ring:active{transform:scale(0.94)}
-.snap-ring.quiet{background:var(--surface3)}
-.snap-ring-inner{
-  width:100%;height:100%;border-radius:50%;
-  overflow:hidden;border:2.5px solid var(--bg);
-}
-.snap-ring-inner img{width:100%;height:100%;object-fit:cover}
-.snap-ring-inner .snap-emoji{
-  width:100%;height:100%;display:flex;align-items:center;
-  justify-content:center;font-size:22px;background:var(--surface2);
-}
-.snap-name{
-  font-size:9px;font-weight:700;color:var(--muted);
-  max-width:60px;text-align:center;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis;
-}
-
-/* Masonry feed */
-.feed-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px 20px}
-.masonry{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.masonry-card{
-  background:var(--surface);border-radius:var(--card-radius);
-  overflow:hidden;cursor:pointer;border:1px solid var(--border);
-  transition:transform 0.15s;position:relative;
-}
-.masonry-card:active{transform:scale(0.97)}
-.masonry-card.tall{grid-row:span 2}
-.card-img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
-.card-img-placeholder{
-  width:100%;aspect-ratio:3/4;
-  display:flex;align-items:center;justify-content:center;font-size:36px;
-}
-.card-img-placeholder.short{aspect-ratio:1}
-.card-img.short{aspect-ratio:1}
-.card-body{padding:10px 10px 12px}
-.card-cat{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:4px}
+/* Cards */
+.card{background:var(--surface);border-radius:16px;overflow:hidden;cursor:pointer;border:1px solid var(--border);transition:transform 0.12s;position:relative}
+.card:active{transform:scale(0.97)}
+.card.tall{grid-row:span 2}
+.card-img{width:100%;display:block;object-fit:cover}
+.card.tall .card-img{aspect-ratio:2/3}
+.card:not(.tall) .card-img{aspect-ratio:1}
+.card-img-ph{width:100%;display:flex;align-items:center;justify-content:center;font-size:32px}
+.card.tall .card-img-ph{aspect-ratio:2/3}
+.card:not(.tall) .card-img-ph{aspect-ratio:1}
+.card-body{padding:9px 10px 11px}
 .card-name{font-size:13px;font-weight:800;line-height:1.25;color:var(--text)}
-.card-meta{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500}
-.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
-.card-price{
-  font-size:11px;font-weight:800;color:#fff;
-  background:var(--brand);padding:3px 8px;border-radius:6px;
-}
-.card-price.free{background:var(--green)}
-.crowd-pip{display:flex;align-items:center;gap:3px;font-size:10px;font-weight:700}
-.pip{width:5px;height:5px;border-radius:50%}
-.crowd-pip.quiet .pip{background:var(--muted)}
-.crowd-pip.filling .pip{background:var(--amber);animation:blink 2s infinite}
-.crowd-pip.busy .pip{background:var(--brand);animation:blink 1.5s infinite}
-.crowd-pip.packed .pip{background:#E05252;animation:blink 0.8s infinite}
-.crowd-pip.quiet{color:var(--muted)}
-.crowd-pip.filling{color:var(--amber)}
-.crowd-pip.busy{color:var(--brand)}
-.crowd-pip.packed{color:#E05252}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+.card-row{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
+.card-price{font-size:11px;font-weight:800;color:var(--green)}
+.card-price.paid{color:var(--text)}
+.crowd-pip{display:flex;align-items:center;gap:3px}
+.pip{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.pip.quiet{background:var(--crowd-quiet)}
+.pip.filling{background:var(--crowd-filling);animation:blink 2s infinite}
+.pip.busy{background:var(--crowd-busy);animation:blink 1.2s infinite}
+.pip.packed{background:var(--crowd-packed);animation:blink 0.7s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 
 /* Packed ribbon */
-.packed-ribbon{
-  position:absolute;top:10px;left:10px;
-  background:#E05252;color:#fff;
-  font-size:9px;font-weight:800;padding:3px 8px;
-  border-radius:100px;letter-spacing:0.3px;
-  display:flex;align-items:center;gap:4px;
-}
-.packed-ribbon-dot{width:5px;height:5px;border-radius:50%;background:#fff;animation:blink 0.8s infinite}
+.ribbon{position:absolute;top:8px;left:8px;background:var(--crowd-packed);color:#fff;font-size:9px;font-weight:800;padding:3px 8px;border-radius:100px;display:flex;align-items:center;gap:3px}
+.ribbon-dot{width:4px;height:4px;border-radius:50%;background:#fff;animation:blink 0.7s infinite}
 
 /* ══════════════════════════════════════
-   MAP OVERLAY
+   MAP OVERLAY — city pulse, read-only dots
 ══════════════════════════════════════ */
-.map-overlay{
-  position:absolute;inset:0;background:var(--bg);
-  display:none;flex-direction:column;z-index:50;
-}
+.map-overlay{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:50}
 .map-overlay.open{display:flex}
-.map-bar{
-  padding:10px 14px;display:flex;align-items:center;gap:10px;
-  background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;
-}
+.map-topbar{padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.map-close{width:34px;height:34px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;color:var(--text);flex-shrink:0}
+.map-title-wrap{flex:1}
+.map-title{font-size:15px;font-weight:800}
+.map-subtitle{font-size:11px;color:var(--muted);margin-top:1px;font-weight:500}
 
-/* MAP SEARCH BAR */
-.map-search-bar{
-  flex:1;display:flex;align-items:center;gap:8px;
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:12px;padding:9px 14px;font-size:13px;
-  color:var(--muted);font-weight:500;
-}
+/* Legend */
+.map-legend{display:flex;gap:12px;padding:8px 14px;flex-shrink:0;border-bottom:1px solid var(--border)}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 
-/* PIN VENUE LABEL */
-.pin-venue-name{
-  font-size:10px;font-weight:700;color:#fff;
-  background:rgba(0,0,0,0.6);padding:3px 8px;
-  border-radius:100px;margin-top:5px;white-space:nowrap;
-  backdrop-filter:blur(4px);max-width:110px;
-  overflow:hidden;text-overflow:ellipsis;text-align:center;
-}
+#map{flex:1;min-height:0}
 
-/* MAP CHECKOUT SHEET */
-.map-checkout-overlay{
-  position:absolute;bottom:0;left:0;right:0;
-  display:none;z-index:60;pointer-events:none;
-}
-.map-checkout-overlay.open{display:block;pointer-events:auto}
-.map-checkout-sheet{
-  background:var(--surface);
-  border-radius:24px 24px 0 0;
-  padding:0 0 calc(env(safe-area-inset-bottom,0px) + 16px);
-  box-shadow:0 -8px 40px rgba(0,0,0,0.6);
-  animation:sheetUp 0.28s cubic-bezier(0.34,1.1,0.64,1) both;
-}
-.mcs-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
-.mcs-event-bar{
-  display:flex;align-items:center;gap:10px;
-  padding:14px 16px 10px;border-bottom:1px solid var(--border);
-}
-.mcs-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.mcs-info{flex:1;min-width:0}
-.mcs-name{font-size:16px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mcs-meta{font-size:12px;color:var(--muted);margin-top:2px;font-weight:500}
-.mcs-close{
-  width:28px;height:28px;border-radius:50%;
-  background:var(--surface3);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;cursor:pointer;color:var(--muted);flex-shrink:0;
-}
-.mcs-body{padding:14px 16px 0}
-.mcs-qty-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 0;border-bottom:1px solid var(--border);margin-bottom:12px;
-}
-.mcs-qty-label{font-size:14px;font-weight:700;color:var(--muted)}
-.mcs-qty-ctrl{display:flex;align-items:center;gap:14px}
-.mcs-qty-btn{
-  width:32px;height:32px;border-radius:50%;
-  background:var(--surface2);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:20px;cursor:pointer;color:var(--text);line-height:1;
-}
-.mcs-qty-btn:active{background:var(--surface3)}
-.mcs-qty-num{font-size:20px;font-weight:900;min-width:22px;text-align:center}
-.mcs-total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.mcs-total-label{font-size:13px;color:var(--muted);font-weight:600}
-.mcs-total-val{font-size:22px;font-weight:900;color:var(--green);letter-spacing:-0.5px}
-.mcs-pay-btn{
-  width:100%;background:var(--green);color:#fff;border:none;
-  border-radius:14px;padding:16px;font-size:16px;font-weight:800;
-  cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:opacity 0.15s,transform 0.1s;
-}
-.mcs-pay-btn:active{opacity:0.85;transform:scale(0.98)}
-.mcs-view-more{
-  width:100%;background:none;border:none;color:var(--muted);
-  font-size:13px;font-weight:600;cursor:pointer;padding:10px;
-  font-family:'Cabinet Grotesk',sans-serif;display:block;text-align:center;
-}
-.mcs-view-more:active{color:var(--text)}
-.map-close-btn{
-  width:34px;height:34px;border-radius:50%;
-  background:var(--surface2);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;cursor:pointer;color:var(--text);flex-shrink:0;
-}
-.map-title{font-size:15px;font-weight:800;flex:1}
-#map{width:100%;flex:1;min-height:0}
+/* Leaflet */
+.leaflet-container{font-family:'Cabinet Grotesk',sans-serif;background:#0E0D0B}
+.leaflet-tile{filter:brightness(0.75) saturate(0.5)}
+.leaflet-control-zoom{border:none!important;box-shadow:none!important;margin:14px!important}
+.leaflet-control-zoom a{background:var(--surface2)!important;color:var(--text)!important;border:1px solid var(--border)!important;border-radius:8px!important;font-weight:800!important;margin-bottom:4px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+.leaflet-control-attribution{background:rgba(14,13,11,0.7)!important;color:var(--muted)!important;font-size:9px!important}
 
-/* Leaflet overrides */
-.leaflet-container{font-family:'Cabinet Grotesk',sans-serif;background:#1A1A18}
-.leaflet-tile{filter:brightness(0.8) saturate(0.7)}
-.leaflet-control-zoom{border:none!important;box-shadow:none!important}
-.leaflet-control-zoom a{
-  background:var(--surface2)!important;color:var(--text)!important;
-  border:1px solid var(--border)!important;border-radius:8px!important;
-  font-weight:800!important;
-}
-.leaflet-popup-content-wrapper{
-  background:var(--surface)!important;border-radius:16px!important;
-  padding:0!important;box-shadow:0 8px 32px rgba(0,0,0,0.4)!important;
-  border:1px solid var(--border)!important;overflow:hidden;
-}
-.leaflet-popup-content{margin:0!important;min-width:200px}
-.leaflet-popup-tip-container{display:none}
-.leaflet-popup-close-button{color:var(--muted)!important;top:8px!important;right:10px!important}
-.map-popup-inner{overflow:hidden}
-.map-popup-top{padding:12px 14px 10px;color:#fff}
-.map-popup-name{font-size:14px;font-weight:800;line-height:1.2}
-.map-popup-meta{font-size:11px;opacity:0.75;margin-top:3px}
-.map-popup-bottom{
-  background:var(--surface2);padding:10px 14px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.map-popup-price{font-size:15px;font-weight:800;color:var(--text)}
-.map-popup-btn{
-  background:var(--brand);color:#fff;border:none;
-  border-radius:8px;padding:7px 14px;font-size:12px;
-  font-weight:800;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
-}
-.custom-pin{display:flex;flex-direction:column;align-items:center;cursor:pointer}
-.pin-glow{
-  width:14px;height:14px;border-radius:50%;
-  box-shadow:0 0 0 4px rgba(255,255,255,0.08);
-  position:relative;
-}
-.pin-glow::after{
-  content:'';position:absolute;inset:-4px;border-radius:50%;
-  animation:pinPulse 2s infinite;
-}
-.pin-glow.quiet{background:var(--green)}
-.pin-glow.quiet::after{background:rgba(29,191,122,0.25)}
-.pin-glow.filling{background:var(--amber)}
-.pin-glow.filling::after{background:rgba(240,165,0,0.25)}
-.pin-glow.busy{background:#FF6B35}
-.pin-glow.busy::after{background:rgba(255,107,53,0.3)}
-.pin-glow.packed{background:#E8294A}
-.pin-glow.packed::after{background:rgba(232,41,74,0.35)}
-@keyframes pinPulse{0%,100%{transform:scale(1);opacity:0.8}50%{transform:scale(1.8);opacity:0}}
+/* Crowd dot pin */
+.crowd-pin{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.crowd-dot-wrap{position:relative;width:20px;height:20px;display:flex;align-items:center;justify-content:center}
+.crowd-dot{width:12px;height:12px;border-radius:50%;position:relative;z-index:1}
+.crowd-dot-ring{position:absolute;inset:0;border-radius:50%;animation:ringPulse 2s infinite}
+@keyframes ringPulse{0%{transform:scale(1);opacity:0.6}100%{transform:scale(2.5);opacity:0}}
 
 /* ══════════════════════════════════════
    EVENT DETAIL SHEET
 ══════════════════════════════════════ */
-.detail-overlay{
-  position:absolute;inset:0;background:rgba(0,0,0,0.7);
-  display:none;align-items:flex-end;z-index:200;backdrop-filter:blur(6px);
-}
+.detail-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.65);display:none;align-items:flex-end;z-index:200;backdrop-filter:blur(8px)}
 .detail-overlay.open{display:flex}
-.detail-sheet{
-  background:var(--surface);width:100%;border-radius:24px 24px 0 0;
-  max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  position:relative;
-  animation:sheetUp 0.3s cubic-bezier(0.34,1.1,0.64,1) both;
-}
+.detail-sheet{background:var(--surface);width:100%;border-radius:24px 24px 0 0;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;animation:sheetUp 0.28s cubic-bezier(0.34,1.1,0.64,1) both}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .detail-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
-.detail-cover{width:100%;height:190px;object-fit:cover;display:block;margin-top:10px}
-.detail-cover-ph{
-  width:100%;height:120px;margin-top:10px;
-  display:flex;align-items:center;justify-content:center;font-size:56px;
-}
-.detail-body{padding:16px}
-.detail-name{font-size:22px;font-weight:900;line-height:1.15;margin-bottom:6px}
-.detail-meta-row{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:4px;font-weight:500}
-.detail-badges{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.detail-price-pill{
-  font-size:14px;font-weight:800;color:#fff;
-  padding:6px 14px;border-radius:8px;background:var(--brand);
-}
-.detail-price-pill.free{background:var(--green)}
-.detail-crowd-pill{
-  font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;
-  display:flex;align-items:center;gap:5px;
-}
-.detail-crowd-pill.quiet{background:var(--surface3);color:var(--muted)}
-.detail-crowd-pill.filling{background:rgba(240,165,0,0.15);color:var(--amber)}
-.detail-crowd-pill.busy{background:rgba(232,69,10,0.15);color:var(--brand)}
-.detail-crowd-pill.packed{background:rgba(224,82,82,0.15);color:#E05252}
-.detail-pip{width:6px;height:6px;border-radius:50%}
-.detail-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px;font-weight:400}
-.detail-snaps-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:10px}
-.detail-snaps{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px}
-.detail-snaps::-webkit-scrollbar{display:none}
-.detail-snap{flex-shrink:0;border-radius:14px;overflow:hidden;border:1px solid var(--border)}
-.detail-snap img{width:120px;height:150px;object-fit:cover;display:block}
-.detail-snap-cap{font-size:10px;color:var(--muted);padding:6px 8px;line-height:1.3}
-.detail-buy{
-  width:100%;background:var(--brand);color:#fff;border:none;
-  border-radius:16px;padding:17px;font-size:16px;font-weight:800;
-  cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
-  margin-bottom:env(safe-area-inset-bottom,16px);
-  transition:background 0.15s,transform 0.1s;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
+.detail-close{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;color:var(--muted)}
+.detail-img{width:100%;height:200px;object-fit:cover;display:block;margin-top:10px}
+.detail-img-ph{width:100%;height:130px;display:flex;align-items:center;justify-content:center;font-size:56px;margin-top:10px}
+.detail-body{padding:16px 16px 0}
+.detail-name{font-size:22px;font-weight:900;line-height:1.15}
+.detail-venue{font-size:13px;color:var(--muted);margin-top:5px;font-weight:500}
+.detail-date{font-size:13px;color:var(--muted);margin-top:3px;font-weight:500}
+.detail-crowd{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:5px 11px;border-radius:100px;font-size:12px;font-weight:700}
+.detail-crowd.quiet{background:rgba(29,191,122,0.12);color:var(--crowd-quiet)}
+.detail-crowd.filling{background:rgba(240,165,0,0.12);color:var(--crowd-filling)}
+.detail-crowd.busy{background:rgba(255,107,53,0.12);color:var(--crowd-busy)}
+.detail-crowd.packed{background:rgba(232,41,74,0.12);color:var(--crowd-packed)}
+.detail-crowd-dot{width:6px;height:6px;border-radius:50%}
+.detail-desc{font-size:14px;color:var(--muted);line-height:1.65;margin-top:12px;font-weight:400}
+.detail-snap{margin-top:14px}
+.detail-snap-img{width:100%;height:160px;object-fit:cover;border-radius:14px;display:block}
+.detail-snap-cap{font-size:11px;color:var(--muted);margin-top:6px;font-weight:500}
+.detail-buy{width:100%;background:var(--brand);color:#fff;border:none;border-radius:16px;padding:17px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;margin-top:16px;margin-bottom:calc(env(safe-area-inset-bottom,0px) + 20px);display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s,transform 0.1s}
 .detail-buy:active{background:var(--brand-dark);transform:scale(0.98)}
-.detail-close{
-  position:absolute;top:14px;right:14px;width:30px;height:30px;
-  border-radius:50%;background:var(--surface3);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;cursor:pointer;color:var(--muted);
-}
 
 /* ══════════════════════════════════════
-   PROFILE SHEET
+   CHECKOUT SHEET (slides up over detail)
 ══════════════════════════════════════ */
-.profile-overlay{
-  position:absolute;inset:0;background:rgba(0,0,0,0.7);
-  display:none;align-items:flex-end;z-index:300;backdrop-filter:blur(6px);
-}
-.profile-overlay.open{display:flex}
-.profile-sheet{
-  background:var(--surface);width:100%;border-radius:24px 24px 0 0;
-  padding:16px 20px calc(env(safe-area-inset-bottom,0px) + 24px);
-  animation:sheetUp 0.3s cubic-bezier(0.34,1.1,0.64,1) both;
-}
-.profile-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
-.profile-avatar{
-  width:64px;height:64px;border-radius:50%;
-  background:linear-gradient(135deg,var(--brand),var(--amber));
-  display:flex;align-items:center;justify-content:center;
-  font-size:24px;font-weight:900;color:#fff;margin:0 auto 12px;
-}
-.profile-name{font-size:20px;font-weight:900;text-align:center}
-.profile-number{font-size:13px;color:var(--muted);text-align:center;margin-top:3px;font-weight:500}
-.profile-stats{display:flex;gap:0;margin:20px 0;border:1px solid var(--border);border-radius:14px;overflow:hidden}
-.profile-stat{flex:1;padding:14px;text-align:center;border-right:1px solid var(--border)}
-.profile-stat:last-child{border-right:none}
-.profile-stat-val{font-size:22px;font-weight:900;color:var(--brand)}
-.profile-stat-label{font-size:11px;color:var(--muted);margin-top:2px;font-weight:600}
-.profile-links{display:flex;flex-direction:column;gap:8px}
-.profile-link{
-  display:flex;align-items:center;gap:12px;padding:13px 14px;
-  background:var(--surface2);border-radius:12px;cursor:pointer;
-  font-size:14px;font-weight:700;color:var(--text);
-  border:1px solid var(--border);transition:background 0.15s;
-}
-.profile-link:active{background:var(--surface3)}
-.profile-link-icon{font-size:18px;width:24px;text-align:center}
-.profile-link-arrow{margin-left:auto;color:var(--muted)}
-.profile-close-btn{
-  width:100%;background:var(--surface2);border:1px solid var(--border);
-  border-radius:12px;padding:13px;font-size:14px;font-weight:700;
-  color:var(--muted);cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
-  margin-top:12px;
-}
-
-/* ══════════════════════════════════════
-   ADD EVENT SHEET
-══════════════════════════════════════ */
-.add-overlay{
-  position:absolute;inset:0;background:rgba(0,0,0,0.75);
-  display:none;align-items:flex-end;z-index:400;backdrop-filter:blur(6px);
-}
-.add-overlay.open{display:flex}
-.add-sheet{
-  background:var(--surface);width:100%;border-radius:24px 24px 0 0;
-  max-height:94vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  animation:sheetUp 0.3s cubic-bezier(0.34,1.1,0.64,1) both;
-}
-.add-top{
-  padding:16px 18px 14px;display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1;
-}
-.add-title{font-size:17px;font-weight:900}
-.add-close{
-  width:28px;height:28px;border-radius:50%;background:var(--surface3);
-  border:1px solid var(--border);display:flex;align-items:center;
-  justify-content:center;font-size:13px;cursor:pointer;color:var(--muted);
-}
-.add-body{padding:16px 18px calc(env(safe-area-inset-bottom,0px) + 24px)}
-.form-group{margin-bottom:16px}
-.form-label{
-  font-size:10px;font-weight:800;color:var(--muted);
-  text-transform:uppercase;letter-spacing:0.6px;margin-bottom:7px;display:block;
-}
-.form-input{
-  width:100%;background:var(--surface2);border:1px solid var(--border);
-  border-radius:12px;padding:12px 14px;font-size:14px;
-  font-family:'Cabinet Grotesk',sans-serif;color:var(--text);outline:none;
-  transition:border-color 0.15s;-webkit-appearance:none;font-weight:500;
-}
-.form-input:focus{border-color:var(--brand)}
-.form-input::placeholder{color:var(--muted)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.cat-opt{
-  padding:12px 8px;border-radius:12px;border:1px solid var(--border);
-  background:var(--surface2);text-align:center;cursor:pointer;
-  transition:all 0.15s;user-select:none;
-}
-.cat-opt .ci{font-size:22px;display:block;margin-bottom:4px}
-.cat-opt .cn{font-size:12px;font-weight:700;color:var(--muted)}
-.cat-opt.selected{border-color:var(--brand);background:rgba(232,69,10,0.1)}
-.cat-opt.selected .cn{color:var(--brand)}
-.hood-wrap{display:flex;gap:6px;flex-wrap:wrap}
-.hood-opt{
-  padding:6px 12px;border-radius:100px;font-size:12px;font-weight:700;
-  cursor:pointer;border:1px solid var(--border);background:var(--surface2);
-  color:var(--muted);transition:all 0.15s;user-select:none;
-}
-.hood-opt.selected{border-color:var(--brand);background:rgba(232,69,10,0.1);color:var(--brand)}
-.price-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.ptb{
-  padding:10px;border-radius:10px;font-size:13px;font-weight:700;
-  border:1px solid var(--border);background:var(--surface2);
-  color:var(--muted);cursor:pointer;text-align:center;transition:all 0.15s;
-}
-.ptb.selected{border-color:var(--brand);background:rgba(232,69,10,0.1);color:var(--brand)}
-.crowd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.crowd-opt{
-  padding:10px 8px;border-radius:12px;border:1px solid var(--border);
-  background:var(--surface2);text-align:center;cursor:pointer;
-  transition:all 0.15s;user-select:none;font-size:13px;font-weight:700;
-  color:var(--muted);line-height:1.3;
-}
-.crowd-opt .ci{font-size:18px;display:block;margin-bottom:3px}
-.crowd-opt.selected{border-color:var(--brand);background:rgba(232,69,10,0.1);color:var(--brand)}
-.submit-btn{
-  width:100%;background:var(--brand);color:#fff;border:none;
-  border-radius:14px;padding:16px;font-size:16px;font-weight:800;
-  cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
-  transition:background 0.15s,transform 0.1s;margin-top:8px;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
-.submit-btn:active{background:var(--brand-dark);transform:scale(0.98)}
-
-/* ══════════════════════════════════════
-   CHECKOUT SCREEN
-══════════════════════════════════════ */
-.checkout-screen{background:var(--bg)}
-.co-hero{padding:20px 18px 24px;color:#fff;position:relative;overflow:hidden;flex-shrink:0}
-.co-hero::before{content:'';position:absolute;right:-50px;top:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.06)}
-.co-back{
-  display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
-  opacity:0.75;cursor:pointer;margin-bottom:14px;width:fit-content;
-}
-.co-back:active{opacity:0.5}
-.co-cat{font-size:10px;font-weight:800;opacity:0.7;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px}
-.co-name{font-size:21px;font-weight:900;line-height:1.2}
-.co-date,.co-venue{font-size:12px;opacity:0.75;margin-top:3px;font-weight:500}
-.co-price{font-size:34px;font-weight:900;margin-top:10px;letter-spacing:-1px}
-.co-body{padding:16px;flex:1;min-height:0;overflow-y:auto}
-.pay-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
-.pay-opt{
-  display:flex;align-items:center;gap:12px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:14px;padding:13px 14px;margin-bottom:8px;
-  cursor:pointer;transition:all 0.15s;
-}
+.checkout-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:flex-end;z-index:300;backdrop-filter:blur(8px)}
+.checkout-overlay.open{display:flex}
+.checkout-sheet{background:var(--surface);width:100%;border-radius:24px 24px 0 0;padding:0 0 calc(env(safe-area-inset-bottom,0px)+20px);animation:sheetUp 0.28s cubic-bezier(0.34,1.1,0.64,1) both}
+.co-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
+.co-event-strip{padding:14px 16px;border-bottom:1px solid var(--border)}
+.co-event-name{font-size:17px;font-weight:900;line-height:1.2}
+.co-event-meta{font-size:12px;color:var(--muted);margin-top:3px;font-weight:500}
+.co-body{padding:16px}
+.co-pay-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px}
+.co-pay-opts{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.pay-opt{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 13px;cursor:pointer;transition:all 0.15s}
 .pay-opt:active{transform:scale(0.98)}
 .pay-opt.selected{border-color:var(--brand);background:rgba(232,69,10,0.08)}
-.pay-icon{
-  width:40px;height:40px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:800;color:#fff;flex-shrink:0;
-}
-.pay-icon.mpesa{background:#2E7D32}
-.pay-icon.tigo{background:#1565C0}
-.pay-icon.airtel{background:#B71C1C;font-size:9px}
-.pay-name{font-weight:700;font-size:14px}
-.pay-sub{font-size:11px;color:var(--muted)}
-.pay-radio{
-  margin-left:auto;width:20px;height:20px;border-radius:50%;
-  border:2px solid var(--border);display:flex;align-items:center;
-  justify-content:center;flex-shrink:0;transition:all 0.15s;
-}
+.pay-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+.pay-icon.mpesa{background:#2E7D32}.pay-icon.tigo{background:#1565C0}.pay-icon.airtel{background:#B71C1C;font-size:9px}
+.pay-name{font-weight:700;font-size:14px}.pay-sub{font-size:11px;color:var(--muted)}
+.pay-radio{margin-left:auto;width:19px;height:19px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
 .pay-radio.checked{border-color:var(--brand);background:var(--brand)}
 .pay-radio.checked::after{content:'';width:7px;height:7px;border-radius:50%;background:#fff}
-.qty-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 0;border-top:1px solid var(--border);margin-top:4px;
-}
-.qty-ctrl{display:flex;align-items:center;gap:16px}
-.qty-btn{
-  width:34px;height:34px;border-radius:50%;
-  background:var(--surface);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-size:20px;cursor:pointer;color:var(--text);line-height:1;
-}
-.qty-btn:active{background:var(--surface2)}
-.qty-num{font-size:20px;font-weight:900;min-width:22px;text-align:center}
-.total-row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:12px 0;border-top:1px solid var(--border);
-}
-.total-val{font-size:18px;font-weight:900;color:var(--brand)}
-.buy-btn{
-  width:100%;background:var(--brand);color:#fff;border:none;
-  border-radius:16px;padding:17px;font-size:16px;font-weight:800;
-  cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  margin-top:12px;transition:background 0.15s,transform 0.1s;
-}
-.buy-btn:active{background:var(--brand-dark);transform:scale(0.98)}
-.buy-hint{text-align:center;font-size:11px;color:var(--muted);margin-top:8px}
-
-/* ══════════════════════════════════════
-   TICKETS SCREEN
-══════════════════════════════════════ */
-.tickets-screen{background:var(--bg)}
-.tickets-header{padding:14px 16px 10px;flex-shrink:0}
-.tickets-title{font-size:24px;font-weight:900}
-.tickets-sub{font-size:13px;color:var(--muted);margin-top:2px;font-weight:500}
-.tickets-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px 24px}
-.ticket-card{
-  background:var(--surface);border-radius:var(--card-radius);
-  border:1px solid var(--border);overflow:hidden;margin-bottom:12px;
-}
-.ticket-top{padding:14px 15px;display:flex;justify-content:space-between;align-items:flex-start}
-.ticket-name{font-size:16px;font-weight:900;line-height:1.2}
-.ticket-date{font-size:12px;color:var(--muted);margin-top:3px;font-weight:500}
-.valid-pill{
-  font-size:10px;font-weight:800;padding:4px 10px;border-radius:6px;
-  background:var(--green-dim);color:var(--green);flex-shrink:0;margin-left:8px;
-}
-.ticket-dashed{border:none;border-top:2px dashed var(--border);margin:0 14px}
-.ticket-qr-area{padding:14px 15px;display:flex;align-items:center;gap:14px}
-.qr-box{
-  width:78px;height:78px;background:#F0EDE8;border-radius:12px;
-  flex-shrink:0;padding:8px;display:grid;
-  grid-template-columns:repeat(7,1fr);gap:1.5px;
-}
-.qr-cell{border-radius:1px}
-.qr-on{background:#0E0D0B}.qr-off{background:transparent}
-.qr-holder{font-size:11px;color:var(--muted);font-weight:500}
-.qr-holder-name{font-weight:800;font-size:15px;margin-top:2px}
-.offline-tag{
-  display:inline-flex;align-items:center;gap:5px;margin-top:8px;
-  font-size:11px;font-weight:700;background:var(--green-dim);
-  color:var(--green);padding:4px 9px;border-radius:6px;
-}
-.offline-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
-.ticket-foot{
-  padding:9px 15px 13px;display:flex;align-items:center;
-  justify-content:space-between;border-top:1px solid var(--border);
-  font-size:11px;color:var(--muted);font-weight:500;
-}
-.ticket-id{font-family:monospace;font-size:11px}
-.empty-tickets{
-  padding:60px 24px;text-align:center;
-}
-.empty-tickets .icon{font-size:48px;margin-bottom:14px}
-.empty-tickets .et-title{font-size:18px;font-weight:900;margin-bottom:6px}
-.empty-tickets .et-sub{font-size:14px;color:var(--muted);line-height:1.5;font-weight:400}
-.empty-tickets .et-cta{
-  display:inline-block;margin-top:20px;background:var(--brand);
-  color:#fff;padding:12px 24px;border-radius:12px;font-weight:800;
-  font-size:14px;cursor:pointer;border:none;font-family:'Cabinet Grotesk',sans-serif;
-}
+.co-qty-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--border)}
+.co-qty-ctrl{display:flex;align-items:center;gap:14px}
+.co-qty-btn{width:32px;height:32px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;color:var(--text);line-height:1}
+.co-qty-btn:active{background:var(--surface3)}
+.co-qty-num{font-size:20px;font-weight:900;min-width:22px;text-align:center}
+.co-total-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--border);margin-bottom:12px}
+.co-total-val{font-size:20px;font-weight:900;color:var(--green);letter-spacing:-0.5px}
+.co-pay-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity 0.15s,transform 0.1s}
+.co-pay-btn:active{opacity:0.85;transform:scale(0.98)}
 
 /* ══════════════════════════════════════
    STK OVERLAY
 ══════════════════════════════════════ */
-.stk-overlay{
-  position:absolute;inset:0;background:rgba(0,0,0,0.7);
-  display:none;align-items:flex-end;z-index:999;backdrop-filter:blur(6px);
-}
-.stk-sheet{
-  background:var(--surface);width:100%;border-radius:24px 24px 0 0;
-  padding:24px 22px calc(env(safe-area-inset-bottom,0px) + 32px);
-  animation:sheetUp 0.3s cubic-bezier(0.34,1.1,0.64,1) both;
-}
+.stk-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:flex-end;z-index:999;backdrop-filter:blur(8px)}
+.stk-sheet{background:var(--surface);width:100%;border-radius:24px 24px 0 0;padding:24px 22px calc(env(safe-area-inset-bottom,0px)+28px);animation:sheetUp 0.28s cubic-bezier(0.34,1.1,0.64,1) both}
 .stk-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
 .stk-title{font-size:18px;font-weight:900;text-align:center;margin-bottom:3px}
 .stk-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:18px;line-height:1.4;font-weight:400}
 .stk-amt{background:var(--surface2);border-radius:14px;padding:16px;text-align:center;margin-bottom:16px}
-.stk-amt-lbl{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px}
-.stk-amt-val{font-size:30px;font-weight:900;color:var(--brand);letter-spacing:-1px}
+.stk-amt-lbl{font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px}
+.stk-amt-val{font-size:30px;font-weight:900;color:var(--green);letter-spacing:-1px}
 .pin-dots{display:flex;justify-content:center;gap:12px;margin:14px 0 6px}
 .dot{width:16px;height:16px;border-radius:50%;background:var(--surface3);transition:background 0.25s}
 .dot.filled{background:var(--brand)}
 .pin-hint{text-align:center;font-size:12px;color:var(--muted);margin-bottom:18px;font-weight:500}
-.stk-confirm{
-  width:100%;background:var(--green);color:#fff;border:none;
-  border-radius:14px;padding:16px;font-size:16px;font-weight:800;
-  cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
-}
+.stk-confirm{width:100%;background:var(--green);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif}
 .stk-confirm:active{opacity:0.85}
-.stk-cancel{
-  width:100%;background:none;border:none;color:var(--muted);
-  font-size:14px;cursor:pointer;margin-top:10px;padding:6px;font-weight:500;
-}
+.stk-cancel{width:100%;background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;margin-top:10px;padding:6px;font-weight:500}
 
 /* ══════════════════════════════════════
-   SUCCESS OVERLAY
+   SUCCESS
 ══════════════════════════════════════ */
-.success-overlay{
-  position:absolute;inset:0;background:var(--bg);
-  display:none;flex-direction:column;align-items:center;
-  justify-content:center;padding:40px 28px;z-index:1000;text-align:center;
-}
-.success-circle{
-  width:80px;height:80px;border-radius:50%;
-  background:var(--green-dim);display:flex;align-items:center;
-  justify-content:center;font-size:36px;margin-bottom:22px;
-  animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-}
+.success-overlay{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;z-index:1000;text-align:center}
+.success-circle{width:80px;height:80px;border-radius:50%;background:var(--green-dim);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:22px;animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both}
 @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
 .success-overlay h2{font-size:24px;font-weight:900;color:var(--green)}
 .success-overlay p{font-size:14px;color:var(--muted);margin-top:10px;line-height:1.6;font-weight:400}
-.success-btn{
-  margin-top:28px;background:var(--brand);color:#fff;border:none;
-  border-radius:16px;padding:15px 36px;font-size:15px;font-weight:800;
-  cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;
-}
+.success-btn{margin-top:28px;background:var(--brand);color:#fff;border:none;border-radius:16px;padding:15px 36px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif}
+
+/* ══════════════════════════════════════
+   TICKETS SCREEN
+══════════════════════════════════════ */
+.tickets-header{padding:14px 16px 10px;flex-shrink:0}
+.tickets-title{font-size:24px;font-weight:900}
+.tickets-sub{font-size:13px;color:var(--muted);margin-top:2px;font-weight:500}
+.tickets-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px 24px}
+.ticket-card{background:var(--surface);border-radius:18px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
+.ticket-top{padding:14px 15px;display:flex;justify-content:space-between;align-items:flex-start}
+.ticket-name{font-size:16px;font-weight:900;line-height:1.2}
+.ticket-date{font-size:12px;color:var(--muted);margin-top:3px;font-weight:500}
+.valid-pill{font-size:10px;font-weight:800;padding:4px 10px;border-radius:6px;background:var(--green-dim);color:var(--green);flex-shrink:0;margin-left:8px}
+.ticket-dashed{border:none;border-top:2px dashed var(--border);margin:0 14px}
+.ticket-qr-area{padding:14px 15px;display:flex;align-items:center;gap:14px}
+.qr-box{width:78px;height:78px;background:#F0EDE8;border-radius:12px;flex-shrink:0;padding:8px;display:grid;grid-template-columns:repeat(7,1fr);gap:1.5px}
+.qr-cell{border-radius:1px}.qr-on{background:#0E0D0B}.qr-off{background:transparent}
+.qr-holder{font-size:11px;color:var(--muted);font-weight:500}
+.qr-holder-name{font-weight:800;font-size:15px;margin-top:2px}
+.offline-tag{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:11px;font-weight:700;background:var(--green-dim);color:var(--green);padding:4px 9px;border-radius:6px}
+.offline-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.ticket-foot{padding:9px 15px 13px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);font-size:11px;color:var(--muted);font-weight:500}
+.ticket-id{font-family:monospace;font-size:11px}
+.empty-tickets{padding:60px 24px;text-align:center}
+.empty-icon{font-size:48px;margin-bottom:14px}
+.empty-title{font-size:18px;font-weight:900;margin-bottom:6px}
+.empty-sub{font-size:14px;color:var(--muted);line-height:1.5;font-weight:400}
+.empty-cta{display:inline-block;margin-top:20px;background:var(--brand);color:#fff;padding:12px 24px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;border:none;font-family:'Cabinet Grotesk',sans-serif}
+
+/* ══════════════════════════════════════
+   PROFILE SHEET
+══════════════════════════════════════ */
+.profile-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:flex-end;z-index:400;backdrop-filter:blur(8px)}
+.profile-overlay.open{display:flex}
+.profile-sheet{background:var(--surface);width:100%;border-radius:24px 24px 0 0;padding:16px 20px calc(env(safe-area-inset-bottom,0px)+24px);animation:sheetUp 0.28s cubic-bezier(0.34,1.1,0.64,1) both}
+.profile-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
+.profile-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--amber));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;margin:0 auto 10px}
+.profile-name{font-size:19px;font-weight:900;text-align:center}
+.profile-sub{font-size:13px;color:var(--muted);text-align:center;margin-top:3px;font-weight:500}
+.profile-stats{display:flex;gap:0;margin:18px 0;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.profile-stat{flex:1;padding:13px;text-align:center;border-right:1px solid var(--border)}
+.profile-stat:last-child{border-right:none}
+.profile-stat-val{font-size:20px;font-weight:900;color:var(--brand)}
+.profile-stat-label{font-size:11px;color:var(--muted);margin-top:2px;font-weight:600}
+.profile-links{display:flex;flex-direction:column;gap:7px}
+.profile-link{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--surface2);border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;color:var(--text);border:1px solid var(--border);transition:background 0.15s}
+.profile-link:active{background:var(--surface3)}
+.profile-link-icon{font-size:17px;width:22px;text-align:center}
+.profile-link-arrow{margin-left:auto;color:var(--muted)}
+.profile-close{width:100%;background:none;border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;margin-top:10px}
+
+/* ══════════════════════════════════════
+   ADD EVENT SHEET
+══════════════════════════════════════ */
+.add-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:flex-end;z-index:500;backdrop-filter:blur(8px)}
+.add-overlay.open{display:flex}
+.add-sheet{background:var(--surface);width:100%;border-radius:24px 24px 0 0;max-height:94vh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:sheetUp 0.28s cubic-bezier(0.34,1.1,0.64,1) both}
+.add-top{padding:16px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
+.add-title{font-size:17px;font-weight:900}
+.add-close{width:28px;height:28px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;color:var(--muted)}
+.add-body{padding:16px 18px calc(env(safe-area-inset-bottom,0px)+24px)}
+.form-group{margin-bottom:15px}
+.form-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:7px;display:block}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;font-family:'Cabinet Grotesk',sans-serif;color:var(--text);outline:none;transition:border-color 0.15s;-webkit-appearance:none;font-weight:500}
+.form-input:focus{border-color:var(--brand)}
+.form-input::placeholder{color:var(--muted)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cat-opt{padding:11px 8px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);text-align:center;cursor:pointer;transition:all 0.15s;user-select:none}
+.cat-opt .ci{font-size:20px;display:block;margin-bottom:4px}
+.cat-opt .cn{font-size:11px;font-weight:700;color:var(--muted)}
+.cat-opt.selected{border-color:var(--brand);background:rgba(232,69,10,0.1)}
+.cat-opt.selected .cn{color:var(--brand)}
+.hood-wrap{display:flex;gap:6px;flex-wrap:wrap}
+.hood-opt{padding:6px 12px;border-radius:100px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--muted);transition:all 0.15s;user-select:none}
+.hood-opt.selected{border-color:var(--brand);background:rgba(232,69,10,0.1);color:var(--brand)}
+.price-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.ptb{padding:10px;border-radius:10px;font-size:13px;font-weight:700;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;text-align:center;transition:all 0.15s}
+.ptb.selected{border-color:var(--brand);background:rgba(232,69,10,0.1);color:var(--brand)}
+.crowd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.crowd-opt{padding:10px 8px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;font-size:12px;font-weight:700;color:var(--muted)}
+.crowd-opt .ci{font-size:17px;display:block;margin-bottom:3px}
+.crowd-opt.selected{border-color:var(--brand);background:rgba(232,69,10,0.1);color:var(--brand)}
+.submit-btn{width:100%;background:var(--brand);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;transition:background 0.15s,transform 0.1s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.submit-btn:active{background:var(--brand-dark);transform:scale(0.98)}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{display:flex;background:var(--surface);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom,8px);flex-shrink:0}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 4px;cursor:pointer;user-select:none;transition:all 0.15s}
+.nav-icon{font-size:20px;margin-bottom:3px;transition:transform 0.2s}
+.nav-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.3px;text-transform:uppercase}
+.nav-tab.active .nav-label{color:var(--brand)}
+.nav-tab.active .nav-icon{transform:scale(1.1)}
+.nav-bar{width:20px;height:3px;border-radius:2px;background:transparent;margin-top:4px;transition:background 0.2s}
+.nav-tab.active .nav-bar{background:var(--brand)}
 
 /* TOAST */
-.toast{
-  position:absolute;bottom:80px;left:50%;
-  transform:translateX(-50%) translateY(20px);
-  background:var(--surface3);color:var(--text);
-  padding:10px 20px;border-radius:100px;font-size:13px;font-weight:700;
-  opacity:0;transition:all 0.3s;z-index:2000;white-space:nowrap;
-  pointer-events:none;border:1px solid var(--border);
-}
+.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface3);color:var(--text);padding:10px 20px;border-radius:100px;font-size:13px;font-weight:700;opacity:0;transition:all 0.3s;z-index:2000;white-space:nowrap;pointer-events:none;border:1px solid var(--border)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
@@ -762,24 +307,25 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
 
   <div class="top-bar">
     <div class="wordmark">Ticket<span>Bure</span></div>
-    <div class="top-actions">
-      <div class="map-pill" onclick="openMap()">🗺 <span class="map-pill-count" id="map-count">6</span></div>
-      <div class="filter-btn" id="filter-btn" onclick="openFilter()">⚙ Filter</div>
-      <button class="top-btn" onclick="openProfile()" title="Profile">👤</button>
-      <button class="add-btn" onclick="openAdd()">＋</button>
+    <div class="top-right">
+      <div class="map-btn" onclick="openMap()">
+        <div class="map-btn-dot"></div>
+        Live Map
+      </div>
+      <div class="icon-btn" onclick="openProfile()">👤</div>
+      <div class="icon-btn" onclick="openAdd()">＋</div>
     </div>
   </div>
 
-  <!-- ══════════ EVENTS SCREEN ══════════ -->
-  <div class="screen active events-screen" id="screen-events">
-    <div class="snaps-row" id="snaps-row"></div>
+  <!-- ══════════ FEED ══════════ -->
+  <div class="screen active" id="screen-feed">
     <div class="feed-scroll">
       <div class="masonry" id="masonry-feed"></div>
     </div>
   </div>
 
-  <!-- ══════════ TICKETS SCREEN ══════════ -->
-  <div class="screen tickets-screen" id="screen-tickets">
+  <!-- ══════════ TICKETS ══════════ -->
+  <div class="screen" id="screen-tickets">
     <div class="tickets-header">
       <div class="tickets-title">My Tickets</div>
       <div class="tickets-sub" id="tickets-sub">0 active tickets</div>
@@ -787,111 +333,141 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
     <div class="tickets-scroll" id="tickets-list"></div>
   </div>
 
-  <!-- ══════════ BOTTOM NAV ══════════ -->
+  <!-- ── BOTTOM NAV ── -->
   <div class="bottom-nav">
-    <div class="nav-tab active" id="tab-events" onclick="switchTab('events')">
+    <div class="nav-tab active" id="tab-feed" onclick="switchTab('feed')">
       <div class="nav-icon">🎪</div>
       <div class="nav-label">Events</div>
-      <div class="nav-tab-bar"></div>
+      <div class="nav-bar"></div>
     </div>
     <div class="nav-tab" id="tab-tickets" onclick="switchTab('tickets')">
       <div class="nav-icon">🎟</div>
       <div class="nav-label">Tickets</div>
-      <div class="nav-tab-bar"></div>
+      <div class="nav-bar"></div>
     </div>
   </div>
 
-  <!-- MAP OVERLAY (lens over events) -->
+  <!-- ══════════ MAP OVERLAY ══════════ -->
   <div class="map-overlay" id="map-overlay">
-    <div class="map-bar">
-      <button class="map-close-btn" onclick="closeMap()">✕</button>
-      <div class="map-search-bar">🔍 Search Dar nightlife...</div>
-    </div>
-    <div id="map" style="flex:1;min-height:0"></div>
-    <!-- Map checkout sheet — slides up over map -->
-    <div class="map-checkout-overlay" id="map-checkout-overlay">
-      <div class="map-checkout-sheet">
-        <div class="mcs-handle"></div>
-        <div class="mcs-event-bar">
-          <div class="mcs-dot" id="mcs-dot"></div>
-          <div class="mcs-info">
-            <div class="mcs-name" id="mcs-name">Event Name</div>
-            <div class="mcs-meta" id="mcs-meta">Venue · Neighborhood</div>
-          </div>
-          <div class="mcs-close" onclick="closeMapCheckout()">✕</div>
-        </div>
-        <div class="mcs-body">
-          <div class="mcs-qty-row">
-            <span class="mcs-qty-label">Number of Tickets</span>
-            <div class="mcs-qty-ctrl">
-              <div class="mcs-qty-btn" onclick="mapChangeQty(-1)">⊖</div>
-              <div class="mcs-qty-num" id="mcs-qty">1</div>
-              <div class="mcs-qty-btn" onclick="mapChangeQty(1)">⊕</div>
-            </div>
-          </div>
-          <div class="mcs-total-row">
-            <span class="mcs-total-label">Total</span>
-            <span class="mcs-total-val" id="mcs-total">TSh 0</span>
-          </div>
-          <button class="mcs-pay-btn" onclick="mapPay()">PAY WITH MOBILE MONEY</button>
-          <button class="mcs-view-more" onclick="mapViewDetail()">View full event details →</button>
-        </div>
+    <div class="map-topbar">
+      <div class="map-close" onclick="closeMap()">✕</div>
+      <div class="map-title-wrap">
+        <div class="map-title">Tonight in Dar es Salaam</div>
+        <div class="map-subtitle">Tap a dot to see what's happening</div>
       </div>
     </div>
+    <div class="map-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--crowd-quiet)"></div>Quiet</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--crowd-filling)"></div>Filling up</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--crowd-busy)"></div>Busy</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--crowd-packed)"></div>Packed</div>
+    </div>
+    <div id="map"></div>
   </div>
 
   <!-- EVENT DETAIL SHEET -->
   <div class="detail-overlay" id="detail-overlay">
     <div class="detail-sheet">
-      <button class="detail-close" onclick="closeDetail()">✕</button>
       <div class="detail-handle"></div>
+      <button class="detail-close" onclick="closeDetail()">✕</button>
       <div id="detail-content"></div>
     </div>
   </div>
 
-  <!-- PROFILE SHEET -->
-  <div class="profile-overlay" id="profile-overlay">
-    <div class="profile-sheet">
-      <div class="profile-handle"></div>
-      <div class="profile-avatar" id="profile-avatar">E</div>
-      <div class="profile-name" id="profile-name">Emmanuel</div>
-      <div class="profile-number" id="profile-number">+255 7xx xxx xxx</div>
-      <div class="profile-stats">
-        <div class="profile-stat">
-          <div class="profile-stat-val" id="ps-tickets">0</div>
-          <div class="profile-stat-label">Tickets</div>
-        </div>
-        <div class="profile-stat">
-          <div class="profile-stat-val" id="ps-events">0</div>
-          <div class="profile-stat-label">Events Listed</div>
-        </div>
-        <div class="profile-stat">
-          <div class="profile-stat-val">DSM</div>
-          <div class="profile-stat-label">Location</div>
-        </div>
+  <!-- CHECKOUT SHEET -->
+  <div class="checkout-overlay" id="checkout-overlay">
+    <div class="checkout-sheet">
+      <div class="co-handle"></div>
+      <div class="co-event-strip">
+        <div class="co-event-name" id="co-event-name">Event</div>
+        <div class="co-event-meta" id="co-event-meta"></div>
       </div>
-      <div class="profile-links">
-        <div class="profile-link" onclick="closeProfile();openAdd()">
-          <div class="profile-link-icon">➕</div>
-          <span>Add an Event</span>
-          <span class="profile-link-arrow">›</span>
+      <div class="co-body">
+        <div class="co-pay-label">Pay with Mobile Money</div>
+        <div class="co-pay-opts">
+          <div class="pay-opt selected" id="opt-mpesa" onclick="selectPay('mpesa')">
+            <div class="pay-icon mpesa">M-PESA</div>
+            <div><div class="pay-name">M-Pesa</div><div class="pay-sub">+255 71x xxx xxx</div></div>
+            <div class="pay-radio checked" id="radio-mpesa"></div>
+          </div>
+          <div class="pay-opt" id="opt-tigo" onclick="selectPay('tigo')">
+            <div class="pay-icon tigo">TIGO</div>
+            <div><div class="pay-name">Tigo Pesa</div><div class="pay-sub">Link your number</div></div>
+            <div class="pay-radio" id="radio-tigo"></div>
+          </div>
+          <div class="pay-opt" id="opt-airtel" onclick="selectPay('airtel')">
+            <div class="pay-icon airtel">AIRTEL</div>
+            <div><div class="pay-name">Airtel Money</div><div class="pay-sub">Link your number</div></div>
+            <div class="pay-radio" id="radio-airtel"></div>
+          </div>
         </div>
-        <div class="profile-link" onclick="window.open('organizer.html','_blank')">
-          <div class="profile-link-icon">📊</div>
-          <span>Organizer Dashboard</span>
-          <span class="profile-link-arrow">›</span>
+        <div class="co-qty-row">
+          <span style="font-weight:700;font-size:14px;color:var(--muted)">Number of Tickets</span>
+          <div class="co-qty-ctrl">
+            <div class="co-qty-btn" onclick="changeQty(-1)">−</div>
+            <div class="co-qty-num" id="qty">1</div>
+            <div class="co-qty-btn" onclick="changeQty(1)">+</div>
+          </div>
         </div>
-        <div class="profile-link" onclick="window.open('landing.html','_blank')">
-          <div class="profile-link-icon">🌐</div>
-          <span>About TicketBure</span>
-          <span class="profile-link-arrow">›</span>
+        <div class="co-total-row">
+          <span style="color:var(--muted);font-weight:600;font-size:13px">Total</span>
+          <span class="co-total-val" id="total">TSh 0</span>
         </div>
+        <button class="co-pay-btn" onclick="showSTK()">PAY WITH MOBILE MONEY</button>
       </div>
-      <button class="profile-close-btn" onclick="closeProfile()">Close</button>
     </div>
   </div>
 
-  <!-- ADD EVENT SHEET -->
+  <!-- STK -->
+  <div class="stk-overlay" id="stk-overlay">
+    <div class="stk-sheet">
+      <div class="stk-handle"></div>
+      <div class="stk-title">Enter your M-Pesa PIN</div>
+      <div class="stk-sub" id="stk-sub">Paying to TicketBure</div>
+      <div class="stk-amt">
+        <div class="stk-amt-lbl">Amount</div>
+        <div class="stk-amt-val" id="stk-val">TSh 0</div>
+      </div>
+      <div class="pin-dots">
+        <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+        <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
+      </div>
+      <div class="pin-hint">Tap Confirm to simulate PIN entry</div>
+      <button class="stk-confirm" onclick="confirmPay()">✓ &nbsp;Confirm Payment</button>
+      <button class="stk-cancel" onclick="cancelSTK()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-circle">✓</div>
+    <h2>Tiketi Yako Iko Ready!</h2>
+    <p>Your ticket is in My Tickets. Show the QR at the door — works offline too.</p>
+    <button class="success-btn" onclick="goTickets()">View My Tickets 🎟</button>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="profile-overlay" id="profile-overlay">
+    <div class="profile-sheet">
+      <div class="profile-handle"></div>
+      <div class="profile-avatar">E</div>
+      <div class="profile-name">Emmanuel</div>
+      <div class="profile-sub">+255 7xx xxx xxx · Dar es Salaam</div>
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="profile-stat-val" id="ps-tickets">0</div><div class="profile-stat-label">Tickets</div></div>
+        <div class="profile-stat"><div class="profile-stat-val" id="ps-events">0</div><div class="profile-stat-label">Events</div></div>
+        <div class="profile-stat"><div class="profile-stat-val">DSM</div><div class="profile-stat-label">City</div></div>
+      </div>
+      <div class="profile-links">
+        <div class="profile-link" onclick="closeProfile();openAdd()"><span class="profile-link-icon">➕</span><span>Add an Event</span><span class="profile-link-arrow">›</span></div>
+        <div class="profile-link" onclick="window.open('organizer.html','_blank')"><span class="profile-link-icon">📊</span><span>Organizer Dashboard</span><span class="profile-link-arrow">›</span></div>
+        <div class="profile-link" onclick="window.open('landing.html','_blank')"><span class="profile-link-icon">🌐</span><span>About TicketBure</span><span class="profile-link-arrow">›</span></div>
+      </div>
+      <button class="profile-close" onclick="closeProfile()">Close</button>
+    </div>
+  </div>
+
+  <!-- ADD EVENT -->
   <div class="add-overlay" id="add-overlay">
     <div class="add-sheet">
       <div class="add-top">
@@ -906,10 +482,10 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
         <div class="form-group">
           <label class="form-label">Category</label>
           <div class="cat-grid">
-            <div class="cat-opt music selected" onclick="selectCat(this,'music')"><span class="ci">🎵</span><span class="cn">Music</span></div>
-            <div class="cat-opt tech" onclick="selectCat(this,'tech')"><span class="ci">💻</span><span class="cn">Tech</span></div>
-            <div class="cat-opt art" onclick="selectCat(this,'art')"><span class="ci">🎨</span><span class="cn">Art</span></div>
-            <div class="cat-opt food" onclick="selectCat(this,'food')"><span class="ci">🍲</span><span class="cn">Food</span></div>
+            <div class="cat-opt selected" onclick="selectCat(this,'music')"><span class="ci">🎵</span><span class="cn">Clubs & Concerts</span></div>
+            <div class="cat-opt" onclick="selectCat(this,'tech')"><span class="ci">💻</span><span class="cn">Tech & Business</span></div>
+            <div class="cat-opt" onclick="selectCat(this,'art')"><span class="ci">🎨</span><span class="cn">Arts & Culture</span></div>
+            <div class="cat-opt" onclick="selectCat(this,'food')"><span class="ci">🍲</span><span class="cn">Food & Markets</span></div>
           </div>
         </div>
         <div class="form-group">
@@ -918,7 +494,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
         </div>
         <div class="form-group">
           <label class="form-label">Neighborhood</label>
-          <div class="hood-wrap" id="hood-wrap">
+          <div class="hood-wrap">
             <div class="hood-opt selected" onclick="selectHood(this,'Masaki')">Masaki</div>
             <div class="hood-opt" onclick="selectHood(this,'Kariakoo')">Kariakoo</div>
             <div class="hood-opt" onclick="selectHood(this,'Upanga')">Upanga</div>
@@ -942,9 +518,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
             <div class="ptb selected" id="pt-paid" onclick="setPriceType('paid')">Paid</div>
             <div class="ptb" id="pt-free" onclick="setPriceType('free')">Free Entry</div>
           </div>
-          <div id="price-wrap">
-            <input class="form-input" id="f-price" type="number" placeholder="Amount in TSh e.g. 15000" min="0" step="500">
-          </div>
+          <div id="price-wrap"><input class="form-input" id="f-price" type="number" placeholder="Amount in TSh e.g. 15000" min="0" step="500"></div>
         </div>
         <div class="form-group">
           <label class="form-label">Crowd Level Right Now</label>
@@ -956,120 +530,16 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Venue Snap (optional)</label>
-          <input class="form-input" id="f-snap" type="url" placeholder="Paste an image link from Google Photos">
+          <label class="form-label">Venue Photo (optional)</label>
+          <input class="form-input" id="f-snap" type="url" placeholder="Paste an image link">
           <input class="form-input" id="f-snap-cap" type="text" placeholder="Caption e.g. Dancefloor is open 🔥" maxlength="60" style="margin-top:8px">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Short Description (optional)</label>
+          <input class="form-input" id="f-desc" type="text" placeholder="e.g. Live band all night, bar opens 7PM" maxlength="100">
         </div>
         <button class="submit-btn" onclick="submitEvent()"><span>🗺</span><span>Publish to Map</span></button>
       </div>
-    </div>
-  </div>
-
-  <!-- Checkout (full screen, shown via switchTab internally) -->
-  <div class="screen checkout-screen" id="screen-checkout">
-    <div class="co-hero" id="co-hero">
-      <div class="co-back" onclick="switchTab('events')">← Back to events</div>
-      <div class="co-cat" id="co-cat">🎵 Music</div>
-      <div class="co-name" id="co-name">Event Name</div>
-      <div class="co-date" id="co-date"></div>
-      <div class="co-venue" id="co-venue"></div>
-      <div class="co-price" id="co-price">TSh 0</div>
-    </div>
-    <div class="co-body">
-      <div class="pay-label">Pay with Mobile Money</div>
-      <div class="pay-opt selected" id="opt-mpesa" onclick="selectPay('mpesa')">
-        <div class="pay-icon mpesa">M-PESA</div>
-        <div><div class="pay-name">M-Pesa</div><div class="pay-sub">+255 71x xxx xxx</div></div>
-        <div class="pay-radio checked" id="radio-mpesa"></div>
-      </div>
-      <div class="pay-opt" id="opt-tigo" onclick="selectPay('tigo')">
-        <div class="pay-icon tigo">TIGO</div>
-        <div><div class="pay-name">Tigo Pesa</div><div class="pay-sub">Link your number</div></div>
-        <div class="pay-radio" id="radio-tigo"></div>
-      </div>
-      <div class="pay-opt" id="opt-airtel" onclick="selectPay('airtel')">
-        <div class="pay-icon airtel">AIRTEL</div>
-        <div><div class="pay-name">Airtel Money</div><div class="pay-sub">Link your number</div></div>
-        <div class="pay-radio" id="radio-airtel"></div>
-      </div>
-      <div class="qty-row">
-        <span style="font-weight:700;font-size:15px">Tickets</span>
-        <div class="qty-ctrl">
-          <div class="qty-btn" onclick="changeQty(-1)">−</div>
-          <div class="qty-num" id="qty">1</div>
-          <div class="qty-btn" onclick="changeQty(1)">+</div>
-        </div>
-      </div>
-      <div class="total-row">
-        <span style="color:var(--muted);font-weight:600">Total</span>
-        <span class="total-val" id="total">TSh 0</span>
-      </div>
-      <button class="buy-btn" onclick="showSTK()"><span>📱</span><span id="buy-btn-txt">Pay with M-Pesa STK Push</span></button>
-      <div class="buy-hint">You'll get a PIN popup on your phone instantly</div>
-    </div>
-  </div>
-
-  <!-- STK Overlay -->
-  <div class="stk-overlay" id="stk-overlay">
-    <div class="stk-sheet">
-      <div class="stk-handle"></div>
-      <div class="stk-title">Enter your M-Pesa PIN</div>
-      <div class="stk-sub" id="stk-sub">Paying to TicketBure</div>
-      <div class="stk-amt">
-        <div class="stk-amt-lbl">Amount</div>
-        <div class="stk-amt-val" id="stk-val">TSh 0</div>
-      </div>
-      <div class="pin-dots">
-        <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
-        <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
-      </div>
-      <div class="pin-hint">Tap Confirm to simulate PIN entry</div>
-      <button class="stk-confirm" onclick="confirmPay()">✓ &nbsp;Confirm Payment</button>
-      <button class="stk-cancel" onclick="cancelSTK()">Cancel</button>
-    </div>
-  </div>
-
-  <!-- Success Overlay -->
-  <div class="success-overlay" id="success-overlay">
-    <div class="success-circle">✓</div>
-    <h2>Tiketi Yako Iko Ready!</h2>
-    <p>Your ticket is saved in My Tickets. Show the QR code at the door — works offline too.</p>
-    <button class="success-btn" onclick="goTickets()">View My Tickets 🎟</button>
-  </div>
-
-  <!-- FILTER SHEET -->
-  <div class="filter-overlay" id="filter-overlay">
-    <div class="filter-sheet">
-      <div class="filter-handle"></div>
-      <div class="filter-sheet-title">Filter Events</div>
-      <div class="filter-cats">
-        <div class="filter-cat-opt selected" onclick="applyFilter('all',this)">
-          <span class="filter-cat-icon">🎪</span>
-          <span class="filter-cat-name">All Events</span>
-          <span class="filter-cat-check">✓</span>
-        </div>
-        <div class="filter-cat-opt" onclick="applyFilter('music',this)">
-          <span class="filter-cat-icon">🎵</span>
-          <span class="filter-cat-name">Clubs & Concerts</span>
-          <span class="filter-cat-check">✓</span>
-        </div>
-        <div class="filter-cat-opt" onclick="applyFilter('tech',this)">
-          <span class="filter-cat-icon">💻</span>
-          <span class="filter-cat-name">Tech & Business</span>
-          <span class="filter-cat-check">✓</span>
-        </div>
-        <div class="filter-cat-opt" onclick="applyFilter('art',this)">
-          <span class="filter-cat-icon">🎨</span>
-          <span class="filter-cat-name">Arts & Culture</span>
-          <span class="filter-cat-check">✓</span>
-        </div>
-        <div class="filter-cat-opt" onclick="applyFilter('food',this)">
-          <span class="filter-cat-icon">🍲</span>
-          <span class="filter-cat-name">Food & Markets</span>
-          <span class="filter-cat-check">✓</span>
-        </div>
-      </div>
-      <button class="filter-reset" onclick="applyFilter('all',document.querySelector('.filter-cat-opt'))">Reset Filter</button>
     </div>
   </div>
 
@@ -1082,25 +552,20 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);font-fa
    DATA
 ══════════════════════════════════════ */
 const SEED = [
-  { id:'s0', name:'Afrobeat Night — Live Band', date:'2026-04-26', time:'20:00', venue:'New Msasani Club', hood:'Masaki', cat:'music', price:15000, lat:-6.7590, lng:39.2695, crowd:'busy', snapUrl:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80', snapCaption:'Dancefloor warming up 🔥', desc:'Live afrobeat band all night. Bar opens at 7PM. Dress smart casual.', custom:false },
-  { id:'s1', name:'DSM Tech Meetup #12', date:'2026-04-26', time:'14:00', venue:'Serena Hotel', hood:'Upanga', cat:'tech', price:25000, lat:-6.8150, lng:39.2900, crowd:'filling', snapUrl:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80', snapCaption:'Setup ready, early birds arriving', desc:'12 lightning talks + networking. Panel on fintech in East Africa.', custom:false },
-  { id:'s2', name:'Sanaa Ya Mitaa Exhibition', date:'2026-04-27', time:'11:00', venue:'Alliance Française', hood:'Upanga', cat:'art', price:10000, lat:-6.8105, lng:39.2825, crowd:'quiet', snapUrl:'https://images.unsplash.com/photo-1531243269054-5ebf6f34081e?w=600&q=80', snapCaption:'Doors open at 11AM', desc:'Street art & photography by 14 Tanzanian artists. Family friendly.', custom:false },
-  { id:'s3', name:'Kariakoo Street Food Fest', date:'2026-04-27', time:'12:00', venue:'Kariakoo Market Square', hood:'Kariakoo', cat:'food', price:0, lat:-6.8220, lng:39.2730, crowd:'packed', snapUrl:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80', snapCaption:'Already packed — come now! 🤩', desc:'30+ food stalls, live cooking demos, kids activities. Completely free entry.', custom:false },
-  { id:'s4', name:'Jazz & Cocktails Evening', date:'2026-04-25', time:'19:30', venue:'Hyatt Regency Dar', hood:'Oyster Bay', cat:'music', price:35000, lat:-6.7710, lng:39.2785, crowd:'busy', snapUrl:'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=600&q=80', snapCaption:'Smooth vibes on the terrace 🎺', desc:'Jazz quartet with ocean views. Dress code smart casual. Cocktails included in ticket.', custom:false },
-  { id:'s5', name:'Startup Pitch Night DSM', date:'2026-04-24', time:'18:00', venue:'Buni Innovation Hub', hood:'Mikocheni', cat:'tech', price:5000, lat:-6.7860, lng:39.2600, crowd:'filling', snapUrl:'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&q=80', snapCaption:'Pitches start at 6:30PM', desc:'6 startups pitch to DSM investors. Q&A and networking after.', custom:false },
+  { id:'s0', name:'Afrobeat Night — Live Band', date:'2026-04-26', time:'20:00', venue:'New Msasani Club', hood:'Masaki', cat:'music', price:15000, lat:-6.7590, lng:39.2695, crowd:'busy', snapUrl:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80', snapCaption:'Dancefloor warming up 🔥', desc:'Live afrobeat band all night. Bar opens at 7PM.', custom:false },
+  { id:'s1', name:'DSM Tech Meetup #12', date:'2026-04-26', time:'14:00', venue:'Serena Hotel', hood:'Upanga', cat:'tech', price:25000, lat:-6.8150, lng:39.2900, crowd:'filling', snapUrl:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80', snapCaption:'Setup ready, early birds arriving', desc:'12 lightning talks + networking. Panel on fintech.', custom:false },
+  { id:'s2', name:'Sanaa Ya Mitaa Exhibition', date:'2026-04-27', time:'11:00', venue:'Alliance Française', hood:'Upanga', cat:'art', price:10000, lat:-6.8105, lng:39.2825, crowd:'quiet', snapUrl:'https://images.unsplash.com/photo-1531243269054-5ebf6f34081e?w=600&q=80', snapCaption:'Doors open at 11AM', desc:'Street art & photography by 14 Tanzanian artists.', custom:false },
+  { id:'s3', name:'Kariakoo Street Food Fest', date:'2026-04-27', time:'12:00', venue:'Kariakoo Market Square', hood:'Kariakoo', cat:'food', price:0, lat:-6.8220, lng:39.2730, crowd:'packed', snapUrl:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80', snapCaption:'Already packed — come now! 🤩', desc:'30+ food stalls, live cooking demos. Free entry.', custom:false },
+  { id:'s4', name:'Jazz & Cocktails Evening', date:'2026-04-25', time:'19:30', venue:'Hyatt Regency Dar', hood:'Oyster Bay', cat:'music', price:35000, lat:-6.7710, lng:39.2785, crowd:'busy', snapUrl:'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=600&q=80', snapCaption:'Smooth vibes on the terrace 🎺', desc:'Jazz quartet, ocean views, cocktails included.', custom:false },
+  { id:'s5', name:'Startup Pitch Night DSM', date:'2026-04-24', time:'18:00', venue:'Buni Innovation Hub', hood:'Mikocheni', cat:'tech', price:5000, lat:-6.7860, lng:39.2600, crowd:'filling', snapUrl:'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&q=80', snapCaption:'Pitches start at 6:30PM', desc:'6 startups pitch to DSM investors. Networking after.', custom:false },
 ];
 
-const CAT_COLORS = { music:'#4F45B0', tech:'#0D6B56', art:'#92314F', food:'#B87316' };
-const CAT_EMOJI  = { music:'🎵', tech:'💻', art:'🎨', food:'🍲' };
-const CAT_LABELS = { music:'🎵 Clubs & Concerts', tech:'💻 Tech & Business', art:'🎨 Arts & Culture', food:'🍲 Food & Markets' };
-const CROWD_LABEL = { quiet:'😴 Quiet', filling:'🚶 Filling up', busy:'🔥 Busy', packed:'🤩 Packed!' };
+const CAT_BG  = { music:'#1A1535', tech:'#0A1F18', art:'#1F0D16', food:'#1F1505' };
+const CAT_EMOJI = { music:'🎵', tech:'💻', art:'🎨', food:'🍲' };
+const CROWD_COLORS = { quiet:'#1DBF7A', filling:'#F0A500', busy:'#FF6B35', packed:'#E8294A' };
+const CROWD_LABELS = { quiet:'😴 Quiet', filling:'🚶 Filling up', busy:'🔥 Busy', packed:'🤩 Packed!' };
 const QR = [1,1,1,1,1,1,1,1,0,0,0,1,0,0,1,0,1,0,1,0,1,1,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,0,1,1,0,1,0,1,1,1,1,1,1];
-
-const HOOD_COORDS = {
-  'Masaki':[-6.7590,39.2695],'Kariakoo':[-6.8220,39.2730],'Upanga':[-6.8120,39.2850],
-  'Oyster Bay':[-6.7720,39.2780],'Mikocheni':[-6.7840,39.2580],'Sinza':[-6.7760,39.2460],
-  'Kinondoni':[-6.7930,39.2520],'Ilala':[-6.8280,39.2870],
-};
+const HOOD_COORDS = {'Masaki':[-6.7590,39.2695],'Kariakoo':[-6.8220,39.2730],'Upanga':[-6.8120,39.2850],'Oyster Bay':[-6.7720,39.2780],'Mikocheni':[-6.7840,39.2580],'Sinza':[-6.7760,39.2460],'Kinondoni':[-6.7930,39.2520],'Ilala':[-6.8280,39.2870]};
 
 function loadCustom(){ try{return JSON.parse(localStorage.getItem('tb_events')||'[]')}catch(e){return[]} }
 function saveCustom(arr){ try{localStorage.setItem('tb_events',JSON.stringify(arr))}catch(e){} }
@@ -1109,11 +574,8 @@ function allEvents(){ return [...SEED,...loadCustom()] }
 /* ══════════════════════════════════════
    STATE
 ══════════════════════════════════════ */
-let activeFilter='all', activeTab='events';
-let selEventId='s0', qty=1, payMethod='mpesa';
-let walletItems=[];
-let pinTimer=null;
-let map=null, markerMap={};
+let selEventId = 's0', qty = 1, payMethod = 'mpesa', walletItems = [], pinTimer = null;
+let map = null, markerMap = {};
 let fCat='music', fHood='Masaki', fPriceType='paid', fCrowd='quiet';
 
 /* ══════════════════════════════════════
@@ -1131,355 +593,156 @@ function fmtDate(date,time){
   const d=new Date(date+'T'+time);
   const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0');
-  const ampm=h>=12?'PM':'AM',hh=h%12||12;
+  const h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0'),ampm=h>=12?'PM':'AM',hh=h%12||12;
   return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} · ${hh}:${m} ${ampm}`;
 }
 
 /* ══════════════════════════════════════
-   TAB NAVIGATION
+   TAB NAV
 ══════════════════════════════════════ */
 function switchTab(name){
-  activeTab=name;
-  ['events','tickets','checkout'].forEach(n=>{
-    const s=document.getElementById('screen-'+n);
-    if(s) s.classList.toggle('active',n===name);
-  });
-  ['events','tickets'].forEach(n=>{
-    const t=document.getElementById('tab-'+n);
-    if(t) t.classList.toggle('active',n===name);
+  ['feed','tickets'].forEach(n=>{
+    document.getElementById('screen-'+n).classList.toggle('active',n===name);
+    document.getElementById('tab-'+n).classList.toggle('active',n===name);
   });
   if(name==='tickets') renderTickets();
 }
 
 /* ══════════════════════════════════════
-   MAP
+   MASONRY FEED — clean, minimal
+══════════════════════════════════════ */
+function renderFeed(){
+  const evts = allEvents();
+  document.getElementById('masonry-feed').innerHTML = evts.map((e,i)=>{
+    const tall = i % 3 === 0;
+    const crowd = e.crowd || 'quiet';
+    const packed = crowd === 'packed';
+    const imgHtml = e.snapUrl
+      ? `<img class="card-img" src="${e.snapUrl}" alt="" onerror="this.style.display='none'">`
+      : `<div class="card-img-ph" style="background:${CAT_BG[e.cat]}">${CAT_EMOJI[e.cat]}</div>`;
+    return `
+      <div class="card${tall?' tall':''}" onclick="openDetail('${e.id}')">
+        ${packed?`<div class="ribbon"><div class="ribbon-dot"></div>PACKED</div>`:''}
+        ${imgHtml}
+        <div class="card-body">
+          <div class="card-name">${e.name}</div>
+          <div class="card-row">
+            <span class="card-price${e.price===0?' paid':''}" style="${e.price>0?'color:var(--text)':''}">${fmt(e.price)}</span>
+            <span class="crowd-pip"><span class="pip ${crowd}"></span></span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════
+   MAP — city pulse only
 ══════════════════════════════════════ */
 function initMap(){
-  if(typeof L==='undefined') return;
-  map=L.map('map',{center:[-6.7924,39.2083],zoom:13,zoomControl:true,attributionControl:false});
+  if(typeof L==='undefined'){
+    const el=document.getElementById('map');
+    if(el){el.style.cssText='flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px';el.innerHTML='<div style="font-size:32px">🗺</div><div style="font-size:13px;color:#6B6860;font-weight:600">Map loads on GitHub Pages</div>'}
+    return;
+  }
+  map = L.map('map',{center:[-6.7924,39.2083],zoom:13,zoomControl:true,attributionControl:false});
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19}).addTo(map);
   allEvents().forEach(addPin);
-  const bounds=L.latLngBounds(SEED.map(e=>[e.lat,e.lng]));
-  map.fitBounds(bounds,{padding:[28,28]});
+  const bounds = L.latLngBounds(SEED.map(e=>[e.lat,e.lng]));
+  map.fitBounds(bounds,{padding:[40,40]});
 }
 
 function addPin(e){
-  if(typeof L==='undefined'||!map) return;
+  if(!map||typeof L==='undefined') return;
   const crowd = e.crowd || 'quiet';
-  const crowdColors = { quiet:'#1DBF7A', filling:'#F0A500', busy:'#FF6B35', packed:'#E8294A' };
-  const col = crowdColors[crowd];
+  const col = CROWD_COLORS[crowd];
+  // Simple glowing dot — no label, no clutter
   const icon = L.divIcon({
     className:'',
-    html:`<div class="custom-pin">
-      <div class="pin-glow ${crowd}" style="background:${col}"></div>
-      <div class="pin-venue-name">${e.venue||e.name.split('—')[0].trim()}</div>
+    html:`<div style="position:relative;width:20px;height:20px;display:flex;align-items:center;justify-content:center">
+      <div style="position:absolute;inset:0;border-radius:50%;background:${col};opacity:0.25;animation:ringPulse 2s infinite"></div>
+      <div style="width:12px;height:12px;border-radius:50%;background:${col};border:2px solid rgba(255,255,255,0.3);position:relative;z-index:1"></div>
     </div>`,
-    iconSize:[null,null],iconAnchor:[55,18],popupAnchor:[0,-20]
+    iconSize:[20,20],iconAnchor:[10,10]
   });
   const marker = L.marker([e.lat,e.lng],{icon}).addTo(map);
-  marker.on('click',()=>{
-    openMapCheckout(e.id);
-  });
-  markerMap[e.id]=marker;
-}
-
-let mapSelEventId = null;
-let mapQty = 1;
-
-function openMapCheckout(id){
-  const e = allEvents().find(ev=>ev.id===id);
-  if(!e) return;
-  mapSelEventId = id;
-  mapQty = 1;
-  const crowdColors = { quiet:'#1DBF7A', filling:'#F0A500', busy:'#FF6B35', packed:'#E8294A' };
-  document.getElementById('mcs-dot').style.background = crowdColors[e.crowd||'quiet'];
-  document.getElementById('mcs-name').textContent = e.name;
-  document.getElementById('mcs-meta').textContent = e.venue+' · '+e.hood+' · '+fmtDate(e.date,e.time);
-  document.getElementById('mcs-qty').textContent = '1';
-  document.getElementById('mcs-total').textContent = fmt(e.price);
-  document.getElementById('map-checkout-overlay').classList.add('open');
-}
-
-function closeMapCheckout(){
-  document.getElementById('map-checkout-overlay').classList.remove('open');
-  mapSelEventId = null;
-}
-
-function mapChangeQty(d){
-  const e = allEvents().find(ev=>ev.id===mapSelEventId);
-  if(!e) return;
-  mapQty = Math.max(1, Math.min(10, mapQty+d));
-  document.getElementById('mcs-qty').textContent = mapQty;
-  document.getElementById('mcs-total').textContent = fmt(e.price*mapQty);
-}
-
-function mapPay(){
-  // transfer to STK flow
-  if(!mapSelEventId) return;
-  selEventId = mapSelEventId;
-  qty = mapQty;
-  const e = allEvents().find(ev=>ev.id===selEventId);
-  const total = e ? e.price*qty : 0;
-  const n={mpesa:'M-Pesa',tigo:'Tigo Pesa',airtel:'Airtel Money'};
-  document.getElementById('stk-sub').textContent='Paying '+fmt(total)+' via M-Pesa for '+qty+' ticket'+(qty>1?'s':'');
-  document.getElementById('stk-val').textContent = fmt(total);
-  document.getElementById('stk-overlay').style.display='flex';
-  [0,1,2,3].forEach(i=>document.getElementById('d'+i).classList.remove('filled'));
-  let n2=0; if(pinTimer)clearInterval(pinTimer);
-  pinTimer=setInterval(()=>{if(n2<4)document.getElementById('d'+n2++).classList.add('filled');else clearInterval(pinTimer)},320);
-}
-
-function mapViewDetail(){
-  if(!mapSelEventId) return;
-  closeMapCheckout();
-  closeMap();
-  openDetail(mapSelEventId);
+  marker.on('click',()=>{ closeMap(); openDetail(e.id); });
+  markerMap[e.id] = marker;
 }
 
 function openMap(){
   document.getElementById('map-overlay').classList.add('open');
   setTimeout(()=>map&&map.invalidateSize(),80);
 }
-function closeMap(){
-  document.getElementById('map-overlay').classList.remove('open');
-}
-
-/* ══════════════════════════════════════
-   FILTER SHEET
-══════════════════════════════════════ */
-function openFilter(){
-  document.getElementById('filter-overlay').classList.add('open');
-}
-function closeFilter(){
-  document.getElementById('filter-overlay').classList.remove('open');
-}
-document.getElementById('filter-overlay').addEventListener('click',function(ev){
-  if(ev.target===this) closeFilter();
-});
-
-function applyFilter(cat, el){
-  activeFilter = cat;
-  // update sheet selection
-  document.querySelectorAll('.filter-cat-opt').forEach(c=>c.classList.remove('selected'));
-  if(el) el.classList.add('selected');
-  // update filter button
-  const btn = document.getElementById('filter-btn');
-  const labels = {all:'⚙ Filter', music:'🎵 Clubs', tech:'💻 Tech', art:'🎨 Arts', food:'🍲 Food'};
-  btn.textContent = labels[cat];
-  btn.classList.toggle('has-filter', cat !== 'all');
-  // update map markers
-  if(map){
-    const evts=allEvents();
-    Object.entries(markerMap).forEach(([id,marker])=>{
-      const e=evts.find(ev=>ev.id===id);
-      if(!e)return;
-      if(cat==='all'||e.cat===cat){if(!map.hasLayer(marker))marker.addTo(map)}
-      else{if(map.hasLayer(marker))map.removeLayer(marker)}
-    });
-  }
-  renderFeed();
-  closeFilter();
-}
-
-/* ══════════════════════════════════════
-   RENDER SNAPS ROW
-══════════════════════════════════════ */
-function renderSnaps(){
-  const evts=allEvents().filter(e=>e.snapUrl);
-  const row=document.getElementById('snaps-row');
-  if(!evts.length){row.innerHTML='';return}
-  row.innerHTML=evts.map(e=>`
-    <div class="snap-bubble" onclick="openDetail('${e.id}')">
-      <div class="snap-ring ${e.crowd==='quiet'?'quiet':''}">
-        <div class="snap-ring-inner">
-          <img src="${e.snapUrl}" alt="${e.name}" onerror="this.style.display='none'">
-        </div>
-      </div>
-      <div class="snap-name">${e.name.split('—')[0].split('&')[0].trim()}</div>
-    </div>`).join('');
-}
-
-/* ══════════════════════════════════════
-   RENDER MASONRY FEED
-══════════════════════════════════════ */
-function renderFeed(){
-  const evts=allEvents().filter(e=>activeFilter==='all'||e.cat===activeFilter);
-  document.getElementById('map-count').textContent=evts.length;
-  const feed=document.getElementById('masonry-feed');
-
-  feed.innerHTML=evts.map((e,i)=>{
-    const tall=i%3===0; // every 3rd card is tall
-    const col=CAT_COLORS[e.cat];
-    const packed=e.crowd==='packed';
-    const imgHtml=e.snapUrl
-      ?`<img class="card-img${tall?'':' short'}" src="${e.snapUrl}" alt="${e.name}" onerror="this.parentElement.querySelector('.card-img-placeholder')&&(this.style.display='none')">`
-      :`<div class="card-img-placeholder${tall?'':' short'}" style="background:${col}22">${CAT_EMOJI[e.cat]}</div>`;
-    return `
-      <div class="masonry-card${tall?' tall':''}" onclick="openDetail('${e.id}')">
-        ${packed?'<div class="packed-ribbon"><div class="packed-ribbon-dot"></div>PACKED</div>':''}
-        ${imgHtml}
-        <div class="card-body">
-          <div class="card-cat" style="color:${col}">${CAT_LABELS[e.cat]}</div>
-          <div class="card-name">${e.name}</div>
-          <div class="card-meta">${fmtDate(e.date,e.time)}</div>
-          <div class="card-footer">
-            <span class="card-price${e.price===0?' free':''}">${fmt(e.price)}</span>
-            <span class="crowd-pip ${e.crowd||'quiet'}"><span class="pip"></span>${CROWD_LABEL[e.crowd||'quiet'].split(' ')[1]||CROWD_LABEL[e.crowd||'quiet']}</span>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-  renderSnaps();
-}
+function closeMap(){ document.getElementById('map-overlay').classList.remove('open') }
 
 /* ══════════════════════════════════════
    EVENT DETAIL
 ══════════════════════════════════════ */
 function openDetail(id){
-  const e=allEvents().find(ev=>ev.id===id);
-  if(!e)return;
-  const col=CAT_COLORS[e.cat];
-  const crowdColors={quiet:'var(--muted)',filling:'var(--amber)',busy:'var(--brand)',packed:'#E05252'};
-  const snap=e.snapUrl?`
-    <div class="detail-snaps-label">Venue Snap</div>
-    <div class="detail-snaps">
-      <div class="detail-snap">
-        <img src="${e.snapUrl}" alt="snap" onerror="this.style.display='none'">
-        ${e.snapCaption?`<div class="detail-snap-cap">${e.snapCaption}</div>`:''}
-      </div>
-    </div>`:'';
-  document.getElementById('detail-content').innerHTML=`
-    ${e.snapUrl?`<img class="detail-cover" src="${e.snapUrl}" onerror="this.style.display='none'">`
-               :`<div class="detail-cover-ph">${CAT_EMOJI[e.cat]}</div>`}
+  const e = allEvents().find(ev=>ev.id===id);
+  if(!e) return;
+  selEventId = id; qty = 1;
+  const col = CROWD_COLORS[e.crowd||'quiet'];
+  const snap = e.snapUrl ? `
+    <div class="detail-snap">
+      <img class="detail-snap-img" src="${e.snapUrl}" alt="" onerror="this.style.display='none'">
+      ${e.snapCaption?`<div class="detail-snap-cap">${e.snapCaption}</div>`:''}
+    </div>` : '';
+  document.getElementById('detail-content').innerHTML = `
+    ${e.snapUrl?`<img class="detail-img" src="${e.snapUrl}" alt="" onerror="this.style.display='none'">`
+               :`<div class="detail-img-ph" style="background:${CAT_BG[e.cat]}">${CAT_EMOJI[e.cat]}</div>`}
     <div class="detail-body">
       <div class="detail-name">${e.name}</div>
-      <div class="detail-meta-row">📍 ${e.venue} · ${e.hood}</div>
-      <div class="detail-meta-row">🗓 ${fmtDate(e.date,e.time)}</div>
-      <div class="detail-badges">
-        <span class="detail-price-pill${e.price===0?' free':''}">${fmt(e.price)}</span>
-        <span class="detail-crowd-pill ${e.crowd||'quiet'}">
-          <span class="detail-pip" style="background:${crowdColors[e.crowd||'quiet']}"></span>
-          ${CROWD_LABEL[e.crowd||'quiet']}
-        </span>
+      <div class="detail-venue">📍 ${e.venue} · ${e.hood}</div>
+      <div class="detail-date">🗓 ${fmtDate(e.date,e.time)}</div>
+      <div class="detail-crowd ${e.crowd||'quiet'}">
+        <div class="detail-crowd-dot" style="background:${col}"></div>
+        ${CROWD_LABELS[e.crowd||'quiet']}
       </div>
       ${e.desc?`<div class="detail-desc">${e.desc}</div>`:''}
       ${snap}
-      <button class="detail-buy" style="background:${col}" onclick="closeDetail();selectEvent('${e.id}')">
+      <button class="detail-buy" onclick="openCheckout('${e.id}')">
         🎟 Get Ticket — ${fmt(e.price)}
       </button>
     </div>`;
   document.getElementById('detail-overlay').classList.add('open');
 }
-function closeDetail(){document.getElementById('detail-overlay').classList.remove('open')}
+function closeDetail(){ document.getElementById('detail-overlay').classList.remove('open') }
 document.getElementById('detail-overlay').addEventListener('click',function(ev){if(ev.target===this)closeDetail()});
 
 /* ══════════════════════════════════════
-   PROFILE
+   CHECKOUT
 ══════════════════════════════════════ */
-function openProfile(){
-  document.getElementById('ps-tickets').textContent=walletItems.length;
-  document.getElementById('ps-events').textContent=loadCustom().length;
-  document.getElementById('profile-overlay').classList.add('open');
+function openCheckout(id){
+  const e = allEvents().find(ev=>ev.id===id);
+  if(!e) return;
+  selEventId = id; qty = 1;
+  document.getElementById('co-event-name').textContent = e.name;
+  document.getElementById('co-event-meta').textContent = e.venue+' · '+fmtDate(e.date,e.time);
+  document.getElementById('qty').textContent = '1';
+  document.getElementById('total').textContent = fmt(e.price);
+  document.getElementById('checkout-overlay').classList.add('open');
 }
-function closeProfile(){document.getElementById('profile-overlay').classList.remove('open')}
-document.getElementById('profile-overlay').addEventListener('click',function(ev){if(ev.target===this)closeProfile()});
+function closeCheckout(){ document.getElementById('checkout-overlay').classList.remove('open') }
+document.getElementById('checkout-overlay').addEventListener('click',function(ev){if(ev.target===this)closeCheckout()});
 
-/* ══════════════════════════════════════
-   ADD EVENT
-══════════════════════════════════════ */
-function openAdd(){document.getElementById('add-overlay').classList.add('open')}
-function closeAdd(){document.getElementById('add-overlay').classList.remove('open')}
-document.getElementById('add-overlay').addEventListener('click',function(ev){if(ev.target===this)closeAdd()});
-
-function selectCat(el,cat){
-  fCat=cat;
-  document.querySelectorAll('.cat-opt').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-}
-function selectHood(el,hood){
-  fHood=hood;
-  document.querySelectorAll('.hood-opt').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-}
-function setPriceType(type){
-  fPriceType=type;
-  document.getElementById('pt-paid').classList.toggle('selected',type==='paid');
-  document.getElementById('pt-free').classList.toggle('selected',type==='free');
-  document.getElementById('price-wrap').style.opacity=type==='free'?'0.4':'1';
-  document.getElementById('price-wrap').style.pointerEvents=type==='free'?'none':'auto';
-}
-function selectCrowd(el,crowd){
-  fCrowd=crowd;
-  document.querySelectorAll('.crowd-opt').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-}
-function submitEvent(){
-  const name=document.getElementById('f-name').value.trim();
-  const venue=document.getElementById('f-venue').value.trim();
-  const date=document.getElementById('f-date').value;
-  const time=document.getElementById('f-time').value;
-  const priceRaw=document.getElementById('f-price').value;
-  if(!name){showToast('Enter event name');return}
-  if(!venue){showToast('Enter venue name');return}
-  if(!date){showToast('Select a date');return}
-  if(fPriceType==='paid'&&(!priceRaw||isNaN(Number(priceRaw)))){showToast('Enter ticket price');return}
-  const price=fPriceType==='free'?0:Number(priceRaw);
-  const base=HOOD_COORDS[fHood]||[-6.7924,39.2083];
-  const newEvent={
-    id:'c_'+Date.now(),name,venue,hood:fHood,cat:fCat,
-    date,time,price,crowd:fCrowd,
-    lat:base[0]+(Math.random()-0.5)*0.012,
-    lng:base[1]+(Math.random()-0.5)*0.012,
-    snapUrl:document.getElementById('f-snap').value.trim()||null,
-    snapCaption:document.getElementById('f-snap-cap').value.trim()||null,
-    desc:'',custom:true,
-  };
-  const customs=loadCustom();customs.push(newEvent);saveCustom(customs);
-  addPin(newEvent);
-  renderFeed();
-  closeAdd();
-  showToast('🗺 Event published!');
-  ['f-name','f-venue','f-price','f-snap','f-snap-cap'].forEach(id=>document.getElementById(id).value='');
-}
-
-/* ══════════════════════════════════════
-   SELECT EVENT → CHECKOUT
-══════════════════════════════════════ */
-function selectEvent(id){
-  const e=allEvents().find(ev=>ev.id===id);
-  if(!e)return;
-  selEventId=id;qty=1;
-  const col=CAT_COLORS[e.cat];
-  document.getElementById('co-hero').style.background=col;
-  document.getElementById('co-cat').textContent=CAT_LABELS[e.cat];
-  document.getElementById('co-name').textContent=e.name;
-  document.getElementById('co-date').textContent=fmtDate(e.date,e.time);
-  document.getElementById('co-venue').textContent=e.venue+' · '+e.hood;
-  document.getElementById('co-price').textContent=fmt(e.price);
-  document.getElementById('qty').textContent='1';
-  document.getElementById('total').textContent=fmt(e.price);
-  switchTab('checkout');
-}
-
-/* ══════════════════════════════════════
-   PAYMENT
-══════════════════════════════════════ */
 function selectPay(id){
   payMethod=id;
   ['mpesa','tigo','airtel'].forEach(m=>{
     document.getElementById('opt-'+m).classList.toggle('selected',m===id);
     document.getElementById('radio-'+m).classList.toggle('checked',m===id);
   });
-  const n={mpesa:'M-Pesa',tigo:'Tigo Pesa',airtel:'Airtel Money'};
-  document.getElementById('buy-btn-txt').textContent='Pay with '+n[id]+' STK Push';
 }
 function changeQty(d){
+  const e=allEvents().find(ev=>ev.id===selEventId);
   qty=Math.max(1,Math.min(10,qty+d));
   document.getElementById('qty').textContent=qty;
-  const e=allEvents().find(ev=>ev.id===selEventId);
   document.getElementById('total').textContent=fmt(e?e.price*qty:0);
 }
+
+/* ══════════════════════════════════════
+   STK
+══════════════════════════════════════ */
 function showSTK(){
   const e=allEvents().find(ev=>ev.id===selEventId);
   const total=e?e.price*qty:0;
@@ -1491,50 +754,36 @@ function showSTK(){
   let n2=0;if(pinTimer)clearInterval(pinTimer);
   pinTimer=setInterval(()=>{if(n2<4)document.getElementById('d'+n2++).classList.add('filled');else clearInterval(pinTimer)},320);
 }
-function cancelSTK(){document.getElementById('stk-overlay').style.display='none';if(pinTimer)clearInterval(pinTimer)}
+function cancelSTK(){ document.getElementById('stk-overlay').style.display='none'; if(pinTimer)clearInterval(pinTimer) }
 function confirmPay(){
   document.getElementById('stk-overlay').style.display='none';
   if(pinTimer)clearInterval(pinTimer);
-  for(let i=0;i<qty;i++)walletItems.push({eventId:selEventId,id:'TB-'+Math.random().toString(36).substring(2,8).toUpperCase()});
+  for(let i=0;i<qty;i++) walletItems.push({eventId:selEventId,id:'TB-'+Math.random().toString(36).substring(2,8).toUpperCase()});
+  closeCheckout(); closeDetail();
   document.getElementById('success-overlay').style.display='flex';
 }
-function goTickets(){
-  document.getElementById('success-overlay').style.display='none';
-  switchTab('tickets');
-}
+function goTickets(){ document.getElementById('success-overlay').style.display='none'; switchTab('tickets') }
 
 /* ══════════════════════════════════════
-   RENDER TICKETS
+   TICKETS
 ══════════════════════════════════════ */
 function renderTickets(){
   const count=walletItems.length;
   document.getElementById('tickets-sub').textContent=count+' active ticket'+(count!==1?'s':'');
   const list=document.getElementById('tickets-list');
   if(!count){
-    list.innerHTML=`<div class="empty-tickets">
-      <div class="icon">🎟</div>
-      <div class="et-title">No tickets yet</div>
-      <div class="et-sub">Find events on the map and buy a ticket in under 30 seconds.</div>
-      <button class="et-cta" onclick="switchTab('events')">Browse Events →</button>
-    </div>`;
+    list.innerHTML=`<div class="empty-tickets"><div class="empty-icon">🎟</div><div class="empty-title">No tickets yet</div><div class="empty-sub">Find an event and buy a ticket in under 30 seconds.</div><button class="empty-cta" onclick="switchTab('feed')">Browse Events →</button></div>`;
     return;
   }
   const qrCells=QR.map(b=>`<div class="qr-cell ${b?'qr-on':'qr-off'}"></div>`).join('');
   list.innerHTML=walletItems.map(item=>{
     const e=allEvents().find(ev=>ev.id===item.eventId)||{name:'Event',date:'',time:'00:00',hood:'',venue:'',price:0};
     return`<div class="ticket-card">
-      <div class="ticket-top">
-        <div><div class="ticket-name">${e.name}</div><div class="ticket-date">${fmtDate(e.date,e.time)} · ${e.hood}</div></div>
-        <div class="valid-pill">VALID</div>
-      </div>
+      <div class="ticket-top"><div><div class="ticket-name">${e.name}</div><div class="ticket-date">${fmtDate(e.date,e.time)} · ${e.hood}</div></div><div class="valid-pill">VALID</div></div>
       <hr class="ticket-dashed">
       <div class="ticket-qr-area">
         <div class="qr-box">${qrCells}</div>
-        <div>
-          <div class="qr-holder">Ticket holder</div>
-          <div class="qr-holder-name">Emmanuel</div>
-          <div class="offline-tag"><div class="offline-dot"></div>Offline ready</div>
-        </div>
+        <div><div class="qr-holder">Ticket holder</div><div class="qr-holder-name">Emmanuel</div><div class="offline-tag"><div class="offline-dot"></div>Offline ready</div></div>
       </div>
       <div class="ticket-foot"><span>${e.venue}</span><span class="ticket-id">${item.id}</span></div>
     </div>`;
@@ -1542,18 +791,62 @@ function renderTickets(){
 }
 
 /* ══════════════════════════════════════
+   PROFILE
+══════════════════════════════════════ */
+function openProfile(){ document.getElementById('ps-tickets').textContent=walletItems.length; document.getElementById('ps-events').textContent=loadCustom().length; document.getElementById('profile-overlay').classList.add('open') }
+function closeProfile(){ document.getElementById('profile-overlay').classList.remove('open') }
+document.getElementById('profile-overlay').addEventListener('click',function(ev){if(ev.target===this)closeProfile()});
+
+/* ══════════════════════════════════════
+   ADD EVENT
+══════════════════════════════════════ */
+function openAdd(){ document.getElementById('add-overlay').classList.add('open') }
+function closeAdd(){ document.getElementById('add-overlay').classList.remove('open') }
+document.getElementById('add-overlay').addEventListener('click',function(ev){if(ev.target===this)closeAdd()});
+function selectCat(el,cat){ fCat=cat; document.querySelectorAll('.cat-opt').forEach(c=>c.classList.remove('selected')); el.classList.add('selected') }
+function selectHood(el,hood){ fHood=hood; document.querySelectorAll('.hood-opt').forEach(c=>c.classList.remove('selected')); el.classList.add('selected') }
+function setPriceType(type){ fPriceType=type; document.getElementById('pt-paid').classList.toggle('selected',type==='paid'); document.getElementById('pt-free').classList.toggle('selected',type==='free'); document.getElementById('price-wrap').style.opacity=type==='free'?'0.4':'1'; document.getElementById('price-wrap').style.pointerEvents=type==='free'?'none':'auto' }
+function selectCrowd(el,crowd){ fCrowd=crowd; document.querySelectorAll('.crowd-opt').forEach(c=>c.classList.remove('selected')); el.classList.add('selected') }
+
+function submitEvent(){
+  const name=document.getElementById('f-name').value.trim();
+  const venue=document.getElementById('f-venue').value.trim();
+  const date=document.getElementById('f-date').value;
+  const time=document.getElementById('f-time').value;
+  const priceRaw=document.getElementById('f-price').value;
+  if(!name){showToast('Enter event name');return}
+  if(!venue){showToast('Enter venue name');return}
+  if(!date){showToast('Select a date');return}
+  if(fPriceType==='paid'&&(!priceRaw||isNaN(Number(priceRaw)))){showToast('Enter ticket price');return}
+  const base=HOOD_COORDS[fHood]||[-6.7924,39.2083];
+  const newEvent={
+    id:'c_'+Date.now(), name, venue, hood:fHood, cat:fCat,
+    date, time, price:fPriceType==='free'?0:Number(priceRaw),
+    crowd:fCrowd,
+    lat:base[0]+(Math.random()-0.5)*0.012,
+    lng:base[1]+(Math.random()-0.5)*0.012,
+    snapUrl:document.getElementById('f-snap').value.trim()||null,
+    snapCaption:document.getElementById('f-snap-cap').value.trim()||null,
+    desc:document.getElementById('f-desc').value.trim()||'',
+    custom:true,
+  };
+  const customs=loadCustom(); customs.push(newEvent); saveCustom(customs);
+  addPin(newEvent);
+  renderFeed();
+  closeAdd();
+  showToast('🗺 Event published!');
+  ['f-name','f-venue','f-price','f-snap','f-snap-cap','f-desc'].forEach(id=>document.getElementById(id).value='');
+}
+
+/* ══════════════════════════════════════
    TOAST
 ══════════════════════════════════════ */
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2400);
-}
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400) }
 
 /* ══════════════════════════════════════
    BOOT
 ══════════════════════════════════════ */
-document.getElementById('f-date').valueAsDate=new Date();
+document.getElementById('f-date').valueAsDate = new Date();
 initMap();
 renderFeed();
 renderTickets();
